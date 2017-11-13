@@ -172,6 +172,17 @@ export default class TableList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={6} sm={24}>
+            <FormItem label="保险公司">
+              {getFieldDecorator('保险公司')(
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Option value="公司1">公司1</Option>
+                  <Option value="公司2">公司2</Option>
+                  <Option value="公司3">公司3</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={6} sm={24}>
             <FormItem label="被保人姓名">
               {getFieldDecorator('被保人姓名')(
                 <Input placeholder="请输入" />
@@ -189,17 +200,6 @@ export default class TableList extends PureComponent {
             <FormItem label="团体名称">
               {getFieldDecorator('团体名称')(
                 <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
-            <FormItem label="保险公司">
-              {getFieldDecorator('保险公司')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="公司1">公司1</Option>
-                  <Option value="公司2">公司2</Option>
-                  <Option value="公司3">公司3</Option>
-                </Select>
               )}
             </FormItem>
           </Col>
