@@ -50,6 +50,10 @@ const data = [{
       name: '影像件导入',
       path: 'todo',
       component: TableList,
+    }, {
+      name: '数据导入',
+      path: '录入',
+      component: TableList,
     }],
   }, {
     name: '栈略数据',

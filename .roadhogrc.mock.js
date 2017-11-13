@@ -26,8 +26,8 @@ const proxy = {
       },
     },
     $body: {
-      name: 'Serati Ma',
-      avatar: 'https://gw.alipayobjects.com/zos/rmsportal/dRFVcIqZOYPcSNrlJsqQ.png',
+      name: '曾朝霞',
+      avatar: 'http://nzr2ybsda.qnssl.com/images/52091/FqcNauRnU9NvhtkMlGaLbkry_fen.jpg?imageMogr2/strip/thumbnail/720x1440%3E/quality/90!/interlace/1/format/jpeg',
       userid: '00000001',
       notifyCount: 12,
     },
