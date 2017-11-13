@@ -35,6 +35,7 @@ import TableList from '../routes/List/TableList';
 
 import Company from '../routes/BasicInfo/company';
 import Group from '../routes/BasicInfo/group';
+import Policy from '../routes/BasicInfo/policy';
 
 const data = [{
   component: BasicLayout,
@@ -43,15 +44,11 @@ const data = [{
   path: '',
   children: [{
     name: '录入系统',
-    path: 'leapStack',
+    path: 'entry',
     icon: 'form',
     children: [{
-      name: '待审核',
+      name: '影像件导入',
       path: 'todo',
-      component: TableList,
-    }, {
-      name: '已审核',
-      path: 'approved',
       component: TableList,
     }],
   }, {
@@ -86,7 +83,7 @@ const data = [{
     }, {
       name: '保单管理',
       path: 'Policies',
-      component: TableList,
+      component: Policy,
     }],
   }, {
     name: '易安保险公司',

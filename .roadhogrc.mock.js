@@ -2,6 +2,7 @@ import mockjs from 'mockjs';
 import { getRule, postRule } from './mock/rule';
 import { getCompany, postCompany } from './mock/Basic/company';
 import { get as getGroup, post as postGroup } from './mock/Basic/group';
+import { get as getPolicy, post as postPolicy } from './mock/Basic/policy';
 import { getActivities, getNotice, getFakeList } from './mock/api';
 import { getFakeChartData } from './mock/chart';
 import { imgMap } from './mock/utils';
@@ -79,6 +80,16 @@ const proxy = {
       },
     },
     $body: postGroup,
+  },
+  'GET /api/policy': getPolicy,
+  'POST /api/policy': {
+    $params: {
+      pageSize: {
+        desc: '分页',
+        exp: 2,
+      },
+    },
+    $body: postPolicy,
   },
   'POST /api/forms': (req, res) => {
     res.send('Ok');
