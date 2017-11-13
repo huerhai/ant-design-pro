@@ -34,6 +34,7 @@ import TableList from '../routes/List/TableList';
 // import RegisterResult from '../routes/User/RegisterResult';
 
 import Company from '../routes/BasicInfo/company';
+import Group from '../routes/BasicInfo/group';
 
 const data = [{
   component: BasicLayout,
@@ -41,6 +42,19 @@ const data = [{
   name: '首页', // for breadcrumb
   path: '',
   children: [{
+    name: '录入系统',
+    path: 'leapStack',
+    icon: 'form',
+    children: [{
+      name: '待审核',
+      path: 'todo',
+      component: TableList,
+    }, {
+      name: '已审核',
+      path: 'approved',
+      component: TableList,
+    }],
+  }, {
     name: '栈略数据',
     path: 'leapStack',
     icon: 'form',
@@ -66,9 +80,9 @@ const data = [{
       path: 'product',
       component: TableList,
     }, {
-      name: '产团体管理',
+      name: '团体管理',
       path: 'Group',
-      component: TableList,
+      component: Group,
     }, {
       name: '保单管理',
       path: 'Policies',

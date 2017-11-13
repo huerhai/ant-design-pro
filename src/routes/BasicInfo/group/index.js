@@ -12,7 +12,7 @@ const { Option } = Select;
 const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 
 @connect(state => ({
-  company: state.company,
+  group: state.group,
 }))
 @Form.create()
 export default class TableList extends PureComponent {
@@ -26,7 +26,7 @@ export default class TableList extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'company/fetch',
+      type: 'group/fetch',
     });
   }
 
@@ -51,7 +51,7 @@ export default class TableList extends PureComponent {
     }
 
     dispatch({
-      type: 'company/fetch',
+      type: 'group/fetch',
       payload: params,
     });
   }
@@ -60,7 +60,7 @@ export default class TableList extends PureComponent {
     const { form, dispatch } = this.props;
     form.resetFields();
     dispatch({
-      type: 'company/fetch',
+      type: 'group/fetch',
       payload: {},
     });
   }
@@ -74,7 +74,7 @@ export default class TableList extends PureComponent {
     switch (e.key) {
       case 'remove':
         dispatch({
-          type: 'company/remove',
+          type: 'group/remove',
           payload: {
             no: selectedRows.map(row => row.no).join(','),
           },
@@ -114,7 +114,7 @@ export default class TableList extends PureComponent {
       });
 
       dispatch({
-        type: 'company/fetch',
+        type: 'group/fetch',
         payload: values,
       });
     });
@@ -129,7 +129,7 @@ export default class TableList extends PureComponent {
   handleAdd = (data) => {
     if (data.key) {
       this.props.dispatch({
-        type: 'company/update',
+        type: 'group/update',
         payload: data,
         callback: () => {
           message.success('修改成功');
@@ -137,7 +137,7 @@ export default class TableList extends PureComponent {
       });
     } else {
       this.props.dispatch({
-        type: 'company/add',
+        type: 'group/add',
         payload: data,
         callback: () => {
           message.success('添加成功');
@@ -158,7 +158,7 @@ export default class TableList extends PureComponent {
 
   handleDelete = (data) => {
     this.props.dispatch({
-      type: 'company/remove',
+      type: 'group/remove',
       payload: data,
       callback: () => {
         message.success('删除成功');
@@ -172,25 +172,48 @@ export default class TableList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={6} sm={24}>
-            <FormItem label="公司名">
-              {getFieldDecorator('公司名')(
+            <FormItem label="团体编号">
+              {getFieldDecorator('团体编号')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
-            <FormItem label="公司编号">
-              {getFieldDecorator('编号')(
+            <FormItem label="团体名称">
+              {getFieldDecorator('团体名称')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
-            <FormItem label="总分公司标示">
-              {getFieldDecorator('标示')(
+            <FormItem label="理赔时效">
+              {getFieldDecorator('理赔时效')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="分公司">分公司</Option>
-                  <Option value="中支公司">中支公司</Option>
+                  <Option value="一个工作日">一个工作日</Option>
+                  <Option value="二个工作日">二个工作日</Option>
+                  <Option value="三个工作日">三个工作日</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={6} sm={24}>
+            <FormItem label="产品名称">
+              {getFieldDecorator('产品名称')(
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Option value="产品1">产品1</Option>
+                  <Option value="产品2">产品2</Option>
+                  <Option value="产品3">产品3</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={6} sm={24}>
+            <FormItem label="保险公司">
+              {getFieldDecorator('保险公司')(
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Option value="公司1">公司1</Option>
+                  <Option value="公司2">公司2</Option>
+                  <Option value="公司3">公司3</Option>
                 </Select>
               )}
             </FormItem>
@@ -207,7 +230,7 @@ export default class TableList extends PureComponent {
   }
 
   render() {
-    const { company: { loading: companyLoading, data } } = this.props;
+    const { group: { loading: groupLoading, data } } = this.props;
     const { selectedRows, modalVisible } = this.state;
 
     const menu = (
@@ -218,7 +241,7 @@ export default class TableList extends PureComponent {
     );
 
     return (
-      <PageHeaderLayout title="保险公司管理">
+      <PageHeaderLayout title="团体管理">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
@@ -233,7 +256,7 @@ export default class TableList extends PureComponent {
                     currentItem: {},
                     modalVisible: true,
                   });
-                }}
+              }}
               >
                 新建
               </Button>
@@ -252,7 +275,7 @@ export default class TableList extends PureComponent {
             </div>
             <ListTable
               selectedRows={selectedRows}
-              loading={companyLoading}
+              loading={groupLoading}
               data={data}
               onEdit={this.handleEdit}
               onDelete={this.handleDelete}

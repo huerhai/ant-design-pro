@@ -37,3 +37,37 @@ export async function updateCompany(params) {
     },
   });
 }
+
+export async function queryGroup(params) {
+  return request(`/api/group?${stringify(params)}`);
+}
+
+export async function removeGroup(params) {
+  return request('/api/group', {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'delete',
+    },
+  });
+}
+
+export async function addGroup(params) {
+  return request('/api/group', {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function updateGroup(params) {
+  return request('/api/group', {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'update',
+    },
+  });
+}
