@@ -33,6 +33,8 @@ import TableList from '../routes/List/TableList';
 // import Register from '../routes/User/Register';
 // import RegisterResult from '../routes/User/RegisterResult';
 
+import Company from '../routes/BasicInfo/company';
+
 const data = [{
   component: BasicLayout,
   layout: 'BasicLayout',
@@ -58,7 +60,7 @@ const data = [{
     children: [{
       name: '保险公司管理',
       path: 'company',
-      component: TableList,
+      component: Company,
     }, {
       name: '产品管理',
       path: 'product',
