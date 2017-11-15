@@ -43,7 +43,7 @@ const data = [{
   component: BasicLayout,
   layout: 'BasicLayout',
   name: '首页', // for breadcrumb
-  path: '',
+  path: '/',
   children: [{
     name: '录入系统',
     path: 'entry',

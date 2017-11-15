@@ -8,12 +8,11 @@ import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import { ContainerQuery } from 'react-container-query';
 import classNames from 'classnames';
-import styles from './BasicLayout.less';
 import HeaderSearch from '../components/HeaderSearch';
 import NoticeIcon from '../components/NoticeIcon';
 import GlobalFooter from '../components/GlobalFooter';
-import { getNavData } from '../common/nav';
-import { getRouteData } from '../utils/utils';
+import NotFound from '../routes/Exception/404';
+import styles from './BasicLayout.less';
 
 const { Header, Sider, Content } = Layout;
 const { SubMenu } = Menu;
@@ -47,15 +46,15 @@ class BasicLayout extends React.PureComponent {
   constructor(props) {
     super(props);
     // 把一级 Layout 的 children 作为菜单项
-    this.menus = getNavData().reduce((arr, current) => arr.concat(current.children), []);
+    this.menus = props.navData.reduce((arr, current) => arr.concat(current.children), []);
     this.state = {
       openKeys: this.getDefaultCollapsedSubMenus(props),
     };
   }
   getChildContext() {
-    const { location } = this.props;
+    const { location, navData, getRouteData } = this.props;
     const routeData = getRouteData('BasicLayout');
-    const firstMenuData = getNavData().reduce((arr, current) => arr.concat(current.children), []);
+    const firstMenuData = navData.reduce((arr, current) => arr.concat(current.children), []);
     const menuData = this.getMenuData(firstMenuData, '');
     const breadcrumbNameMap = {};
 
@@ -165,7 +164,7 @@ class BasicLayout extends React.PureComponent {
     });
   }
   getPageTitle() {
-    const { location } = this.props;
+    const { location, getRouteData } = this.props;
     const { pathname } = location;
     let title = 'Ant Design Pro';
     getRouteData('BasicLayout').forEach((item) => {
@@ -205,7 +204,7 @@ class BasicLayout extends React.PureComponent {
   handleOpenChange = (openKeys) => {
     const lastOpenKey = openKeys[openKeys.length - 1];
     const isMainMenu = this.menus.some(
-      item => (item.key === lastOpenKey || item.path === lastOpenKey)
+      item => lastOpenKey && (item.key === lastOpenKey || item.path === lastOpenKey)
     );
     this.setState({
       openKeys: isMainMenu ? [lastOpenKey] : [...openKeys],
@@ -238,7 +237,7 @@ class BasicLayout extends React.PureComponent {
     }
   }
   render() {
-    const { currentUser, collapsed, fetchingNotices } = this.props;
+    const { currentUser, collapsed, fetchingNotices, getRouteData } = this.props;
 
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={this.onMenuClick}>
@@ -356,7 +355,8 @@ class BasicLayout extends React.PureComponent {
                   )
                 )
               }
-              <Redirect to="/dashboard/analysis" />
+              <Redirect exact from="/" to="/dashboard/analysis" />
+              <Route component={NotFound} />
             </Switch>
             <GlobalFooter
               links={[{
