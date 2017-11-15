@@ -33,6 +33,8 @@ import TableList from '../routes/List/TableList';
 // import Register from '../routes/User/Register';
 // import RegisterResult from '../routes/User/RegisterResult';
 
+import EntryForm from '../routes/EntrySystem/entry';
+
 import Company from '../routes/BasicInfo/company';
 import Group from '../routes/BasicInfo/group';
 import Policy from '../routes/BasicInfo/policy';
@@ -53,7 +55,7 @@ const data = [{
     }, {
       name: '数据导入',
       path: '录入',
-      component: TableList,
+      component: EntryForm,
     }],
   }, {
     name: '栈略数据',
