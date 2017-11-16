@@ -42,9 +42,16 @@ function RouterConfig({ history, app }) {
   const UserLayout = getLayout(navData, 'UserLayout').component;
   const BasicLayout = getLayout(navData, 'BasicLayout').component;
 
-  const passProps = {
+  const passProps1 = {
     app,
     navData,
+    getRouteData: (path) => {
+      return getRouteData(navData, path);
+    },
+  };
+  const passProps2 = {
+    app,
+    navData: navData.filter(item => item.layout === 'BasicLayout'),
     getRouteData: (path) => {
       return getRouteData(navData, path);
     },
@@ -54,8 +61,8 @@ function RouterConfig({ history, app }) {
     <LocaleProvider locale={zhCN}>
       <Router history={history}>
         <Switch>
-          <Route path="/user" render={props => <UserLayout {...props} {...passProps} />} />
-          <Route path="/" render={props => <BasicLayout {...props} {...passProps} />} />
+          <Route path="/user" render={props => <UserLayout {...props} {...passProps1} />} />
+          <Route path="/" render={props => <BasicLayout {...props} {...passProps2} />} />
         </Switch>
       </Router>
     </LocaleProvider>
