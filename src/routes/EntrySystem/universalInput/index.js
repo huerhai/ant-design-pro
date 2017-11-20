@@ -6,6 +6,7 @@ import FooterToolbar from '../../../components/FooterToolbar';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 import UniversalInput from '../../../components/UniversalInput';
 import UniversalForm from '../../../components/UniversalForm';
+import InvoiceTable from './InvoiceTable';
 
 
 import city from './city';
@@ -28,14 +29,9 @@ export default class UniversalClaim extends PureComponent {
   constructor(props) {
     super(props);
     this.newTabIndex = 1;
-    const events = [
-      { title: '事件1',
-        key: '事件1',
-      },
-    ];
     this.state = {
-      activeKey: events[0].key,
-      events,
+      activeKey: '1 事件',
+      events: [],
       claimSchema,
       eventSchema,
     };
@@ -46,7 +42,6 @@ export default class UniversalClaim extends PureComponent {
       type: 'group/fetch',
     });
   }
-
   onChange = (activeKey) => {
     this.setState({ activeKey });
   }
@@ -85,9 +80,9 @@ export default class UniversalClaim extends PureComponent {
       });
     return <Row gutter={40}>{children}</Row>;
   }
-  add = () => {
+  add = (name) => {
     const { events } = this.state;
-    const activeKey = `事件${this.newTabIndex + 1}`;
+    const activeKey = `${this.newTabIndex}-${name}事件`;
     events.push({ title: activeKey, key: activeKey });
     this.setState({ events, activeKey });
     this.newTabIndex = this.newTabIndex + 1;
@@ -135,7 +130,14 @@ export default class UniversalClaim extends PureComponent {
           </Card>
           <Card className={styles.card} bordered={false} style={{ marginTop: 16 }}>
             <div style={{ marginBottom: 16 }}>
-              <Button onClick={this.add}>添加事件</Button>
+              <span>添加:</span>
+              <Button onClick={this.add.bind(this, '疾病门诊')}>+疾病门诊事件</Button>
+              <Button onClick={this.add.bind(this, '疾病住院')}>+疾病住院事件</Button>
+              <Button onClick={this.add.bind(this, '意外门诊')}>+意外门诊事件</Button>
+              <Button onClick={this.add.bind(this, '意外住院')}>+意外住院事件</Button>
+              <Button onClick={this.add.bind(this, '伤残')}>+伤残事件</Button>
+              <Button onClick={this.add.bind(this, '生育')}>+生育事件</Button>
+              <Button onClick={this.add.bind(this, '身故')}>+身故事件</Button>
             </div>
             <Tabs
               hideAdd
@@ -157,6 +159,11 @@ export default class UniversalClaim extends PureComponent {
                   </TabPane>);
               })}
             </Tabs>
+          </Card>
+          <Card className={styles.card} bordered={false} style={{ marginTop: 16 }}>
+            {getFieldDecorator('invoiceList', {
+              initialValue: [],
+            })(<InvoiceTable />)}
           </Card>
         </Form>
         <FooterToolbar>

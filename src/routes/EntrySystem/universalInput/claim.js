@@ -208,7 +208,6 @@ const claim = {
     },
   },
 };
-
 const event = {
   title: '事件数组',
   type: 'array',
