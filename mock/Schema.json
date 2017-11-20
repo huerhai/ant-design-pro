@@ -1,0 +1,141 @@
+{
+  "title": "一个案件对象",
+  "type": "object",
+  "properties": {
+    "accidentAddress": {
+      "type": "string",
+      "title": "出险地址",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "accidentArea": {
+      "type": "string",
+      "title": "出险地区",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "accidentCity": {
+      "type": "string",
+      "title": "出险城市",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "accidentInfo": {
+      "type": "string",
+      "title": "出险经过",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "accidentProvince": {
+      "type": "string",
+      "title": "名称",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "accidentSubtype": {
+      "type": "string",
+      "title": "名称",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "auditConclusion": {
+      "type": "string",
+      "title": "名称",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "auditOption": {
+      "type": "string",
+      "title": "名称",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "claimId": {
+      "type": "string",
+      "title": "名称",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "customCode": {
+      "type": "string",
+      "title": "名称",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "materialCode": {
+      "type": "string",
+      "title": "名称",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "firstDate": {
+      "type": "date",
+      "title": "名称",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "accidentDate": {
+      "type": "date",
+      "title": "名称",
+      "defaultValue": "默认值",
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "emailAccept": {
+      "type": "bool",
+      "title": "名称",
+      "defaultValue": true,
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    },
+    "isOriginal": {
+      "type": "bool",
+      "title": "名称",
+      "defaultValue": false,
+      "description": "描述",
+      "order": 1,
+      "rule": [],
+      "style": {}
+    }
+  }
+}

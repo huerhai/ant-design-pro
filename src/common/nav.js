@@ -58,6 +58,7 @@ import EntryForm from '../routes/EntrySystem/entry';
 import Company from '../routes/BasicInfo/company';
 import Group from '../routes/BasicInfo/group';
 import Policy from '../routes/BasicInfo/policy';
+import UniversalInput from '../routes/EntrySystem/universalInput';
 
 // wrapper of dynamic
 const dy = (app, models, component) => dynamic({
@@ -81,7 +82,7 @@ export const getNavData = app => [
       }, {
         name: '数据导入',
         path: 'input',
-        component: dy(app, [RuleModel], TableList),
+        component: dy(app, [GroupModel], UniversalInput),
       },
       {
         name: '保险公司管理',
