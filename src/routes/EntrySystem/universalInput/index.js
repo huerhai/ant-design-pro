@@ -12,7 +12,7 @@ import InvoiceTable from './InvoiceTable';
 import city from './city';
 import styles from './index.less';
 
-import { claim as claimSchema, event as eventSchema } from './claim';
+import { claim as claimSchema, event as eventSchema, person as personSchema } from './claim';
 
 const { TabPane } = Tabs;
 
@@ -32,8 +32,14 @@ export default class UniversalClaim extends PureComponent {
     this.state = {
       activeKey: '1 事件',
       events: [],
+      personActiveKey: '被保人 申请人 报案人 领款人',
+      persons: [{
+        key: '被保人 申请人 报案人 领款人',
+        title: '被保人 申请人 报案人 领款人',
+      }],
       claimSchema,
       eventSchema,
+      personSchema,
     };
   }
   componentDidMount() {
@@ -47,6 +53,9 @@ export default class UniversalClaim extends PureComponent {
   }
   onEdit = (targetKey, action) => {
     this[action](targetKey);
+  }
+  onPeasonEdit = (targetKey, action) => {
+    if (action === 'remove') this.removePeason(targetKey);
   }
   getInputForm(data) {
     const { getFieldDecorator } = this.props.form;
@@ -87,6 +96,14 @@ export default class UniversalClaim extends PureComponent {
     this.setState({ events, activeKey });
     this.newTabIndex = this.newTabIndex + 1;
   }
+  addPerson = (name) => {
+    const { persons } = this.state;
+    const personActiveKey = `${name}`;
+    persons[0].key = persons[0].key.replace(` ${name}`, '');
+    persons[0].title = persons[0].key.replace(` ${name}`, '');
+    persons.push({ title: personActiveKey, key: personActiveKey });
+    this.setState({ persons, personActiveKey });
+  }
   remove = (targetKey) => {
     let { activeKey } = this.state;
     let lastIndex;
@@ -101,6 +118,20 @@ export default class UniversalClaim extends PureComponent {
     }
     this.setState({ events, activeKey });
   }
+  removePeason = (targetKey) => {
+    let { personActiveKey } = this.state;
+    let lastIndex;
+    this.state.persons.forEach((pane, i) => {
+      if (pane.key === targetKey) {
+        lastIndex = i - 1;
+      }
+    });
+    const persons = this.state.persons.filter(pane => pane.key !== targetKey);
+    if (lastIndex >= 0 && personActiveKey === targetKey) {
+      personActiveKey = persons[lastIndex].key;
+    }
+    this.setState({ persons, personActiveKey });
+  }
   handleFormChange = (index, changedFields) => {
     const newEvents = this.state.events.map((item, index2) => {
       if (index2 === index) {
@@ -114,6 +145,7 @@ export default class UniversalClaim extends PureComponent {
   }
   render() {
     const { form, submitting = false } = this.props;
+    const { persons } = this.state;
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError } = form;
     const validate = () => {
       validateFieldsAndScroll((error, values) => {
@@ -127,6 +159,34 @@ export default class UniversalClaim extends PureComponent {
         <Form>
           <Card className={styles.card} bordered={false}>
             {this.getInputForm(this.state.claimSchema)}
+          </Card>
+          <Card className={styles.card} bordered={false} style={{ marginTop: 16 }}>
+            <div style={{ marginBottom: 16 }}>
+              <span>添加:</span>
+              {~persons[0].title.indexOf('申请人') ? <Button onClick={this.addPerson.bind(this, '申请人')}>+申请人</Button> : null}
+              {~persons[0].title.indexOf('领款人') ? <Button onClick={this.addPerson.bind(this, '领款人')}>+领款人</Button> : null}
+              {~persons[0].title.indexOf('报案人') ? <Button onClick={this.addPerson.bind(this, '报案人')}>+报案人</Button> : null}
+            </div>
+            <Tabs
+              hideAdd
+              onChange={key => this.setState({ personActiveKey: key })}
+              activeKey={this.state.personActiveKey}
+              type="editable-card"
+              onEdit={this.onPeasonEdit}
+            >
+              {this.state.persons.map((pane, index) => {
+                return (
+                  <TabPane tab={pane.title} key={pane.key}>
+                    <Card className={styles.card} bordered={false}>
+                      <UniversalForm
+                        schema={this.state.personSchema}
+                        {...this.state.persons[index]}
+                        onChange={this.handleFormChange.bind(this, index)}
+                      />
+                    </Card>
+                  </TabPane>);
+              })}
+            </Tabs>
           </Card>
           <Card className={styles.card} bordered={false} style={{ marginTop: 16 }}>
             <div style={{ marginBottom: 16 }}>
