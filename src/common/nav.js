@@ -78,27 +78,33 @@ export const getNavData = app => [
       {
         name: '影像件导入',
         path: 'todo',
+        icon: 'scan',
         component: dy(app, [RuleModel], TableList),
       }, {
         name: '数据导入',
         path: 'input',
+        icon: 'solution',
         component: dy(app, [GroupModel], UniversalInput),
       },
       {
         name: '保险公司管理',
         path: 'company',
+        icon: 'usb',
         component: dy(app, [CompanyModel], Company),
       }, {
         name: '产品管理',
         path: 'product',
+        icon: 'bars',
         component: dy(app, [RuleModel], TableList),
       }, {
         name: '团体管理',
         path: 'Group',
+        icon: 'team',
         component: dy(app, [GroupModel], Group),
       }, {
         name: '保单管理',
         path: 'Policies',
+        icon: 'copy',
         component: dy(app, [PolicyModel], Policy),
       },
     ],
