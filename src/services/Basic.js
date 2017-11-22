@@ -71,3 +71,13 @@ export async function updateGroup(params) {
     },
   });
 }
+
+// 获取预审案件列表
+export async function queryRreList(params) {
+  return request('/gw/cs/pretreatment/list', {
+    method: 'POST',
+    body: {
+      ...params,
+    },
+  });
+}

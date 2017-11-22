@@ -32,7 +32,7 @@ export const getNavData = app => [
         name: '预审',
         path: 'preliminary',
         icon: 'customer-service',
-        component: dynamicWrapper(app, ['list'], () => import('../routes/Preliminary/BasicList')),
+        component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
       },
       {
         name: '保险公司管理',
