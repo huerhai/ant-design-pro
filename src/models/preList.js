@@ -1,4 +1,4 @@
-import { queryRreList, updatePreCase } from '../services/Basic';
+import { queryRreList, updatePreCase, freshRreList } from '../services/Basic';
 
 export default {
   namespace: 'preList',
@@ -73,6 +73,18 @@ export default {
         payload: false,
       });
       if (callback) callback(data, res);
+    },
+    *fresh({ callback }, { call, put }) {
+      yield put({
+        type: 'changeLoading',
+        payload: true,
+      });
+      yield call(freshRreList);
+      yield put({
+        type: 'changeLoading',
+        payload: false,
+      });
+      if (callback) callback();
     },
   },
 

@@ -72,6 +72,11 @@ export async function updateGroup(params) {
   });
 }
 
+// 拉取最新的预审案件列表
+export async function freshRreList() {
+  return request('/gw/am/attachment/updateftpfiles');
+}
+
 // 获取预审案件列表
 export async function queryRreList(params) {
   return request('/gw/cs/pretreatment/list', {

@@ -31,21 +31,70 @@ export default class BasicList extends PureComponent {
     this.fetch();
   }
   fetch(newFilter) {
-    this.setState({
-      filter: { ...this.state.filter, ...newFilter },
-    });
-    this.props.dispatch({
-      type: 'preList/fetch',
-      payload: { ...this.state.filter, ...newFilter },
-    });
+    const { form } = this.props;
+    setTimeout(() => {
+      form.validateFields((err) => {
+        if (!err) {
+          let filter = {
+            ...this.state.filter,
+            ...form.getFieldsValue(),
+            ...newFilter,
+          };
+          if (filter) {
+            filter = {
+              ...filter,
+              para2: filter.para2 ?
+                (filter.para2.length === 2 ?
+                  undefined :
+                  filter.para2.join()) :
+                undefined,
+              tpa: filter.tpa ?
+                (filter.tpa.length === 2 ?
+                  undefined :
+                  filter.tpa.join()) :
+                undefined,
+            };
+          }
+          this.setState({ filter });
+          this.props.dispatch({
+            type: 'preList/fetch',
+            payload: filter,
+          });
+        }
+      });
+    }, 0);
+  }
+  handleFormSubmit = () => {
+    this.fetch();
   }
 
   render() {
-    const { preList: { list, loading } } = this.props;
+    const { preList: { list, loading }, dispatch } = this.props;
     const { modalVisible } = this.state;
 
     const extraContent = (
       <div className={styles.extraContent}>
+        <a
+          onClick={() => {
+            dispatch({
+              type: 'preList/fresh',
+              callback: () => {
+                message.success('拉取最新数据');
+              },
+            });
+          }}
+          style={{ marginRight: 15 }}
+        >
+          拉取新数据
+        </a>
+        <a
+          onClick={() => {
+            window.open(`/gw/cs/pretreatment/export?fileName=预审导出[${this.state.filter.para2 || '公司不限'}][${this.state.filter.tpa || 'tpa不限'}][${new Date().toLocaleDateString() + new Date().toLocaleTimeString()}].xls&para2=${this.state.filter.para2 || ''}&active=true&tpa=${this.state.filter.tpa || ''}`);
+          }}
+          style={{ marginRight: 15 }}
+        >
+          导出
+        </a>
         <RadioGroup
           defaultValue={undefined}
           onChange={(e) => {
@@ -113,8 +162,8 @@ export default class BasicList extends PureComponent {
         return (
           <div className={styles.listContent}>
             <div style={{ width: 110 }}>
-              <p>录入方:{tpa}</p>
-              <p>所属公司:{para2}</p>
+              <p>录入方:{tpa === 'shibo' ? '世博' : tpa === 'pukang' ? '世博' : '未知公司'}</p>
+              <p>所属公司:{para2 === '000205' ? '易安' : '人保'}</p>
               <p>修改人:{lastName}</p>
             </div>
             <div>
@@ -220,20 +269,22 @@ export default class BasicList extends PureComponent {
             <Form layout="inline">
               <StandardFormRow title="所属公司" block style={{ paddingBottom: 11 }}>
                 <FormItem>
-                  {getFieldDecorator('category')(
+                  {getFieldDecorator('para2', {
+                    initialValue: ['000205', '000002320500'],
+                  })(
                     <TagSelect onChange={this.handleFormSubmit} expandable>
-                      <TagSelect.Option value="cat1">易安</TagSelect.Option>
-                      <TagSelect.Option value="cat2">江苏人保财</TagSelect.Option>
+                      <TagSelect.Option value="000205">易安</TagSelect.Option>
+                      <TagSelect.Option value="000002320500">江苏人保财</TagSelect.Option>
                     </TagSelect>
                   )}
                 </FormItem>
               </StandardFormRow>
               <StandardFormRow title="录入方" block style={{ paddingBottom: 11 }}>
                 <FormItem>
-                  {getFieldDecorator('category')(
+                  {getFieldDecorator('tpa')(
                     <TagSelect onChange={this.handleFormSubmit} expandable>
-                      <TagSelect.Option value="世博">世博</TagSelect.Option>
-                      <TagSelect.Option value="普康">普康</TagSelect.Option>
+                      <TagSelect.Option value="shibo">世博</TagSelect.Option>
+                      <TagSelect.Option value="pukang">普康</TagSelect.Option>
                     </TagSelect>
                   )}
                 </FormItem>
