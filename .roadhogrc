@@ -6,6 +6,13 @@
     "transform-class-properties",
     ["import", { "libraryName": "antd", "libraryDirectory": "es", "style": true }]
   ],
+  "proxy": {
+    "/gw": {
+      "target": "http://hic-dev.leapstack.cn/",
+      "changeOrigin": true,
+      "pathRewrite": { "^/gw": "/gw" }
+    }
+  },
   "env": {
     "development": {
       "extraBabelPlugins": [

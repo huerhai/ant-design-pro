@@ -54,7 +54,7 @@ export default {
     changeLoginStatus(state, { payload }) {
       return {
         ...state,
-        status: payload.status,
+        success: payload.success,
         type: payload.type,
       };
     },

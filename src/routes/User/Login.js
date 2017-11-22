@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { routerRedux, Link } from 'dva/router';
-import { Form, Input, Tabs, Button, Icon, Checkbox, Row, Col, Alert } from 'antd';
+import { Form, Input, Tabs, Button, Icon, Checkbox, Row, Col, Alert, notification } from 'antd';
 import styles from './Login.less';
 
 const FormItem = Form.Item;
@@ -18,8 +18,19 @@ export default class Login extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.login.status === 'ok') {
-      this.props.dispatch(routerRedux.push('/'));
+    if (nextProps.login.success) {
+      this.props.dispatch(routerRedux.push('/preliminary'));
+    } else if (nextProps.login.success === null) {
+      notification.error({
+        message: '对不起, 登录失败',
+        description: '请检查您的登录名或密码',
+      });
+      this.props.dispatch({
+        type: 'login/changeLoginStatus',
+        payload: {
+          success: undefined,
+        },
+      });
     }
   }
 
@@ -87,7 +98,7 @@ export default class Login extends Component {
                 this.renderMessage('账户或密码错误')
               }
               <FormItem>
-                {getFieldDecorator('userName', {
+                {getFieldDecorator('username', {
                   rules: [{
                     required: type === 'account', message: '请输入账户名！',
                   }],
