@@ -113,7 +113,7 @@ export default class BasicList extends PureComponent {
               <p>{pretreatmentStatus === '1' ? '已审' : '待审' }</p>
             </div>
             <div>
-              <Progress percent={riskScore * 100 || 0} strokeWidth={6} format={percent => `${percent / 100}分`} />
+              <Progress percent={riskScore * 100 || 0} strokeWidth={6} format={percent => `${percent / 100}`} />
             </div>
           </div>);
       };

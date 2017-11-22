@@ -81,7 +81,7 @@ const modal = ({
           {getFieldDecorator('riskScore', {
             initialValue: +item.riskScore || 0,
           })(
-            <Slider min={0} max={1} step={0.001} />
+            <Slider min={0} max={1} step={0.01} />
           )}
         </FormItem>
         <FormItem {...formItemLayout} label="风险场景">
