@@ -81,3 +81,13 @@ export async function queryRreList(params) {
     },
   });
 }
+
+// 修改预审案件
+export async function updatePreCase(params) {
+  return request('/gw/cs/pretreatment/updateeventpretreatment', {
+    method: 'POST',
+    body: {
+      ...params,
+    },
+  });
+}

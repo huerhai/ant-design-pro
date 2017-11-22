@@ -1,12 +1,13 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Form, Select, List, Card, Row, Col, Radio, Input, Progress, Icon, Dropdown, Menu, Avatar } from 'antd';
+import { Form, Select, List, Card, Row, Col, Radio, Input, Progress, Icon, Dropdown, Menu, Avatar, message } from 'antd';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import StandardFormRow from '../../components/StandardFormRow';
 import TagSelect from '../../components/TagSelect';
 
+import EditModal from './modle';
 import styles from './BasicList.less';
 
 const RadioButton = Radio.Button;
@@ -21,6 +22,10 @@ const { Search } = Input;
   preList: state.preList,
 }))
 export default class BasicList extends PureComponent {
+  state = {
+    currentItem: {},
+    modalVisible: false,
+  };
   componentDidMount() {
     this.props.dispatch({
       type: 'preList/fetch',
@@ -32,6 +37,7 @@ export default class BasicList extends PureComponent {
 
   render() {
     const { preList: { list, loading } } = this.props;
+    const { modalVisible } = this.state;
 
     const extraContent = (
       <div className={styles.extraContent}>
@@ -48,6 +54,18 @@ export default class BasicList extends PureComponent {
       </div>
     );
 
+    const handleEdit = (data) => {
+      this.props.dispatch({
+        type: 'preList/update',
+        payload: data,
+        callback: () => {
+          message.success('修改成功');
+        },
+      });
+      this.setState({
+        modalVisible: false,
+      });
+    };
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
@@ -55,43 +73,41 @@ export default class BasicList extends PureComponent {
       total: 50,
     };
 
-    const ListContent = ({ data: { tpa, para2, modifiedBy, createdAt, riskScore } }) => {
-      let lastName = '管理员';
-      switch (modifiedBy) {
-        case -1:
-          lastName = '-';
-          break;
-        case -4:
-          lastName = '神秘人';
-          break;
-        case -7:
-          lastName = '罗咏梅';
-          break;
-        case -6:
-          lastName = '曾朝霞';
-          break;
-        default:
-          break;
-      }
-      return (
-        <div className={styles.listContent}>
-          <div>
-            <span>录入方:{tpa}</span>
-            <p>所属公司:{para2}</p>
-          </div>
-          <div>
-            <span>最后修改人</span>
-            <p>{lastName}</p>
-          </div>
-          <div>
-            <span>创建时间</span>
-            <p>{moment(createdAt).format('YYYY-MM-DD hh:mm')}</p>
-          </div>
-          <div>
-            <Progress percent={riskScore || 0} strokeWidth={6} />
-          </div>
-        </div>);
-    };
+    const ListContent =
+      ({ data: { tpa, para2, modifiedBy, createdAt, modifiedAt, riskScore } }) => {
+        let lastName = '管理员';
+        switch (modifiedBy) {
+          case -1:
+            lastName = '-';
+            break;
+          case -4:
+            lastName = '神秘人';
+            break;
+          case -7:
+            lastName = '罗咏梅';
+            break;
+          case -6:
+            lastName = '曾朝霞';
+            break;
+          default:
+            break;
+        }
+        return (
+          <div className={styles.listContent}>
+            <div style={{ width: 110 }}>
+              <p>录入方:{tpa}</p>
+              <p>所属公司:{para2}</p>
+              <p>修改人:{lastName}</p>
+            </div>
+            <div>
+              <p>{moment(createdAt).format('YYYY-MM-DD hh:mm')}</p>
+              <p>{moment(modifiedAt).format('YYYY-MM-DD hh:mm')}</p>
+            </div>
+            <div>
+              <Progress percent={riskScore * 100 || 0} strokeWidth={6} format={percent => `${percent / 100}分`} />
+            </div>
+          </div>);
+      };
 
     const menu = (
       <Menu>
@@ -111,10 +127,11 @@ export default class BasicList extends PureComponent {
         </a>
       </Dropdown>
     );
-    const ListTitle = ({ riskDimension, description }) => {
+    const ListTitle = ({ riskDimension, description, suggestion }) => {
       let temp = '';
-      if (riskDimension) temp = `${temp}维度:${riskDimension}`;
-      if (description) temp = `${temp} 描述:${description}`;
+      if (riskDimension) temp = ` ┃ 维度:${riskDimension}`;
+      if (description) temp = `${temp} ┃ 场景:${description}`;
+      if (suggestion) temp = `${temp} ┃ 描述:${suggestion}`;
       return temp;
     };
     const icon = ({ riskLevel }) => {
@@ -249,7 +266,18 @@ export default class BasicList extends PureComponent {
               dataSource={list}
               renderItem={item => (
                 <List.Item
-                  actions={[<a>编辑</a>, <a>影像</a>, <MoreBtn />]}
+                  actions={[
+                    <a onClick={() => {
+                    this.setState({ modalVisible: true, currentItem: item });
+                  }}>
+                      编辑
+                    </a>,
+                    <a onClick={() => {
+                      window.open(`/gw/am/attachment/getclaimFileByCalimId?claimId=${item.claimId}`);
+                    }}
+                    >
+                      影像
+                    </a>, <MoreBtn />]}
                 >
                   <List.Item.Meta
                     avatar={<Avatar icon={icon(item).icon} shape="square" size="large" style={icon(item).style} />}
@@ -262,6 +290,13 @@ export default class BasicList extends PureComponent {
             />
           </Card>
         </div>
+        <EditModal
+          title="编辑"
+          visible={modalVisible}
+          item={this.state.currentItem}
+          onOk={handleEdit}
+          onCancel={() => this.setState({ modalVisible: false })}
+        />
       </PageHeaderLayout>
     );
   }
