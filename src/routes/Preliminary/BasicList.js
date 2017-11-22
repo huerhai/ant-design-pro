@@ -25,13 +25,18 @@ export default class BasicList extends PureComponent {
   state = {
     currentItem: {},
     modalVisible: false,
+    filter: {},
   };
   componentDidMount() {
+    this.fetch();
+  }
+  fetch(newFilter) {
+    this.setState({
+      filter: { ...this.state.filter, ...newFilter },
+    });
     this.props.dispatch({
       type: 'preList/fetch',
-      payload: {
-        count: 5,
-      },
+      payload: { ...this.state.filter, ...newFilter },
     });
   }
 
@@ -41,15 +46,20 @@ export default class BasicList extends PureComponent {
 
     const extraContent = (
       <div className={styles.extraContent}>
-        <RadioGroup defaultValue="all">
-          <RadioButton value="all">全部</RadioButton>
-          <RadioButton value="progress">待审</RadioButton>
-          <RadioButton value="waiting">已审</RadioButton>
+        <RadioGroup
+          defaultValue={undefined}
+          onChange={(e) => {
+            this.fetch({ pretreatmentStatus: e.target.value });
+          }}
+        >
+          <RadioButton value={undefined}>全部</RadioButton>
+          <RadioButton value="0">待审</RadioButton>
+          <RadioButton value="1">已审</RadioButton>
         </RadioGroup>
         <Search
           className={styles.extraContentSearch}
-          placeholder="被保人"
-          onSearch={() => ({})}
+          placeholder="赔案号"
+          onSearch={value => this.fetch({ claimId: value })}
         />
       </div>
     );
