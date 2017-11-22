@@ -7,9 +7,6 @@ import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 import UniversalInput from '../../../components/UniversalInput';
 import UniversalForm from '../../../components/UniversalForm';
 import InvoiceTable from './InvoiceTable';
-
-
-import city from './city';
 import styles from './index.less';
 
 import { claim as claimSchema, event as eventSchema, person as personSchema } from './claim';
@@ -92,7 +89,7 @@ export default class UniversalClaim extends PureComponent {
   add = (name) => {
     const { events } = this.state;
     const activeKey = `${this.newTabIndex}-${name}事件`;
-    events.push({ title: activeKey, key: activeKey });
+    events.push({ title: activeKey, key: activeKey, type: name });
     this.setState({ events, activeKey });
     this.newTabIndex = this.newTabIndex + 1;
   }
@@ -106,7 +103,7 @@ export default class UniversalClaim extends PureComponent {
   }
   remove = (targetKey) => {
     let { activeKey } = this.state;
-    let lastIndex;
+    let lastIndex = 0;
     this.state.events.forEach((pane, i) => {
       if (pane.key === targetKey) {
         lastIndex = i - 1;
@@ -149,9 +146,10 @@ export default class UniversalClaim extends PureComponent {
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError } = form;
     const validate = () => {
       validateFieldsAndScroll((error, values) => {
-        if (!error) {
-          console.log(this.state.events);
-        }
+        // if (error) {
+        // } else {
+        //   // console.log(this.state.events);
+        // }
       });
     };
     return (
@@ -211,6 +209,7 @@ export default class UniversalClaim extends PureComponent {
                   <TabPane tab={pane.title} key={pane.key}>
                     <Card className={styles.card} bordered={false}>
                       <UniversalForm
+                        filter={this.state.events[index].type}
                         schema={this.state.eventSchema}
                         {...this.state.events[index]}
                         onChange={this.handleFormChange.bind(this, index)}
@@ -227,6 +226,14 @@ export default class UniversalClaim extends PureComponent {
           </Card>
         </Form>
         <FooterToolbar>
+          <Button
+            onClick={() => {
+              window.open('http://hic.leapstack.cn/gw/am/attachment/getclaimFileByCalimId?claimId=0000000180');
+            }}
+            loading={submitting}
+          >
+            查看影像件
+          </Button>
           <Button type="primary" onClick={validate} loading={submitting}>
             提交
           </Button>

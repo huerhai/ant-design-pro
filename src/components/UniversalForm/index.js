@@ -35,8 +35,16 @@ export default class UniversalForm extends PureComponent {
       },
     };
     const children = [];
-    Object.keys(data.properties)
-      .sort((a, b) => data.properties[a].order - data.properties[b].order)
+    let arr = Object.keys(data.properties);
+    if (this.props.filter) {
+      arr = arr.filter((key) => {
+        if (data.properties[key].filter) {
+          return this.props.filter.indexOf(data.properties[key].filter);
+        }
+        return true;
+      });
+    }
+    arr.sort((a, b) => data.properties[a].order - data.properties[b].order)
       .forEach((key) => {
         const item = data.properties[key];
         children.push(

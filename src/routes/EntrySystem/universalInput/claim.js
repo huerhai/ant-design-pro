@@ -610,6 +610,7 @@ const event = {
       order: 5,
       rules: [],
       style: {},
+      filter: '住院',
     },
     inDays: {
       type: 'number',
@@ -620,6 +621,7 @@ const event = {
       order: 5,
       rules: [],
       style: {},
+      filter: '住院',
     },
     mainDoctor: {
       type: 'string',
