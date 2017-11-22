@@ -40,6 +40,40 @@ export default {
       });
       if (callback) callback(payload, res);
     },
+    *publish({ payload, callback }, { call, put }) {
+      const data = Object.assign({}, payload, { pretreatmentStatus: '1' });
+      yield put({
+        type: 'changeLoading',
+        payload: true,
+      });
+      const res = yield call(updatePreCase, data);
+      yield put({
+        type: 'save',
+        payload: data,
+      });
+      yield put({
+        type: 'changeLoading',
+        payload: false,
+      });
+      if (callback) callback(data, res);
+    },
+    *delete({ payload, callback }, { call, put }) {
+      const data = Object.assign({}, payload, { active: false });
+      yield put({
+        type: 'changeLoading',
+        payload: true,
+      });
+      const res = yield call(updatePreCase, data);
+      yield put({
+        type: 'deleteFromCase',
+        payload: data,
+      });
+      yield put({
+        type: 'changeLoading',
+        payload: false,
+      });
+      if (callback) callback(data, res);
+    },
   },
 
   reducers: {
@@ -61,6 +95,15 @@ export default {
           return payload;
         }
         return item;
+      });
+      return {
+        ...state,
+        list,
+      };
+    },
+    deleteFromCase(state, { payload }) {
+      const list = state.list.filter((item) => {
+        return item.eventPretreatmentId !== payload.eventPretreatmentId;
       });
       return {
         ...state,

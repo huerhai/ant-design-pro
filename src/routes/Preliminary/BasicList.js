@@ -74,7 +74,15 @@ export default class BasicList extends PureComponent {
     };
 
     const ListContent =
-      ({ data: { tpa, para2, modifiedBy, createdAt, modifiedAt, riskScore } }) => {
+      ({ data: {
+        tpa,
+        para2,
+        modifiedBy,
+        createdAt, modifiedAt,
+        riskScore,
+        pretreatmentStatus,
+      },
+      }) => {
         let lastName = '管理员';
         switch (modifiedBy) {
           case -1:
@@ -102,6 +110,7 @@ export default class BasicList extends PureComponent {
             <div>
               <p>{moment(createdAt).format('YYYY-MM-DD hh:mm')}</p>
               <p>{moment(modifiedAt).format('YYYY-MM-DD hh:mm')}</p>
+              <p>{pretreatmentStatus === '1' ? '已审' : '待审' }</p>
             </div>
             <div>
               <Progress percent={riskScore * 100 || 0} strokeWidth={6} format={percent => `${percent / 100}分`} />
@@ -109,19 +118,45 @@ export default class BasicList extends PureComponent {
           </div>);
       };
 
-    const menu = (
-      <Menu>
-        <Menu.Item>
-          <a>编辑</a>
-        </Menu.Item>
-        <Menu.Item>
+    const menu = item => (
+      <Menu onClick={(menuItem) => {
+        switch (menuItem.key) {
+          case '1':
+            this.props.dispatch({
+              type: 'preList/publish',
+              payload: { ...item },
+              callback: () => {
+                message.success('发布成功');
+              },
+            });
+            break;
+          case '2':
+            this.props.dispatch({
+              type: 'preList/delete',
+              payload: { ...item },
+              callback: () => {
+                message.success('删除成功');
+              },
+            });
+            break;
+          default:
+            break;
+        }
+      }}
+      >
+        {item.pretreatmentStatus !== '1' ?
+          <Menu.Item key="1">
+            <a>发布</a>
+          </Menu.Item> : null
+        }
+        <Menu.Item key="2">
           <a>删除</a>
         </Menu.Item>
       </Menu>
     );
 
-    const MoreBtn = () => (
-      <Dropdown overlay={menu}>
+    const MoreBtn = ({ item }) => (
+      <Dropdown overlay={menu(item)}>
         <a>
           更多 <Icon type="down" />
         </a>
@@ -277,11 +312,17 @@ export default class BasicList extends PureComponent {
                     }}
                     >
                       影像
-                    </a>, <MoreBtn />]}
+                    </a>, <MoreBtn item={item} />]}
                 >
                   <List.Item.Meta
                     avatar={<Avatar icon={icon(item).icon} shape="square" size="large" style={icon(item).style} />}
-                    title={<a href={item.href}>{item.para1} {item.claimId} </a>}
+                    title={
+                      <a onClick={() => {
+                        this.setState({ modalVisible: true, currentItem: item });
+                      }}
+                      >
+                        {item.para1} {item.claimId}
+                      </a>}
                     description={ListTitle(item)}
                   />
                   <ListContent data={item} />
