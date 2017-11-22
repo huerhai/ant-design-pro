@@ -1,124 +1,172 @@
 /* eslint-disable no-unused-vars */
 import dynamic from 'dva/dynamic';
 
-// models
-import UserModel from '../models/user';
-import ChartModel from '../models/chart';
-import MonitorModel from '../models/monitor';
-import ProjectModel from '../models/project';
-import ActivitiesModel from '../models/activities';
-import FormModel from '../models/form';
-import RuleModel from '../models/rule';
-import ListModel from '../models/list';
-import ProfileModel from '../models/profile';
-import LoginModel from '../models/login';
-import RegisterModel from '../models/register';
-
-import CompanyModel from '../models/company';
-import GroupModel from '../models/group';
-import PolicyModel from '../models/policy';
-
-// components
-import BasicLayout from '../layouts/BasicLayout';
-import UserLayout from '../layouts/UserLayout';
-import BlankLayout from '../layouts/BlankLayout';
-
-import Analysis from '../routes/Dashboard/Analysis';
-import Monitor from '../routes/Dashboard/Monitor';
-import Workplace from '../routes/Dashboard/Workplace';
-
-import BasicForm from '../routes/Forms/BasicForm';
-import AdvancedForm from '../routes/Forms/AdvancedForm';
-import StepForm from '../routes/Forms/StepForm';
-import Step2 from '../routes/Forms/StepForm/Step2';
-import Step3 from '../routes/Forms/StepForm/Step3';
-
-import TableList from '../routes/List/TableList';
-import BasicList from '../routes/List/BasicList';
-import CardList from '../routes/List/CardList';
-import CoverCardList from '../routes/List/CoverCardList';
-import FilterCardList from '../routes/List/FilterCardList';
-import SearchList from '../routes/List/SearchList';
-
-import BasicProfile from '../routes/Profile/BasicProfile';
-import AdvancedProfile from '../routes/Profile/AdvancedProfile';
-
-import Success from '../routes/Result/Success';
-import Error from '../routes/Result/Error';
-import Exception403 from '../routes/Exception/403';
-import Exception404 from '../routes/Exception/404';
-import Exception500 from '../routes/Exception/500';
-
-import Login from '../routes/User/Login';
-import Register from '../routes/User/Register';
-import RegisterResult from '../routes/User/RegisterResult';
-
-import EntryForm from '../routes/EntrySystem/entry';
-
-import Company from '../routes/BasicInfo/company';
-import Group from '../routes/BasicInfo/group';
-import Policy from '../routes/BasicInfo/policy';
-import UniversalInput from '../routes/EntrySystem/universalInput';
-import Preliminary from '../routes/Preliminary/BasicList';
-
 // wrapper of dynamic
-const dy = (app, models, component) => dynamic({
+const dynamicWrapper = (app, models, component) => dynamic({
   app,
-  models: () => models,
-  component: () => component,
+  models: () => models.map(m => import(`../models/${m}.js`)),
+  component,
 });
 
 // nav data
 export const getNavData = app => [
   {
-    component: dy(app, [UserModel], BasicLayout),
+    component: dynamicWrapper(app, ['user', 'login'], () => import('../layouts/BasicLayout')),
     layout: 'BasicLayout',
     name: '首页', // for breadcrumb
     path: '/',
     children: [
       {
-        name: '影像件导入',
-        path: 'todo',
-        icon: 'scan',
-        component: dy(app, [RuleModel], TableList),
+        name: 'Dashboard',
+        icon: 'dashboard',
+        path: 'dashboard',
+        children: [
+          {
+            name: '分析页',
+            path: 'analysis',
+            component: dynamicWrapper(app, ['chart'], () => import('../routes/Dashboard/Analysis')),
+          },
+          {
+            name: '监控页',
+            path: 'monitor',
+            component: dynamicWrapper(app, ['monitor'], () => import('../routes/Dashboard/Monitor')),
+          },
+          {
+            name: '工作台',
+            path: 'workplace',
+            component: dynamicWrapper(app, ['project', 'activities', 'chart'], () => import('../routes/Dashboard/Workplace')),
+          },
+        ],
       },
       {
-        name: '数据导入',
-        path: 'input',
-        icon: 'solution',
-        component: dy(app, [GroupModel], UniversalInput),
+        name: '表单页',
+        path: 'form',
+        icon: 'form',
+        children: [
+          {
+            name: '基础表单',
+            path: 'basic-form',
+            component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/BasicForm')),
+          },
+          {
+            name: '分步表单',
+            path: 'step-form',
+            component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm')),
+            children: [
+              {
+                path: 'confirm',
+                component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step2')),
+              },
+              {
+                path: 'result',
+                component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/StepForm/Step3')),
+              },
+            ],
+          },
+          {
+            name: '高级表单',
+            path: 'advanced-form',
+            component: dynamicWrapper(app, ['form'], () => import('../routes/Forms/AdvancedForm')),
+          },
+        ],
       },
       {
-        name: '预审',
-        path: 'preliminary',
-        icon: 'customer-service',
-        component: dy(app, [ListModel], Preliminary),
+        name: '列表页',
+        path: 'list',
+        icon: 'table',
+        children: [
+          {
+            name: '查询表格',
+            path: 'table-list',
+            component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
+          },
+          {
+            name: '标准列表',
+            path: 'basic-list',
+            component: dynamicWrapper(app, ['list'], () => import('../routes/List/BasicList')),
+          },
+          {
+            name: '卡片列表',
+            path: 'card-list',
+            component: dynamicWrapper(app, ['list'], () => import('../routes/List/CardList')),
+          },
+          {
+            name: '搜索列表（项目）',
+            path: 'cover-card-list',
+            component: dynamicWrapper(app, ['list'], () => import('../routes/List/CoverCardList')),
+          },
+          {
+            name: '搜索列表（应用）',
+            path: 'filter-card-list',
+            component: dynamicWrapper(app, ['list'], () => import('../routes/List/FilterCardList')),
+          },
+          {
+            name: '搜索列表（文章）',
+            path: 'search',
+            component: dynamicWrapper(app, ['list'], () => import('../routes/List/SearchList')),
+          },
+        ],
       },
       {
-        name: '保险公司管理',
-        path: 'company',
-        icon: 'usb',
-        component: dy(app, [CompanyModel], Company),
-      }, {
-        name: '产品管理',
-        path: 'product',
-        icon: 'bars',
-        component: dy(app, [RuleModel], TableList),
-      }, {
-        name: '团体管理',
-        path: 'Group',
-        icon: 'team',
-        component: dy(app, [GroupModel], Group),
-      }, {
-        name: '保单管理',
-        path: 'Policies',
-        icon: 'copy',
-        component: dy(app, [PolicyModel], Policy),
+        name: '详情页',
+        path: 'profile',
+        icon: 'profile',
+        children: [
+          {
+            name: '基础详情页',
+            path: 'basic',
+            component: dynamicWrapper(app, ['profile'], () => import('../routes/Profile/BasicProfile')),
+          },
+          {
+            name: '高级详情页',
+            path: 'advanced',
+            component: dynamicWrapper(app, ['profile'], () => import('../routes/Profile/AdvancedProfile')),
+          },
+        ],
+      },
+      {
+        name: '结果',
+        path: 'result',
+        icon: 'check-circle-o',
+        children: [
+          {
+            name: '成功',
+            path: 'success',
+            component: dynamicWrapper(app, [], () => import('../routes/Result/Success')),
+          },
+          {
+            name: '失败',
+            path: 'fail',
+            component: dynamicWrapper(app, [], () => import('../routes/Result/Error')),
+          },
+        ],
+      },
+      {
+        name: '异常',
+        path: 'exception',
+        icon: 'warning',
+        children: [
+          {
+            name: '403',
+            path: '403',
+            component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),
+          },
+          {
+            name: '404',
+            path: '404',
+            component: dynamicWrapper(app, [], () => import('../routes/Exception/404')),
+          },
+          {
+            name: '500',
+            path: '500',
+            component: dynamicWrapper(app, [], () => import('../routes/Exception/500')),
+          },
+        ],
       },
     ],
   },
   {
-    component: dy(app, [], UserLayout),
+    component: dynamicWrapper(app, [], () => import('../layouts/UserLayout')),
     path: '/user',
     layout: 'UserLayout',
     children: [
@@ -130,24 +178,24 @@ export const getNavData = app => [
           {
             name: '登录',
             path: 'login',
-            component: dy(app, [LoginModel], Login),
+            component: dynamicWrapper(app, ['login'], () => import('../routes/User/Login')),
           },
           {
             name: '注册',
             path: 'register',
-            component: dy(app, [RegisterModel], Register),
+            component: dynamicWrapper(app, ['register'], () => import('../routes/User/Register')),
           },
           {
             name: '注册结果',
             path: 'register-result',
-            component: dy(app, [], RegisterResult),
+            component: dynamicWrapper(app, [], () => import('../routes/User/RegisterResult')),
           },
         ],
       },
     ],
   },
   {
-    component: dy(app, [], BlankLayout),
+    component: dynamicWrapper(app, [], () => import('../layouts/BlankLayout')),
     layout: 'BlankLayout',
     children: {
       name: '使用文档',
