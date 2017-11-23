@@ -99,6 +99,14 @@ export default class BasicList extends PureComponent {
         >
           导出
         </a>
+        <a
+          onClick={() => {
+            this.fetch();
+          }}
+          style={{ marginRight: 15 }}
+        >
+          刷新
+        </a>
         <RadioGroup
           defaultValue={undefined}
           onChange={(e) => {
@@ -240,8 +248,9 @@ export default class BasicList extends PureComponent {
     const ListTitle = ({ riskDimension, description, suggestion }) => {
       let temp = '';
       if (riskDimension) temp = ` ┃ 维度:${riskDimension}`;
-      if (description) temp = `${temp} ┃ 场景:${description}`;
-      if (suggestion) temp = `${temp} ┃ 描述:${suggestion}`;
+      if (suggestion) temp = `${temp} ┃ 场景:${suggestion}`;
+      if (description) temp = `${temp} ┃ 说明:${description}`;
+
       return temp;
     };
     const icon = ({ riskLevel }) => {
@@ -249,17 +258,17 @@ export default class BasicList extends PureComponent {
         case '高':
           return {
             icon: 'frown',
-            style: { color: '#fd3244', backgroundColor: '#fde3cf' },
+            style: { color: '#fd3244', backgroundColor: '#fdd439' },
           };
         case '中':
           return {
             icon: 'meh',
-            style: { color: '#f56a00', backgroundColor: '#fde3cf' },
+            style: { color: '#f58d4e', backgroundColor: '#fde3cf' },
           };
         case '低':
           return {
             icon: 'smile',
-            style: { color: '#d3f59e', backgroundColor: '#fde3cf' },
+            style: { color: '#95f53b', backgroundColor: '#e7fd83' },
           };
         default:
           return {

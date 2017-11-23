@@ -17,6 +17,7 @@ const modal = ({
     getFieldDecorator,
     validateFields,
     getFieldsValue,
+    setFieldsValue,
   },
   ...modalProps
 }) => {
@@ -70,7 +71,24 @@ const modal = ({
           {getFieldDecorator('riskLevel', {
             initialValue: item.riskLevel,
           })(
-            <RadioGroup>
+            <RadioGroup onChange={(e) => {
+              let tmp = 0;
+              switch (e.target.value) {
+                case '高':
+                  tmp = 0.8;
+                  break;
+                case '中':
+                  tmp = 0.5;
+                  break;
+                case '低':
+                  tmp = 0.2;
+                  break;
+                default:
+                  break;
+              }
+                setFieldsValue({ riskScore: tmp });
+              }}
+            >
               <RadioButton value="高">高</RadioButton>
               <RadioButton value="中">中</RadioButton>
               <RadioButton value="低">低</RadioButton>
@@ -85,14 +103,14 @@ const modal = ({
           )}
         </FormItem>
         <FormItem {...formItemLayout} label="风险场景">
-          {getFieldDecorator('description', {
+          {getFieldDecorator('suggestion', {
             initialValue: item.suggestion,
           })(
             <Input />
           )}
         </FormItem>
         <FormItem {...formItemLayout} label="风险说明">
-          {getFieldDecorator('suggestion', {
+          {getFieldDecorator('description', {
             initialValue: item.description,
           })(
             <Input.TextArea rows={4} />
