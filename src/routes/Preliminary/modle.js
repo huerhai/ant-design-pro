@@ -85,14 +85,14 @@ const modal = ({
           )}
         </FormItem>
         <FormItem {...formItemLayout} label="风险场景">
-          {getFieldDecorator('suggestion', {
+          {getFieldDecorator('description', {
             initialValue: item.suggestion,
           })(
             <Input />
           )}
         </FormItem>
         <FormItem {...formItemLayout} label="风险说明">
-          {getFieldDecorator('description', {
+          {getFieldDecorator('suggestion', {
             initialValue: item.description,
           })(
             <Input.TextArea rows={4} />
