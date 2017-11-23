@@ -25,7 +25,11 @@ export default class BasicList extends PureComponent {
   state = {
     currentItem: {},
     modalVisible: false,
-    filter: {},
+    filter: {
+      active: true,
+      page: 0,
+      size: 20,
+    },
   };
   componentDidMount() {
     this.fetch();
@@ -289,18 +293,18 @@ export default class BasicList extends PureComponent {
                   )}
                 </FormItem>
               </StandardFormRow>
-              <StandardFormRow title="审核员" block style={{ paddingBottom: 11 }}>
-                <FormItem>
-                  {getFieldDecorator('category')(
-                    <TagSelect onChange={this.handleFormSubmit} expandable>
-                      <TagSelect.Option value="未分配">未分配</TagSelect.Option>
-                      <TagSelect.Option value="曾朝霞">曾朝霞</TagSelect.Option>
-                      <TagSelect.Option value="罗咏梅">罗咏梅</TagSelect.Option>
-                      <TagSelect.Option value="其他">其他</TagSelect.Option>
-                    </TagSelect>
-                  )}
-                </FormItem>
-              </StandardFormRow>
+              {/* <StandardFormRow title="审核员" block style={{ paddingBottom: 11 }}> */}
+              {/* <FormItem> */}
+              {/* {getFieldDecorator('category')( */}
+              {/* <TagSelect onChange={this.handleFormSubmit} expandable> */}
+              {/* <TagSelect.Option value="未分配">未分配</TagSelect.Option> */}
+              {/* <TagSelect.Option value="曾朝霞">曾朝霞</TagSelect.Option> */}
+              {/* <TagSelect.Option value="罗咏梅">罗咏梅</TagSelect.Option> */}
+              {/* <TagSelect.Option value="其他">其他</TagSelect.Option> */}
+              {/* </TagSelect> */}
+              {/* )} */}
+              {/* </FormItem> */}
+              {/* </StandardFormRow> */}
               <StandardFormRow
                 title="其它选项"
                 grid
@@ -310,17 +314,21 @@ export default class BasicList extends PureComponent {
                   <Col lg={8} md={10} sm={10} xs={24}>
                     <FormItem
                       {...formItemLayout}
-                      label="风险等级"
+                      label="排序方式"
                     >
-                      {getFieldDecorator('author', {})(
+                      {getFieldDecorator('sortBy', {
+                        initialValue: 'claimId',
+                      })(
                         <Select
                           onChange={this.handleFormSubmit}
                           placeholder="不限"
                           style={{ maxWidth: 200, width: '100%' }}
                         >
-                          <Option value="高">高</Option>
-                          <Option value="中">中</Option>
-                          <Option value="低">低</Option>
+                          <Option value="createdAt">按照创建时间</Option>
+                          <Option value="claimId">按照赔案号</Option>
+                          <Option value="modifiedAt">按照修改时间</Option>
+                          <Option value="riskDimension">按照风险维度</Option>
+                          <Option value="riskScore">按照风险分数</Option>
                         </Select>
                       )}
                     </FormItem>
@@ -328,17 +336,15 @@ export default class BasicList extends PureComponent {
                   <Col lg={8} md={10} sm={10} xs={24}>
                     <FormItem
                       {...formItemLayout}
-                      label="风险维度"
+                      label="排序顺序"
                     >
-                      {getFieldDecorator('rate', {})(
-                        <Select
-                          onChange={this.handleFormSubmit}
-                          placeholder="不限"
-                          style={{ maxWidth: 200, width: '100%' }}
-                        >
-                          <Option value="good">优秀</Option>
-                          <Option value="normal">普通</Option>
-                        </Select>
+                      {getFieldDecorator('asc', {
+                        initialValue: false,
+                      })(
+                        <RadioGroup onChange={this.handleFormSubmit}>
+                          <Radio value>升序</Radio>
+                          <Radio value={false}>降序</Radio>
+                        </RadioGroup>
                       )}
                     </FormItem>
                   </Col>
