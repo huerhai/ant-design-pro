@@ -27,8 +27,8 @@ export default class BasicList extends PureComponent {
     modalVisible: false,
     filter: {
       active: true,
-      page: 0,
-      size: 20,
+      page: this.props.preList.page || 0,
+      size: 40,
     },
   };
   componentDidMount() {
@@ -69,11 +69,11 @@ export default class BasicList extends PureComponent {
     }, 0);
   }
   handleFormSubmit = () => {
-    this.fetch();
+    this.fetch({ page: 0 });
   }
 
   render() {
-    const { preList: { list, loading }, dispatch } = this.props;
+    const { preList: { list, loading, total }, dispatch } = this.props;
     const { modalVisible } = this.state;
 
     const extraContent = (
@@ -102,7 +102,7 @@ export default class BasicList extends PureComponent {
         <RadioGroup
           defaultValue={undefined}
           onChange={(e) => {
-            this.fetch({ pretreatmentStatus: e.target.value });
+            this.fetch({ pretreatmentStatus: e.target.value, page: 0 });
           }}
         >
           <RadioButton value={undefined}>全部</RadioButton>
@@ -112,7 +112,7 @@ export default class BasicList extends PureComponent {
         <Search
           className={styles.extraContentSearch}
           placeholder="赔案号"
-          onSearch={value => this.fetch({ claimId: value })}
+          onSearch={value => this.fetch({ claimId: value, page: 0 })}
         />
       </div>
     );
@@ -132,8 +132,20 @@ export default class BasicList extends PureComponent {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
-      pageSize: 5,
-      total: 50,
+      pageSize: this.state.filter.size,
+      current: this.state.filter.page + 1,
+      total,
+      onChange: (page, pageSize) => {
+        console.log(page, pageSize);
+        this.setState({
+          filter: {
+            ...this.state.filter,
+            page: page - 1,
+            size: pageSize,
+          },
+        });
+        this.fetch();
+      },
     };
 
     const ListContent =

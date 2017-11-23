@@ -93,6 +93,8 @@ export default {
       return {
         ...state,
         list: action.payload.list,
+        total: action.payload.totalElement,
+        page: action.payload.current,
       };
     },
     changeLoading(state, action) {
