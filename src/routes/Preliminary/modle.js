@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, Modal, Radio, Alert, Slider } from 'antd';
+import { Form, Input, Modal, Radio, Alert, Slider, Checkbox } from 'antd';
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
@@ -26,9 +26,11 @@ const modal = ({
       if (errors) {
         return;
       }
+      const values = getFieldsValue();
       const data = {
         ...item,
-        ...getFieldsValue(),
+        ...values,
+        riskDimension: values.riskDimension.join(','),
       };
       onOk(data);
     });
@@ -41,8 +43,15 @@ const modal = ({
 
   const formItemLayout = {
     labelCol: { span: 5 },
-    wrapperCol: { span: 15 },
+    wrapperCol: { span: 16 },
   };
+  const options = [
+    { label: '索赔行为', value: '索赔行为' },
+    { label: '医疗行为', value: '医疗行为' },
+    { label: '疾病诊断', value: '疾病诊断' },
+    { label: '药品项目', value: '药品项目' },
+    { label: '诊疗项目', value: '诊疗项目' },
+  ];
   return (
     <Modal {...modalOpts} width={800}>
       <Alert message={`赔案号:${item.claimId}`} type="info" style={{ marginBottom: 15 }} />
@@ -56,15 +65,9 @@ const modal = ({
         </FormItem>
         <FormItem {...formItemLayout} label="风险维度">
           {getFieldDecorator('riskDimension', {
-            initialValue: item.riskDimension,
+            initialValue: item.riskDimension ? item.riskDimension.split(',') : [],
           })(
-            <RadioGroup>
-              <RadioButton value="索赔行为">索赔行为</RadioButton>
-              <RadioButton value="医疗行为">医疗行为</RadioButton>
-              <RadioButton value="疾病诊断">疾病诊断</RadioButton>
-              <RadioButton value="药品项目">药品项目</RadioButton>
-              <RadioButton value="诊疗项目">诊疗项目</RadioButton>
-            </RadioGroup>
+            <Checkbox.Group options={options} />
           )}
         </FormItem>
         <FormItem {...formItemLayout} label="风险等级">
