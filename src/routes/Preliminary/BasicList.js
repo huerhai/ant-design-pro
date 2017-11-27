@@ -256,6 +256,7 @@ export default class BasicList extends PureComponent {
       if (riskDimension) temp = ` ┃ 维度:${riskDimension}`;
       if (suggestion) temp = `${temp} ┃ 场景:${suggestion}`;
       if (description) temp = `${temp} ┃ 说明:${description}`;
+      if (description) temp = `${temp} ┃ 等 * 个 风险`;
 
       return temp;
     };
