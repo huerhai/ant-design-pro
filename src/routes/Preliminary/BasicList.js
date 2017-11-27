@@ -24,6 +24,7 @@ const { Search } = Input;
 export default class BasicList extends PureComponent {
   state = {
     currentItem: {},
+    currentItemRiskNumber: 1,
     modalVisible: false,
     filter: {
       active: true,
@@ -135,6 +136,11 @@ export default class BasicList extends PureComponent {
       });
       this.setState({
         modalVisible: false,
+      });
+    };
+    const handleAdd = () => {
+      this.setState({
+        currentItemRiskNumber: this.state.currentItemRiskNumber + 1,
       });
     };
     const paginationProps = {
@@ -423,7 +429,9 @@ export default class BasicList extends PureComponent {
           title="编辑"
           visible={modalVisible}
           item={this.state.currentItem}
+          riskNumber={this.state.currentItemRiskNumber}
           onOk={handleEdit}
+          onAdd={handleAdd}
           onCancel={() => this.setState({ modalVisible: false })}
         />
       </PageHeaderLayout>

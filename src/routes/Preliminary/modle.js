@@ -3,7 +3,8 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, Modal, Radio, Alert, Slider, Checkbox } from 'antd';
+import { Form, Input, Modal, Radio, Alert, Slider, Button, Icon } from 'antd';
+import styles from './BasicList.less';
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
@@ -13,6 +14,8 @@ const FormItem = Form.Item;
 const modal = ({
   item = {},
   onOk,
+  onAdd,
+  riskNumber,
   form: {
     getFieldDecorator,
     validateFields,
@@ -52,6 +55,80 @@ const modal = ({
     { label: '药品项目', value: '药品项目' },
     { label: '诊疗项目', value: '诊疗项目' },
   ];
+  const formItemLayoutWithOutLabel = {
+    wrapperCol: {
+      xs: { span: 24, offset: 0 },
+      sm: { span: 20, offset: 4 },
+    },
+  };
+
+  const RiskFormItem = () => {
+    const tem = [];
+    for (let i = 0; i < riskNumber; i += 1) {
+      tem.push(
+        <div key={i}>
+          <FormItem {...formItemLayout} label="风险维度">
+            {getFieldDecorator('riskDimension', {
+              initialValue: item.riskDimension ? item.riskDimension.split(',') : [],
+            })(
+              <Radio.Group options={options} />
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="风险等级">
+            {getFieldDecorator('riskLevel', {
+              initialValue: item.riskLevel,
+            })(
+              <RadioGroup onChange={(e) => {
+                let tmp = 0;
+                switch (e.target.value) {
+                  case '高':
+                    tmp = 0.8;
+                    break;
+                  case '中':
+                    tmp = 0.5;
+                    break;
+                  case '低':
+                    tmp = 0.2;
+                    break;
+                  default:
+                    break;
+                }
+                setFieldsValue({ riskScore: tmp });
+              }}
+              >
+                <RadioButton value="高">高</RadioButton>
+                <RadioButton value="中">中</RadioButton>
+                <RadioButton value="低">低</RadioButton>
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="风险评分">
+            {getFieldDecorator('riskScore', {
+              initialValue: +item.riskScore || 0,
+            })(
+              <Slider min={0} max={1} step={0.01} />
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="风险场景">
+            {getFieldDecorator('suggestion', {
+              initialValue: item.suggestion,
+            })(
+              <Input />
+            )}
+          </FormItem>
+          <FormItem {...formItemLayout} label="风险说明">
+            {getFieldDecorator('description', {
+              initialValue: item.description,
+            })(
+              <Input.TextArea rows={4} />
+            )}
+          </FormItem>
+          <div className={styles.divider} />
+        </div>
+      );
+    }
+    return tem;
+  };
   return (
     <Modal {...modalOpts} width={800}>
       <Alert message={`赔案号:${item.claimId}`} type="info" style={{ marginBottom: 15 }} />
@@ -63,61 +140,11 @@ const modal = ({
             <Input />
           )}
         </FormItem>
-        <FormItem {...formItemLayout} label="风险维度">
-          {getFieldDecorator('riskDimension', {
-            initialValue: item.riskDimension ? item.riskDimension.split(',') : [],
-          })(
-            <Checkbox.Group options={options} />
-          )}
-        </FormItem>
-        <FormItem {...formItemLayout} label="风险等级">
-          {getFieldDecorator('riskLevel', {
-            initialValue: item.riskLevel,
-          })(
-            <RadioGroup onChange={(e) => {
-              let tmp = 0;
-              switch (e.target.value) {
-                case '高':
-                  tmp = 0.8;
-                  break;
-                case '中':
-                  tmp = 0.5;
-                  break;
-                case '低':
-                  tmp = 0.2;
-                  break;
-                default:
-                  break;
-              }
-                setFieldsValue({ riskScore: tmp });
-              }}
-            >
-              <RadioButton value="高">高</RadioButton>
-              <RadioButton value="中">中</RadioButton>
-              <RadioButton value="低">低</RadioButton>
-            </RadioGroup>
-          )}
-        </FormItem>
-        <FormItem {...formItemLayout} label="风险评分">
-          {getFieldDecorator('riskScore', {
-            initialValue: +item.riskScore || 0,
-          })(
-            <Slider min={0} max={1} step={0.01} />
-          )}
-        </FormItem>
-        <FormItem {...formItemLayout} label="风险场景">
-          {getFieldDecorator('suggestion', {
-            initialValue: item.suggestion,
-          })(
-            <Input />
-          )}
-        </FormItem>
-        <FormItem {...formItemLayout} label="风险说明">
-          {getFieldDecorator('description', {
-            initialValue: item.description,
-          })(
-            <Input.TextArea rows={4} />
-          )}
+        {RiskFormItem()}
+        <FormItem {...formItemLayoutWithOutLabel}>
+          <Button type="dashed" onClick={onAdd} style={{ width: '60%' }}>
+            <Icon type="plus" /> 添加一个风险提示
+          </Button>
         </FormItem>
       </Form>
     </Modal>
