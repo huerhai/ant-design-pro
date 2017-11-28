@@ -30,6 +30,7 @@ export default class BasicList extends PureComponent {
       active: true,
       page: this.props.preList.page || 0,
       size: 40,
+      pretreatmentStatus: '0',
     },
   };
   componentDidMount() {
@@ -109,7 +110,7 @@ export default class BasicList extends PureComponent {
           刷新
         </a>
         <RadioGroup
-          defaultValue={undefined}
+          defaultValue="0"
           onChange={(e) => {
             this.fetch({ pretreatmentStatus: e.target.value, page: 0 });
           }}
@@ -198,7 +199,7 @@ export default class BasicList extends PureComponent {
             <div style={{ width: 130 }}>
               <p>{moment(createdAt).format('YYYY-MM-DD hh:mm')}</p>
               <p>{moment(modifiedAt).format('YYYY-MM-DD hh:mm')}</p>
-              <p>{pretreatmentStatus === '1' ? '已审' : '待审' }</p>
+              <p style={{ color: pretreatmentStatus === '1' ? 'green' : '' }}>{pretreatmentStatus === '1' ? '已审' : '待审' }</p>
             </div>
           </div>);
       };
@@ -229,11 +230,6 @@ export default class BasicList extends PureComponent {
         }
       }}
       >
-        {item.pretreatmentStatus !== '1' ?
-          <Menu.Item key="1">
-            <a>发布</a>
-          </Menu.Item> : null
-        }
         <Menu.Item key="2">
           <a>删除</a>
         </Menu.Item>
@@ -258,27 +254,31 @@ export default class BasicList extends PureComponent {
       return temp;
     };
     const icon = ({ riskLevel }) => {
-      switch (riskLevel) {
-        case '高':
-          return {
-            icon: 'frown',
-            style: { color: '#fd3244', backgroundColor: '#fdd439' },
-          };
-        case '中':
-          return {
-            icon: 'meh',
-            style: { color: '#f58d4e', backgroundColor: '#fde3cf' },
-          };
-        case '低':
-          return {
-            icon: 'smile',
-            style: { color: '#95f53b', backgroundColor: '#e7fd83' },
-          };
-        default:
-          return {
-            icon: 'question-circle',
-            style: { color: '#eeeeee', backgroundColor: '#d8d8d8' },
-          };
+      if (riskLevel) {
+        switch (riskLevel.split('||')[0]) {
+          case '高':
+            return {
+              icon: 'frown',
+              style: { color: '#fd3244', backgroundColor: '#fdd439' },
+            };
+          case '中':
+            return {
+              icon: 'meh',
+              style: { color: '#f58d4e', backgroundColor: '#fde3cf' },
+            };
+          case '低':
+            return {
+              icon: 'smile',
+              style: { color: '#95f53b', backgroundColor: '#e7fd83' },
+            };
+          default:
+            return false;
+        }
+      } else {
+        return {
+          icon: 'question-circle',
+          style: { color: '#eeeeee', backgroundColor: '#d8d8d8' },
+        };
       }
     };
     const { form } = this.props;
@@ -395,7 +395,12 @@ export default class BasicList extends PureComponent {
                 <List.Item
                   actions={[
                     <a onClick={() => {
-                    this.setState({ modalVisible: true, currentItem: item });
+                      this.setState(
+                        {
+                          currentItem: item,
+                          currentItemRiskNumber: item.riskDimension ? item.riskDimension.split('||').length : 1,
+                          modalVisible: true,
+                        });
                   }}>
                       编辑
                     </a>,
@@ -404,7 +409,20 @@ export default class BasicList extends PureComponent {
                     }}
                     >
                       影像
-                    </a>, <MoreBtn item={item} />]}
+                    </a>,
+                    <a onClick={() => {
+                      this.props.dispatch({
+                        type: 'preList/publish',
+                        payload: { ...item },
+                        callback: () => {
+                          message.success('发布成功');
+                        },
+                      });
+                    }}
+                    >
+                      发布
+                    </a>,
+                    <MoreBtn item={item} />]}
                 >
                   <List.Item.Meta
                     avatar={<Avatar icon={icon(item).icon} shape="square" size="large" style={icon(item).style} />}

@@ -14,6 +14,7 @@ const FormItem = Form.Item;
 const modal = ({
   item = {},
   onOk,
+  onCancel,
   onAdd,
   riskNumber,
   form: {
@@ -21,27 +22,55 @@ const modal = ({
     validateFields,
     getFieldsValue,
     setFieldsValue,
+    resetFields,
   },
   ...modalProps
 }) => {
-  const handleOk = () => {
+  const handleOk = (bool) => {
     validateFields((errors) => {
       if (errors) {
         return;
       }
       const values = getFieldsValue();
+      const riskDimension = [];
+      const suggestion = [];
+      const des = [];
+      const riskLevel = [];
+      // const riskScore = [];
+      const description = [];
+      const riskAmout = [];
+      for (let i = 0; i < riskNumber; i += 1) {
+        riskDimension.push(values[`riskDimension-${i}`][0]);
+        suggestion.push(values[`riskDimension-${i}`][1]);
+        des.push(values[`riskDimension-${i}`][2]);
+        riskLevel.push(values[`riskLevel-${i}`] || '低');
+        // riskScore.push(values[`riskLevel-${i}`] === '高' ? 0.8 : 0.4);
+        description.push(values[`description-${i}`]);
+        riskAmout.push(values[`riskAmout-${i}`] || 0);
+      }
       const data = {
         ...item,
-        ...values,
-        riskDimension: values.riskDimension.join(','),
+        para1: values.para1,
+        riskDimension: riskDimension.join('||'),
+        suggestion: riskDimension.join('||'),
+        des: riskDimension.join('||'),
+        riskLevel: riskLevel.join('||'),
+        riskAmout: riskAmout.join('||'),
+        // riskScore: riskScore.join('||'),
+        description: description.join('||'),
+        pretreatmentStatus: bool ? '1' : item.pretreatmentStatus,
       };
       onOk(data);
+      setTimeout(() => {
+        resetFields();
+      }, 900);
     });
   };
 
   const modalOpts = {
     ...modalProps,
     onOk: handleOk,
+    onCancel,
   };
 
   const formItemLayout = {
@@ -306,15 +335,16 @@ const modal = ({
           <FormItem {...formItemLayout} label="风险模板">
             {getFieldDecorator(`riskDimension-${i}`, {
               initialValue: item.riskDimension ?
-                [item.riskDimension, item.suggestion, item.des || '']
+                [item.riskDimension ? item.riskDimension.split('||')[i] : '', item.suggestion ? item.suggestion.split('||')[i] : '', item.des ? item.des.split('||')[i] : '']
                 : [],
+              rules: [{ required: true, message: '必须选择风险场景' }],
             })(
-              <Cascader options={options} onChange={value => muban(value, i)} />
+              <Cascader options={options} onChange={value => muban(value, i)} placeholder="请选择 风险维度 风险场景" />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="风险等级">
             {getFieldDecorator(`riskLevel-${i}`, {
-              initialValue: item.riskLevel,
+              initialValue: item.riskLevel ? item.riskLevel.split('||')[i] : '低',
             })(
               <RadioGroup>
                 <RadioButton value="高">高</RadioButton>
@@ -325,15 +355,15 @@ const modal = ({
           </FormItem>
           <FormItem {...formItemLayout} label="风险说明">
             {getFieldDecorator(`description-${i}`, {
-              initialValue: item.description,
+              initialValue: item.description ? item.description.split('||')[i] : '',
             })(
               <Input.TextArea rows={4} />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="风险金额">
-            {getFieldDecorator('money', {
-              initialValue: item.money,
-              rules: [{ pattern: /^([1-9][0-9]*)+(.[0-9]{1,2})?$/, message: '请填写有效的金额(最多两位小数)' }],
+            {getFieldDecorator(`riskAmout-${i}`, {
+              initialValue: item.riskAmout ? item.riskAmout.split('||')[i] : 0,
+              rules: [{ pattern: /^([1-9][0-9]*)+(.[0-9]{1,2})?|0$/, message: '请填写有效的金额(最多两位小数)' }],
             })(
               <Input addonAfter="元" />
             )}
@@ -345,9 +375,25 @@ const modal = ({
     return tem;
   };
   return (
-    <Modal {...modalOpts} width={800}>
-      <Alert message={`赔案号:${item.claimId}`} type="info" style={{ marginBottom: 15 }} />
-      <Form>
+    <Modal
+      {...modalOpts}
+      width={800}
+      footer={[
+        <Button key="back" size="large" onClick={onCancel}>取消</Button>,
+        <Button key="submit" type="primary" size="large" onClick={() => handleOk(false)}>
+          保存
+        </Button>,
+        <Button key="submit2" type="primary" size="large" onClick={() => handleOk(true)}>
+          保存并发布
+        </Button>,
+      ]}
+    >
+      <Alert
+        message={`赔案号:${item.claimId}`}
+        type="info"
+        style={{ marginBottom: 15 }}
+      />
+      <Form key={item.claimId}>
         <FormItem {...formItemLayout} label="被保人">
           {getFieldDecorator('para1', {
             initialValue: item.para1,
