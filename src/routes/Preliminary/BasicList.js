@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Form, Select, List, Card, Row, Col, Radio, Input, Progress, Icon, Dropdown, Menu, Avatar, message } from 'antd';
+import { Form, Select, List, Card, Row, Col, Radio, Input, Icon, Dropdown, Menu, Avatar, message } from 'antd';
 
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import StandardFormRow from '../../components/StandardFormRow';
@@ -168,7 +168,6 @@ export default class BasicList extends PureComponent {
         para2,
         modifiedBy,
         createdAt, modifiedAt,
-        riskScore,
         pretreatmentStatus,
       },
       }) => {
@@ -196,13 +195,10 @@ export default class BasicList extends PureComponent {
               <p>所属公司:{para2 === '000205' ? '易安' : '人保'}</p>
               <p>修改人:{lastName}</p>
             </div>
-            <div>
+            <div style={{ width: 130 }}>
               <p>{moment(createdAt).format('YYYY-MM-DD hh:mm')}</p>
               <p>{moment(modifiedAt).format('YYYY-MM-DD hh:mm')}</p>
               <p>{pretreatmentStatus === '1' ? '已审' : '待审' }</p>
-            </div>
-            <div>
-              <Progress percent={riskScore * 100 || 0} strokeWidth={6} format={percent => `${percent / 100}`} />
             </div>
           </div>);
       };
@@ -251,12 +247,13 @@ export default class BasicList extends PureComponent {
         </a>
       </Dropdown>
     );
-    const ListTitle = ({ riskDimension, description, suggestion }) => {
+    const ListTitle = ({ riskDimension, description, suggestion, riskScore }) => {
       let temp = '';
       if (riskDimension) temp = ` ┃ 维度:${riskDimension}`;
       if (suggestion) temp = `${temp} ┃ 场景:${suggestion}`;
       if (description) temp = `${temp} ┃ 说明:${description}`;
       if (description) temp = `${temp} ┃ 等 * 个 风险`;
+      if (riskScore) temp = `${temp} ┃ 风险分数:${riskScore}`;
 
       return temp;
     };
