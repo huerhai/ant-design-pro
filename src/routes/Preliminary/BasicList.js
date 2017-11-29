@@ -43,6 +43,7 @@ export default class BasicList extends PureComponent {
         if (!err) {
           let filter = {
             ...this.state.filter,
+            active: true,
             ...form.getFieldsValue(),
             ...newFilter,
           };
@@ -115,9 +116,12 @@ export default class BasicList extends PureComponent {
             this.fetch({ pretreatmentStatus: e.target.value, page: 0 });
           }}
         >
-          <RadioButton value={undefined}>全部</RadioButton>
-          <RadioButton value="0">待审</RadioButton>
-          <RadioButton value="1">已审</RadioButton>
+          <RadioButton value={undefined}>
+            全部{!loading && this.state.filter.pretreatmentStatus === undefined && total}
+          </RadioButton>
+          <RadioButton value="0">待审{!loading && this.state.filter.pretreatmentStatus === '0' && total}</RadioButton>
+          <RadioButton value="1">有风险{!loading && this.state.filter.pretreatmentStatus === '1' && total}</RadioButton>
+          <RadioButton value="2">无风险{!loading && this.state.filter.pretreatmentStatus === '2' && total}</RadioButton>
         </RadioGroup>
         <Search
           className={styles.extraContentSearch}
@@ -138,6 +142,7 @@ export default class BasicList extends PureComponent {
       this.setState({
         modalVisible: false,
       });
+      this.fetch();
     };
     const handleAdd = () => {
       this.setState({
@@ -199,7 +204,7 @@ export default class BasicList extends PureComponent {
             <div style={{ width: 130 }}>
               <p>{moment(createdAt).format('YYYY-MM-DD hh:mm')}</p>
               <p>{moment(modifiedAt).format('YYYY-MM-DD hh:mm')}</p>
-              <p style={{ color: pretreatmentStatus === '1' ? 'green' : '' }}>{pretreatmentStatus === '1' ? '已审' : '待审' }</p>
+              <p style={{ color: pretreatmentStatus !== '0' ? 'green' : '' }}>{pretreatmentStatus !== '0' ? '已审' : '待审' }</p>
             </div>
           </div>);
       };
@@ -213,6 +218,7 @@ export default class BasicList extends PureComponent {
               payload: { ...item },
               callback: () => {
                 message.success('发布成功');
+                this.fetch();
               },
             });
             break;
@@ -421,6 +427,7 @@ export default class BasicList extends PureComponent {
                         payload: { ...item },
                         callback: () => {
                           message.success('发布成功');
+                          this.fetch();
                         },
                       });
                     }}

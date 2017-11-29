@@ -26,7 +26,14 @@ const modal = ({
   },
   ...modalProps
 }) => {
-  const handleOk = (bool) => {
+  const handleOk = (bool, onlyPublish) => {
+    if (onlyPublish) {
+      onOk({
+        ...item,
+        pretreatmentStatus: '2',
+      });
+      return;
+    }
     validateFields((errors) => {
       if (errors) {
         return;
@@ -380,6 +387,9 @@ const modal = ({
       width={800}
       footer={[
         <Button key="back" size="large" onClick={onCancel}>取消</Button>,
+        <Button key="delete" size="large" onClick={() => handleOk(true, true)}>
+          无风险
+        </Button>,
         <Button key="submit" type="primary" size="large" onClick={() => handleOk(false)}>
           保存
         </Button>,
