@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { routerRedux, Link } from 'dva/router';
-import { Form, Input, Tabs, Button, Icon, Checkbox, Row, Col, Alert, notification } from 'antd';
+import { routerRedux } from 'dva/router';
+import { Form, Input, Tabs, Button, Icon, Row, Col, Alert, notification, message } from 'antd';
 import styles from './Login.less';
 
 const FormItem = Form.Item;
@@ -71,11 +71,11 @@ export default class Login extends Component {
     );
   }
 
-  renderMessage = (message) => {
+  renderMessage = (msg) => {
     return (
       <Alert
         style={{ marginBottom: 24 }}
-        message={message}
+        message={msg}
         type="error"
         showIcon
       />
@@ -177,14 +177,8 @@ export default class Login extends Component {
             </TabPane>
           </Tabs>
           <FormItem className={styles.additional}>
-            {getFieldDecorator('remember', {
-              valuePropName: 'checked',
-              initialValue: true,
-            })(
-              <Checkbox className={styles.autoLogin}>自动登录</Checkbox>
-            )}
-            <Link className={styles.register} to="/user/register">注册账户</Link>
-            <a className={styles.forgot} href="">忘记密码</a>
+            <a className={styles.register} onClick={() => message.warning('请联系管理员')} >注册账户</a>
+            <a className={styles.forgot} onClick={() => message.warning('请联系管理员')} >忘记密码</a>
             <Button size="large" loading={login.submitting} className={styles.submit} type="primary" htmlType="submit">
               登录
             </Button>
