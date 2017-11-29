@@ -125,7 +125,7 @@ export default class Login extends Component {
                 )}
               </FormItem>
             </TabPane>
-            <TabPane tab="手机号登录" key="mobile">
+            <TabPane tab="手机号登录(暂不支持)" key="mobile">
               {
                 login.status === 'error' &&
                 login.type === 'mobile' &&
@@ -183,20 +183,13 @@ export default class Login extends Component {
             })(
               <Checkbox className={styles.autoLogin}>自动登录</Checkbox>
             )}
+            <Link className={styles.register} to="/user/register">注册账户</Link>
             <a className={styles.forgot} href="">忘记密码</a>
             <Button size="large" loading={login.submitting} className={styles.submit} type="primary" htmlType="submit">
               登录
             </Button>
           </FormItem>
         </Form>
-        <div className={styles.other}>
-          其他登录方式
-          {/* 需要加到 Icon 中 */}
-          <span className={styles.iconAlipay} />
-          <span className={styles.iconTaobao} />
-          <span className={styles.iconWeibo} />
-          <Link className={styles.register} to="/user/register">注册账户</Link>
-        </div>
       </div>
     );
   }

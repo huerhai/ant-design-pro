@@ -6,15 +6,17 @@ import { Icon } from 'antd';
 import GlobalFooter from '../components/GlobalFooter';
 import styles from './UserLayout.less';
 
+import logo from '../assets/栈略Logo.png';
+
 const links = [{
   title: '帮助',
-  href: '',
+  href: '#/user/login',
 }, {
   title: '隐私',
-  href: '',
+  href: '#/user/login',
 }, {
   title: '条款',
-  href: '',
+  href: '#/user/login',
 }];
 
 const copyright = <div>Copyright <Icon type="copyright" /> 2017 上海栈略数据技术有限公司 (蚂蚁金服脚手架)</div>;
@@ -47,11 +49,11 @@ class UserLayout extends React.PureComponent {
           <div className={styles.top}>
             <div className={styles.header}>
               <Link to="/">
-                <img alt="" className={styles.logo} src="https://gw.alipayobjects.com/zos/rmsportal/NGCCBOENpgTXpBWUIPnI.svg" />
-                <span className={styles.title}>商保2.0审阅系统</span>
+                <img alt="" className={styles.logo} src={logo} />
+                <span className={styles.title}>保险理赔系统</span>
               </Link>
             </div>
-            <div className={styles.desc}>您正在使用的是 氨基酸 Beta1.0版本</div>
+            <div className={styles.desc}>您正在使用的是 Beta2.0.1版本</div>
           </div>
           {
             getRouteData('UserLayout').map(item =>
