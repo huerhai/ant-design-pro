@@ -17,25 +17,37 @@ export const getNavData = app => [
     path: '/',
     children: [
       {
-        name: '影像件导入',
-        path: 'todo',
-        icon: 'scan',
-        component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
-      },
-      {
-        name: '数据导入',
+        name: '保单导入',
         path: 'input',
         icon: 'solution',
         component: dynamicWrapper(app, ['group'], () => import('../routes/EntrySystem/universalInput')),
       },
       {
-        name: '预审',
+        name: '影像导入',
+        path: 'todo',
+        icon: 'scan',
+        component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
+      },
+      {
+        name: '案件录入',
+        path: 'input',
+        icon: 'solution',
+        component: dynamicWrapper(app, ['group'], () => import('../routes/EntrySystem/universalInput')),
+      },
+      {
+        name: '案件预审',
         path: 'preliminary',
         icon: 'customer-service',
         component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
       },
       {
-        name: '保险公司管理',
+        name: '案件审核',
+        path: 'review',
+        icon: 'customer-service',
+        component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
+      },
+      {
+        name: '公司管理',
         path: 'company',
         icon: 'usb',
         component: dynamicWrapper(app, ['company'], () => import('../routes/BasicInfo/company')),
@@ -43,6 +55,12 @@ export const getNavData = app => [
       {
         name: '产品管理',
         path: 'product',
+        icon: 'bars',
+        component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
+      },
+      {
+        name: '险种管理',
+        path: 'planted',
         icon: 'bars',
         component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
       },
@@ -55,6 +73,12 @@ export const getNavData = app => [
       {
         name: '保单管理',
         path: 'Policies',
+        icon: 'copy',
+        component: dynamicWrapper(app, ['policy'], () => import('../routes/BasicInfo/policy')),
+      },
+      {
+        name: '用户管理',
+        path: 'users',
         icon: 'copy',
         component: dynamicWrapper(app, ['policy'], () => import('../routes/BasicInfo/policy')),
       },
