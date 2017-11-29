@@ -47,6 +47,12 @@ export const getNavData = app => [
         component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
       },
       {
+        name: '案件导出',
+        path: 'export',
+        icon: 'customer-service',
+        component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
+      },
+      {
         name: '公司管理',
         path: 'company',
         icon: 'usb',
