@@ -18,7 +18,7 @@ export const getNavData = app => [
     children: [
       {
         name: '保单导入',
-        path: 'input',
+        path: 'policyImport',
         icon: 'solution',
         component: dynamicWrapper(app, ['group'], () => import('../routes/EntrySystem/universalInput')),
       },
@@ -49,6 +49,12 @@ export const getNavData = app => [
       {
         name: '案件导出',
         path: 'export',
+        icon: 'customer-service',
+        component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
+      },
+      {
+        name: '理赔历史',
+        path: 'history',
         icon: 'customer-service',
         component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
       },
