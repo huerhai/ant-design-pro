@@ -362,7 +362,6 @@ export default class BasicList extends PureComponent {
                           <Option value="claimId">按照赔案号</Option>
                           <Option value="modifiedAt">按照修改时间</Option>
                           <Option value="riskDimension">按照风险维度</Option>
-                          <Option value="riskScore">按照风险分数</Option>
                         </Select>
                       )}
                     </FormItem>

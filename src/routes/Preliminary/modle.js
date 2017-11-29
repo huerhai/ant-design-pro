@@ -27,9 +27,11 @@ const modal = ({
   ...modalProps
 }) => {
   const handleOk = (bool, onlyPublish) => {
+    const values = getFieldsValue();
     if (onlyPublish) {
       onOk({
         ...item,
+        para1: values.para1,
         pretreatmentStatus: '2',
       });
       return;
@@ -38,7 +40,6 @@ const modal = ({
       if (errors) {
         return;
       }
-      const values = getFieldsValue();
       const riskDimension = [];
       const suggestion = [];
       const des = [];
