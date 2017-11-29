@@ -192,7 +192,7 @@ export default class BasicList extends PureComponent {
         return (
           <div className={styles.listContent}>
             <div style={{ width: 110 }}>
-              <p>录入方:{tpa === 'shibo' ? '世博' : tpa === 'pukang' ? '世博' : '未知公司'}</p>
+              <p>录入方:{tpa === 'shibo' ? '世博' : tpa === 'pukang' ? '普康' : '未知公司'}</p>
               <p>所属公司:{para2 === '000205' ? '易安' : '人保'}</p>
               <p>修改人:{lastName}</p>
             </div>
@@ -243,13 +243,16 @@ export default class BasicList extends PureComponent {
         </a>
       </Dropdown>
     );
+    // eslint-disable-next-line no-unused-vars
     const ListTitle = ({ riskDimension, description, suggestion, riskScore }) => {
       let temp = '';
-      if (riskDimension) temp = ` ┃ 维度:${riskDimension}`;
-      if (suggestion) temp = `${temp} ┃ 场景:${suggestion}`;
-      if (description) temp = `${temp} ┃ 说明:${description}`;
-      if (description) temp = `${temp} ┃ 等 * 个 风险`;
-      if (riskScore) temp = `${temp} ┃ 风险分数:${riskScore}`;
+      // if (riskDimension) temp = ` ┃ 维度:${riskDimension.split('||')[0]}`;
+      if (suggestion) {
+        temp = `${suggestion.split('||').map((item) => {
+          return `${item}`;
+        }).join('┃   ')}`;
+      }
+      // if (description) temp = `${temp} ┃ 说明:${description.split('||')[0]}`;
 
       return temp;
     };
@@ -405,7 +408,9 @@ export default class BasicList extends PureComponent {
                       编辑
                     </a>,
                     <a onClick={() => {
-                      window.open(`/gw/am/attachment/getclaimFileByCalimId?claimId=${item.claimId}`);
+                      window.open(
+                        `/gw/am/attachment/getclaimFileByCalimId?claimId=${item.claimId}`
+                      );
                     }}
                     >
                       影像

@@ -17,10 +17,16 @@ export const getNavData = app => [
     path: '/',
     children: [
       {
-        name: '保单导入',
-        path: 'policyImport',
-        icon: 'solution',
-        component: dynamicWrapper(app, ['group'], () => import('../routes/EntrySystem/universalInput')),
+        name: '首页',
+        icon: 'dashboard',
+        path: 'workplace',
+        component: dynamicWrapper(app, ['project', 'activities', 'chart'], () => import('../routes/Home/Workplace')),
+      },
+      {
+        name: '保单管理',
+        path: 'Policies',
+        icon: 'copy',
+        component: dynamicWrapper(app, ['policy'], () => import('../routes/BasicInfo/policy')),
       },
       {
         name: '影像导入',
@@ -83,16 +89,16 @@ export const getNavData = app => [
         component: dynamicWrapper(app, ['group'], () => import('../routes/BasicInfo/group')),
       },
       {
-        name: '保单管理',
-        path: 'Policies',
-        icon: 'copy',
-        component: dynamicWrapper(app, ['policy'], () => import('../routes/BasicInfo/policy')),
-      },
-      {
         name: '用户管理',
         path: 'users',
         icon: 'copy',
         component: dynamicWrapper(app, ['policy'], () => import('../routes/BasicInfo/policy')),
+      },
+      {
+        name: '退出',
+        path: 'policyImport',
+        icon: 'solution',
+        component: dynamicWrapper(app, ['group'], () => import('../routes/EntrySystem/universalInput')),
       },
     ],
   },
