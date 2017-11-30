@@ -147,6 +147,7 @@ export default class BasicList extends PureComponent {
         claimPay,
         coverages,
         status,
+        riskLevel,
         auditConclusion,
       },
       }) => {
@@ -170,6 +171,8 @@ export default class BasicList extends PureComponent {
               <div className={styles.plainDiv}>
                 <p>结案金额:{claimPay}</p>
                 <p>当前结论:{result.value}</p>
+                <p>风险总结:{riskLevel}</p>
+
               </div>
               <div className={styles.plainDiv}>
                 <p>{coverages.map(item => item.value).join(',')}</p>
@@ -302,10 +305,8 @@ export default class BasicList extends PureComponent {
                         <RadioGroup onChange={this.handleFormSubmit}>
                           <Radio value={undefined}>不限</Radio>
                           <Radio value="1" >赔付</Radio>
-                          <Radio value="2" >协议赔付</Radio>
                           <Radio value="3" >部分赔付</Radio>
                           <Radio value="4" >拒赔</Radio>
-                          <Radio value="5" >通融赔付</Radio>
                           <Radio value="6" >撤案</Radio>
                         </RadioGroup>
                       )}
