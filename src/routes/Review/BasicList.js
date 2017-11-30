@@ -71,7 +71,7 @@ export default class BasicList extends PureComponent {
     this.fetch({ page: 0 });
   }
   render() {
-    const { caseList: { list, loading, total }, dispatch } = this.props;
+    const { caseList: { list, loading, total, currentItem }, dispatch } = this.props;
     const { modalVisible } = this.state;
     const extraContent = (
       <div className={styles.extraContent}>
@@ -434,15 +434,20 @@ export default class BasicList extends PureComponent {
                         </a>);
                     }),
                     <a onClick={() => {
-                      this.setState(
-                        {
-                          currentItem: item,
-                          currentItemRiskNumber: item.riskDimension ? item.riskDimension.split('||').length : 1,
-                          modalVisible: true,
-                        });
+                      dispatch({
+                        type: 'caseList/fetchDutyDetail',
+                        payload: item,
+                        callback: () => {
+                          this.setState(
+                            {
+                              currentItem: this.props.caseList.currentItem,
+                              modalVisible: true,
+                            });
+                        },
+                      });
                     }}
                     >
-                      编辑
+                      编辑责任
                     </a>,
                     <a onClick={() => {
                       this.setState(
@@ -482,12 +487,24 @@ export default class BasicList extends PureComponent {
           </Card>
         </div>
         <EditModal
-          title="编辑"
+          title="编辑责任"
           visible={modalVisible}
           item={this.state.currentItem}
-          riskNumber={this.state.currentItemRiskNumber}
-          onOk={handleEdit}
+          onOk={() => {
+            this.state.currentItem.dutyList.forEach((duty) => {
+              dispatch({
+                type: 'caseList/updateDutyByClaimId',
+                payload: duty,
+              });
+            });
+            this.setState({ modalVisible: false });
+          }}
           onAdd={handleAdd}
+          onChange={(item) => {
+            this.setState({
+              currentItem: item,
+            });
+          }}
           onCancel={() => this.setState({ modalVisible: false })}
         />
       </PageHeaderLayout>

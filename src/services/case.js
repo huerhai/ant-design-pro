@@ -32,3 +32,16 @@ export async function updateStatusCodes({ items, to }) {
     },
   });
 }
+
+// 获取预审案件列表
+export async function getDutyByClaimId(claimId) {
+  return request(`/gw/cs/duty/getDutyByClaimId?claimId=${claimId}`);
+}
+
+// 案件 修改责任
+export async function updateDutyByClaimId(body) {
+  return request('/gw/cs/duty/updateDutyByClaimId', {
+    method: 'POST',
+    body,
+  });
+}

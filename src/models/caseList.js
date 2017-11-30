@@ -1,11 +1,12 @@
 import { updatePreCase, freshRreList } from '../services/Basic';
-import { queryList, updateStatusCodes } from '../services/case';
+import { queryList, updateStatusCodes, getDutyByClaimId, updateDutyByClaimId } from '../services/case';
 
 export default {
   namespace: 'caseList',
 
   state: {
     list: [],
+    currentItem: {},
     loading: false,
   },
 
@@ -24,6 +25,24 @@ export default {
         type: 'changeLoading',
         payload: false,
       });
+    },
+    *fetchDutyDetail({ payload, callback }, { call, put }) {
+      const response = yield call(getDutyByClaimId, payload.claimId);
+      const newItem = {
+        ...payload,
+        dutyList: response,
+      };
+      yield put({
+        type: 'updatePorps',
+        payload: {
+          currentItem: newItem,
+        },
+      });
+      if (callback) callback(newItem);
+    },
+    *updateDutyByClaimId({ payload, callback }, { call }) {
+      const res = yield call(updateDutyByClaimId, payload);
+      if (callback) callback(payload, res);
     },
     *update({ payload, callback }, { call, put }) {
       yield put({
@@ -106,6 +125,12 @@ export default {
   },
 
   reducers: {
+    updatePorps(state, { payload }) {
+      return {
+        ...state,
+        ...payload,
+      };
+    },
     freshList(state, action) {
       return {
         ...state,
