@@ -32,6 +32,7 @@ export default class EditableTable extends React.Component {
     }, {
       title: '赔付金额',
       dataIndex: 'dutyPay',
+      width: 150,
       render: (text, record) => {
         return (<Input
           value={record.dutyPay}
@@ -41,6 +42,7 @@ export default class EditableTable extends React.Component {
     }, {
       title: '赔付结论',
       dataIndex: 'resCode',
+      width: 250,
       render: (text, record) => {
         return (<Input
           value={record.resCode}

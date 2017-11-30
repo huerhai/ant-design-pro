@@ -194,6 +194,7 @@ export function caseState(value) {
             label: '导出',
             to: 40,
             css: 'success',
+            fn: 'exportCase',
           },
         ],
       };
@@ -211,6 +212,7 @@ export function caseState(value) {
             label: '重新导出',
             to: 40,
             css: 'success',
+            fn: 'exportCase',
           },
         ],
       };

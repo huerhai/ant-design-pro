@@ -70,6 +70,9 @@ export default class BasicList extends PureComponent {
   handleFormSubmit = () => {
     this.fetch({ page: 0 });
   }
+  exportCase = (item) => {
+    window.open(`gw/cs/excelexport/excel?fileName=${new Date().toLocaleDateString()}.xls&companyId=${item.companyName.dictionaryDataId}&claimIds=${item.claimId}&afterUpdateStatus=40`);
+  }
   render() {
     const { caseList: { list, loading, total, currentItem }, dispatch } = this.props;
     const { modalVisible } = this.state;
@@ -429,6 +432,9 @@ export default class BasicList extends PureComponent {
                                 },
                               }
                             );
+                            if (todo.fn) {
+                             this[todo.fn](item);
+                            }
                           }}
                         >{todo.label}
                         </a>);
