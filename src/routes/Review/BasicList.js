@@ -48,6 +48,15 @@ export default class BasicList extends PureComponent {
             filter = {
               ...filter,
             };
+            if (filter.auditConclusion) {
+              filter = {
+                ...filter,
+                auditConclusion: {
+                  referenceCode: filter.auditConclusion,
+                  type: 12,
+                },
+              };
+            }
           }
           this.setState({ filter });
           this.props.dispatch({
@@ -292,10 +301,12 @@ export default class BasicList extends PureComponent {
                       {getFieldDecorator('auditConclusion')(
                         <RadioGroup onChange={this.handleFormSubmit}>
                           <Radio value={undefined}>不限</Radio>
-                          <Radio value="3424" disabled >赔付</Radio>
-                          <Radio value="3426" disabled >部分赔付</Radio>
-                          <Radio value="3427" disabled >拒赔</Radio>
-                          <Radio value="3429" disabled >撤案</Radio>
+                          <Radio value="1" >赔付</Radio>
+                          <Radio value="2" >协议赔付</Radio>
+                          <Radio value="3" >部分赔付</Radio>
+                          <Radio value="4" >拒赔</Radio>
+                          <Radio value="5" >通融赔付</Radio>
+                          <Radio value="6" >撤案</Radio>
                         </RadioGroup>
                       )}
                     </FormItem>
