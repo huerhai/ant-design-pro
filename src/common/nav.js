@@ -50,7 +50,7 @@ export const getNavData = app => [
         name: '案件审核',
         path: 'review',
         icon: 'customer-service',
-        component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
+        component: dynamicWrapper(app, ['caseList'], () => import('../routes/Review/BasicList')),
       },
       {
         name: '案件导出',

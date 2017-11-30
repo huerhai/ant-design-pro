@@ -8,7 +8,7 @@
   ],
   "proxy": {
     "/gw": {
-      "target": "http://hic.leapstack.cn/",
+      "target": "http://hic-dev.leapstack.cn/",
       "changeOrigin": true,
       "pathRewrite": { "^/gw": "/gw" }
     }
