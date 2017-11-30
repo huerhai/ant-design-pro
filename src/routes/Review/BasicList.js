@@ -1,11 +1,12 @@
+/* eslint-disable no-unused-vars */
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
 import { Form, Select, List, Card, Row, Col, Radio, Input, Icon, Dropdown, Menu, Avatar, message } from 'antd';
 
+import { caseState } from '../../utils/utils';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import StandardFormRow from '../../components/StandardFormRow';
-import TagSelect from '../../components/TagSelect';
 
 import EditModal from './modle';
 import styles from './BasicList.less';
@@ -14,7 +15,6 @@ const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
 
-const { Option } = Select;
 const { Search } = Input;
 
 @Form.create()
@@ -27,10 +27,8 @@ export default class BasicList extends PureComponent {
     currentItemRiskNumber: 1,
     modalVisible: false,
     filter: {
-      active: true,
       page: this.props.caseList.page || 0,
       size: 40,
-      pretreatmentStatus: '0',
     },
   };
   componentDidMount() {
@@ -43,18 +41,12 @@ export default class BasicList extends PureComponent {
         if (!err) {
           let filter = {
             ...this.state.filter,
-            active: true,
             ...form.getFieldsValue(),
             ...newFilter,
           };
           if (filter) {
             filter = {
               ...filter,
-              companyId: filter.companyId ?
-                (filter.companyId.length === 2 ?
-                  undefined :
-                  filter.companyId.join()) :
-                undefined,
             };
           }
           this.setState({ filter });
@@ -72,30 +64,8 @@ export default class BasicList extends PureComponent {
   render() {
     const { caseList: { list, loading, total }, dispatch } = this.props;
     const { modalVisible } = this.state;
-
     const extraContent = (
       <div className={styles.extraContent}>
-        <a
-          onClick={() => {
-            dispatch({
-              type: 'caseList/fresh',
-              callback: () => {
-                message.success('拉取最新数据');
-              },
-            });
-          }}
-          style={{ marginRight: 15 }}
-        >
-          拉取新数据
-        </a>
-        <a
-          onClick={() => {
-            window.open(`/gw/cs/pretreatment/export?fileName=预审导出[${this.state.filter.para2 || '公司不限'}][${this.state.filter.tpa || 'tpa不限'}][${new Date().toLocaleDateString() + new Date().toLocaleTimeString()}].xls&para2=${this.state.filter.para2 || ''}&active=true&tpa=${this.state.filter.tpa || ''}`);
-          }}
-          style={{ marginRight: 15 }}
-        >
-          导出
-        </a>
         <a
           onClick={() => {
             this.fetch();
@@ -105,26 +75,23 @@ export default class BasicList extends PureComponent {
           刷新
         </a>
         <RadioGroup
-          defaultValue="0"
+          defaultValue={undefined}
           onChange={(e) => {
-            this.fetch({ pretreatmentStatus: e.target.value, page: 0 });
+            this.fetch({ statusCodes: e.target.value ? e.target.value.split(',').map(item => +item) : undefined, page: 0 });
           }}
         >
           <RadioButton value={undefined}>
-            全部{!loading && this.state.filter.pretreatmentStatus === undefined && total}
+            全部{!loading && this.state.filter.statusCodes === undefined && total}
           </RadioButton>
-          <RadioButton value="0">待初审{!loading && this.state.filter.pretreatmentStatus === '0' && total}</RadioButton>
-          <RadioButton value="1">待复审{!loading && this.state.filter.pretreatmentStatus === '1' && total}</RadioButton>
-          <RadioButton value="2">已审核{!loading && this.state.filter.pretreatmentStatus === '2' && total}</RadioButton>
+          <RadioButton value="10,11" >质检{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(10) ? total : ''}</RadioButton>
+          <RadioButton value="91" >质检不通过{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(91) ? total : ''}</RadioButton>
+          <RadioButton value="20,21,92" >待审核{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(20) ? total : ''}</RadioButton>
+          <RadioButton value="92" >审核未通过{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(92) ? total : ''}</RadioButton>
+          <RadioButton value="30" >审核通过{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(30) ? total : ''}</RadioButton>
+          <RadioButton value="40" >已导出{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(40) ? total : ''}</RadioButton>
         </RadioGroup>
-        <Search
-          className={styles.extraContentSearch}
-          placeholder="赔案号"
-          onSearch={value => this.fetch({ claimId: value, page: 0 })}
-        />
       </div>
     );
-
     const handleEdit = (data) => {
       this.props.dispatch({
         type: 'caseList/update',
@@ -165,7 +132,7 @@ export default class BasicList extends PureComponent {
       ({ data: {
         insuredPersonName,
         accidentDate,
-        companyName,
+        companyName = { value: '未知公司' },
         insuredPersonGender,
         receiveTime,
         claimPay,
@@ -174,16 +141,17 @@ export default class BasicList extends PureComponent {
         auditConclusion,
       },
       }) => {
+        const result = auditConclusion || { value: '没有结论' };
         return (
           <div className={styles.listContent}>
             <div className={styles.modified} style={{ width: 230 }}>
               <p>{companyName.value}</p>
               <p>{moment(receiveTime).format('YYYY-MM-DD hh:mm')}</p>
-              <p>{status}</p>
+              <p>{caseState(status).label}</p>
             </div>
             <div className={styles.flexContent}>
               <div className={styles.avatar}>
-                <Avatar icon={icon(auditConclusion.value).icon} shape="square" size="large" style={icon(auditConclusion.value).style} />
+                <Avatar icon={icon(result.value).icon} shape="square" size="large" style={icon(result.value).style} />
               </div>
               <div className={styles.plainDiv}>
                 <p>被保人:{insuredPersonName}</p>
@@ -192,7 +160,7 @@ export default class BasicList extends PureComponent {
               </div>
               <div className={styles.plainDiv}>
                 <p>结案金额:{claimPay}</p>
-                <p>当前结论:{auditConclusion.value}</p>
+                <p>当前结论:{result.value}</p>
               </div>
               <div className={styles.plainDiv}>
                 <p>{coverages.map(item => item.value).join(',')}</p>
@@ -273,7 +241,10 @@ export default class BasicList extends PureComponent {
               style: { color: '#95f53b', backgroundColor: '#e7fd83' },
             };
           default:
-            return false;
+            return {
+              icon: 'question-circle',
+              style: { color: '#eeeeee', backgroundColor: '#d8d8d8' },
+            };
         }
       } else {
         return {
@@ -300,24 +271,48 @@ export default class BasicList extends PureComponent {
               <StandardFormRow title="所属公司" block style={{ paddingBottom: 11 }}>
                 <FormItem>
                   {getFieldDecorator('companyId', {
-                    initialValue: ['7428', '7427'],
+                    initialValue: undefined,
                   })(
-                    <TagSelect onChange={this.handleFormSubmit} expandable>
-                      <TagSelect.Option value="7428">易安</TagSelect.Option>
-                      <TagSelect.Option value="7427">江苏人保财</TagSelect.Option>
-                    </TagSelect>
+                    <RadioGroup onChange={this.handleFormSubmit}>
+                      <Radio value={undefined}>不限</Radio>
+                      <Radio value="7428">易安</Radio>
+                      <Radio value="7427">江苏人保财</Radio>
+                    </RadioGroup>
                   )}
                 </FormItem>
               </StandardFormRow>
-              <StandardFormRow title="录入方" block style={{ paddingBottom: 11 }}>
-                <FormItem>
-                  {getFieldDecorator('tpa')(
-                    <TagSelect onChange={this.handleFormSubmit} expandable>
-                      <TagSelect.Option value="shibo">世博</TagSelect.Option>
-                      <TagSelect.Option value="pukang">普康</TagSelect.Option>
-                    </TagSelect>
-                  )}
-                </FormItem>
+              <StandardFormRow
+                title="案件筛选"
+                block
+                style={{ paddingBottom: 11 }}
+              >
+                <Row gutter={16}>
+                  <Col lg={8} md={10} sm={10} xs={24}>
+                    <FormItem>
+                      {getFieldDecorator('auditConclusion')(
+                        <RadioGroup onChange={this.handleFormSubmit}>
+                          <Radio value={undefined}>不限</Radio>
+                          <Radio value="3424" disabled >赔付</Radio>
+                          <Radio value="3426" disabled >部分赔付</Radio>
+                          <Radio value="3427" disabled >拒赔</Radio>
+                          <Radio value="3429" disabled >撤案</Radio>
+                        </RadioGroup>
+                      )}
+                    </FormItem>
+                  </Col>
+                  <Col lg={8} md={10} sm={10} xs={24}>
+                    <FormItem>
+                      {getFieldDecorator('riskLevel')(
+                        <RadioGroup onChange={this.handleFormSubmit}>
+                          <Radio value={undefined}>不限</Radio>
+                          <Radio value="低">低风险</Radio>
+                          <Radio value="中">中风险</Radio>
+                          <Radio value="高">高风险</Radio>
+                        </RadioGroup>
+                      )}
+                    </FormItem>
+                  </Col>
+                </Row>
               </StandardFormRow>
               {/* <StandardFormRow title="审核员" block style={{ paddingBottom: 11 }}> */}
               {/* <FormItem> */}
@@ -340,51 +335,48 @@ export default class BasicList extends PureComponent {
                   <Col lg={8} md={10} sm={10} xs={24}>
                     <FormItem
                       {...formItemLayout}
-                      label="排序方式"
+                      label="赔案号"
                     >
-                      {getFieldDecorator('sortBy', {
-                        initialValue: 'claimId',
+                      {getFieldDecorator('claimId', {
+                        initialValue: '',
                       })(
-                        <Select
-                          onChange={this.handleFormSubmit}
-                          placeholder="不限"
-                          style={{ maxWidth: 200, width: '100%' }}
-                        >
-                          <Option value="createdAt">按照创建时间</Option>
-                          <Option value="claimId">按照赔案号</Option>
-                          <Option value="modifiedAt">按照修改时间</Option>
-                          <Option value="riskDimension">按照风险维度</Option>
-                        </Select>
+                        <Search
+                          className={styles.extraContentSearch}
+                          placeholder="赔案号"
+                          onSearch={this.handleFormSubmit}
+                        />
                       )}
                     </FormItem>
                   </Col>
                   <Col lg={8} md={10} sm={10} xs={24}>
                     <FormItem
                       {...formItemLayout}
-                      label="排序顺序"
+                      label="被保人"
                     >
-                      {getFieldDecorator('asc', {
-                        initialValue: false,
+                      {getFieldDecorator('insuredPersonName', {
+                        initialValue: '',
                       })(
-                        <RadioGroup onChange={this.handleFormSubmit}>
-                          <Radio value>升序</Radio>
-                          <Radio value={false}>降序</Radio>
-                        </RadioGroup>
+                        <Search
+                          className={styles.extraContentSearch}
+                          placeholder="被保人"
+                          onSearch={this.handleFormSubmit}
+                        />
                       )}
                     </FormItem>
                   </Col>
                   <Col lg={8} md={10} sm={10} xs={24}>
                     <FormItem
                       {...formItemLayout}
-                      label="案件筛选"
+                      label="被保人身份证"
                     >
-                      {getFieldDecorator('asc', {
-                        initialValue: false,
+                      {getFieldDecorator('insuredPersonId', {
+                        initialValue: '',
                       })(
-                        <RadioGroup onChange={this.handleFormSubmit}>
-                          <Radio value>仅看个人</Radio>
-                          <Radio value={false}>查看全部</Radio>
-                        </RadioGroup>
+                        <Search
+                          className={styles.extraContentSearch}
+                          placeholder="被保人身份证"
+                          onSearch={this.handleFormSubmit}
+                        />
                       )}
                     </FormItem>
                   </Col>
@@ -410,6 +402,25 @@ export default class BasicList extends PureComponent {
               renderItem={item => (
                 <List.Item
                   actions={[
+                    ...caseState(item.status).toDo.map((todo) => {
+                      return (
+                        <a
+                          key={todo.label}
+                          className={styles[`action-${todo.css}`]}
+                          onClick={() => {
+                            dispatch(
+                              {
+                                type: 'caseList/changeStatus',
+                                payload: {
+                                  items: [item.claimDataId],
+                                  to: todo.to,
+                                },
+                              }
+                            );
+                          }}
+                        >{todo.label}
+                        </a>);
+                    }),
                     <a onClick={() => {
                       this.setState(
                         {
@@ -417,8 +428,20 @@ export default class BasicList extends PureComponent {
                           currentItemRiskNumber: item.riskDimension ? item.riskDimension.split('||').length : 1,
                           modalVisible: true,
                         });
-                  }}>
+                    }}
+                    >
                       编辑
+                    </a>,
+                    <a onClick={() => {
+                      this.setState(
+                        {
+                          currentItem: item,
+                          currentItemRiskNumber: item.riskDimension ? item.riskDimension.split('||').length : 1,
+                          modalVisible: true,
+                        });
+                    }}
+                    >
+                      查看
                     </a>,
                     <a onClick={() => {
                       window.open(
@@ -428,20 +451,7 @@ export default class BasicList extends PureComponent {
                     >
                       影像
                     </a>,
-                    <a onClick={() => {
-                      this.props.dispatch({
-                        type: 'caseList/publish',
-                        payload: { ...item },
-                        callback: () => {
-                          message.success('发布成功');
-                          this.fetch();
-                        },
-                      });
-                    }}
-                    >
-                      审核通过
-                    </a>,
-                    <MoreBtn item={item} />]}
+                  ]}
                 >
                   <List.Item.Meta
                     title={

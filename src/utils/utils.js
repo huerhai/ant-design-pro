@@ -92,3 +92,151 @@ export function digitUppercase(n) {
 
   return s.replace(/(零.)*零元/, '元').replace(/(零.)+/g, '零').replace(/^整$/, '零元整');
 }
+
+export function caseState(value) {
+  switch (+value) {
+    case 10:
+      return {
+        label: '待质检',
+        toDo: [
+          {
+            label: '质检通过',
+            to: 20,
+            css: 'success',
+          },
+          {
+            label: '质检不通过',
+            to: 91,
+            css: 'error',
+          },
+        ],
+        css: 'blue',
+      };
+    case 11:
+      return {
+        label: '质检中',
+        css: 'blue',
+        toDo: [
+          {
+            label: '质检通过',
+            to: 20,
+            css: 'success',
+          },
+          {
+            label: '质检不通过',
+            to: 91,
+            css: 'error',
+          },
+        ],
+      };
+    case 91:
+      return {
+        label: '质检不通过',
+        css: 'blue',
+        toDo: [
+          {
+            label: '改为质检通过',
+            to: 20,
+            css: 'warning',
+          },
+        ],
+      };
+    case 20:
+      return {
+        label: '待审核',
+        css: 'blue',
+        toDo: [
+          {
+            label: '审核通过',
+            to: 30,
+            css: 'success',
+          },
+          {
+            label: '审核不通过',
+            to: 92,
+            css: 'error',
+          },
+        ],
+      };
+    case 21:
+      return {
+        label: '正在审核',
+        css: 'blue',
+        toDo: [
+          {
+            label: '审核通过',
+            to: 30,
+            css: 'success',
+          },
+          {
+            label: '审核不通过',
+            to: 92,
+            css: 'error',
+          },
+        ],
+      };
+    case 30:
+      return {
+        label: '审核通过',
+        css: 'blue',
+        toDo: [
+          {
+            label: '打回质检',
+            to: 10,
+            css: 'error',
+          },
+          {
+            label: '打回重审',
+            to: 20,
+            css: 'error',
+          },
+          {
+            label: '导出',
+            to: 40,
+            css: 'success',
+          },
+        ],
+      };
+    case 40:
+      return {
+        label: '已导出',
+        css: 'blue',
+        toDo: [
+          {
+            label: '打回重审',
+            to: 20,
+            css: 'error',
+          },
+          {
+            label: '重新导出',
+            to: 40,
+            css: 'success',
+          },
+        ],
+      };
+    case 92:
+      return {
+        label: '审核不通过',
+        css: 'blue',
+        toDo: [
+          {
+            label: '改为通过',
+            to: 30,
+            css: 'success',
+          },
+        ],
+      };
+    default:
+      return {
+        label: '状态异常',
+        css: 'blue',
+        toDo: [
+          {
+            label: '改为待质检',
+            to: 10,
+            css: 'success',
+          },
+        ],
+      };
+  }
+}

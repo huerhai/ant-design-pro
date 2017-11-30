@@ -1,5 +1,5 @@
 import { updatePreCase, freshRreList } from '../services/Basic';
-import { queryList } from '../services/case';
+import { queryList, updateStatusCodes } from '../services/case';
 
 export default {
   namespace: 'caseList',
@@ -87,6 +87,22 @@ export default {
       });
       if (callback) callback();
     },
+    *changeStatus({ payload, callback }, { call, put }) {
+      yield put({
+        type: 'changeLoading',
+        payload: true,
+      });
+      const res = yield call(updateStatusCodes, payload);
+      yield put({
+        type: 'saveStatus',
+        payload,
+      });
+      yield put({
+        type: 'changeLoading',
+        payload: false,
+      });
+      if (callback) callback(payload, res);
+    },
   },
 
   reducers: {
@@ -106,8 +122,21 @@ export default {
     },
     save(state, { payload }) {
       const list = state.list.map((item) => {
-        if (item.eventPretreatmentId === payload.eventPretreatmentId) {
+        if (item.claimDataId === payload.claimDataId) {
           return payload;
+        }
+        return item;
+      });
+      return {
+        ...state,
+        list,
+      };
+    },
+    saveStatus(state, { payload: { items, to } }) {
+      console.log(items, to);
+      const list = state.list.map((item) => {
+        if (items.indexOf(item.claimDataId) > -1) {
+          return Object.assign({}, item, { status: to });
         }
         return item;
       });
@@ -118,7 +147,7 @@ export default {
     },
     deleteFromCase(state, { payload }) {
       const list = state.list.filter((item) => {
-        return item.eventPretreatmentId !== payload.eventPretreatmentId;
+        return item.claimDataId !== payload.claimDataId;
       });
       return {
         ...state,
