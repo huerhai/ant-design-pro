@@ -344,7 +344,7 @@ export default class BasicList extends PureComponent {
                 last
               >
                 <Row gutter={16}>
-                  <Col lg={8} md={10} sm={10} xs={24}>
+                  <Col lg={8} md={12} sm={10} xs={24}>
                     <FormItem
                       {...formItemLayout}
                       label="赔案号"
@@ -360,7 +360,7 @@ export default class BasicList extends PureComponent {
                       )}
                     </FormItem>
                   </Col>
-                  <Col lg={8} md={10} sm={10} xs={24}>
+                  <Col lg={8} md={12} sm={10} xs={24}>
                     <FormItem
                       {...formItemLayout}
                       label="被保人"
@@ -376,7 +376,7 @@ export default class BasicList extends PureComponent {
                       )}
                     </FormItem>
                   </Col>
-                  <Col lg={8} md={10} sm={10} xs={24}>
+                  <Col lg={8} md={12} sm={10} xs={24}>
                     <FormItem
                       {...formItemLayout}
                       label="被保人身份证"
