@@ -239,17 +239,17 @@ export default class BasicList extends PureComponent {
         switch (value) {
           case '拒赔':
             return {
-              icon: 'frown',
+              icon: 'dislike',
               style: { color: '#fd3244', backgroundColor: '#fdd439' },
             };
           case '部分':
             return {
-              icon: 'meh',
+              icon: 'like',
               style: { color: '#f58d4e', backgroundColor: '#fde3cf' },
             };
           case '赔付':
             return {
-              icon: 'smile',
+              icon: 'like',
               style: { color: '#95f53b', backgroundColor: '#e7fd83' },
             };
           default:
@@ -363,14 +363,14 @@ export default class BasicList extends PureComponent {
                   <Col lg={8} md={12} sm={10} xs={24}>
                     <FormItem
                       {...formItemLayout}
-                      label="被保人"
+                      label="姓名"
                     >
                       {getFieldDecorator('insuredPersonName', {
                         initialValue: '',
                       })(
                         <Search
                           className={styles.extraContentSearch}
-                          placeholder="被保人"
+                          placeholder="被保人姓名"
                           onSearch={this.handleFormSubmit}
                         />
                       )}
@@ -379,7 +379,7 @@ export default class BasicList extends PureComponent {
                   <Col lg={8} md={12} sm={10} xs={24}>
                     <FormItem
                       {...formItemLayout}
-                      label="被保人身份证"
+                      label="身份证"
                     >
                       {getFieldDecorator('insuredPersonId', {
                         initialValue: '',
