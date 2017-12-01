@@ -79,6 +79,12 @@ export const getNavData = app => [
         component: dynamicWrapper(app, ['company'], () => import('../routes/BasicInfo/company')),
       },
       {
+        name: '公司管理2',
+        path: 'company2',
+        icon: 'usb',
+        component: dynamicWrapper(app, ['list'], () => import('../routes/BasicInfo/company/SearchList.js')),
+      },
+      {
         name: '产品管理',
         path: 'product',
         icon: 'bars',
