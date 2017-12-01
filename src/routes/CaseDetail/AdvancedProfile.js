@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import Debounce from 'lodash-decorators/debounce';
 import Bind from 'lodash-decorators/bind';
+import moment from 'moment';
+import { parse } from 'qs';
 import { connect } from 'dva';
-import { Button, Menu, Dropdown, Icon, Row, Col, Steps, Card, Popover, Badge, Table, Tooltip, Divider } from 'antd';
+import { Button, Menu, Dropdown, Icon, Row, Col, Steps, Card, Popover, Badge, Table, Tooltip, Divider, Spin } from 'antd';
 import classNames from 'classnames';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DescriptionList from '../../components/DescriptionList';
@@ -16,61 +18,85 @@ const getWindowWidth = () => (window.innerWidth || document.documentElement.clie
 
 const menu = (
   <Menu>
-    <Menu.Item key="1">选项一</Menu.Item>
-    <Menu.Item key="2">选项二</Menu.Item>
-    <Menu.Item key="3">选项三</Menu.Item>
+    <Menu.Item key="1">删除案件</Menu.Item>
+    <Menu.Item key="2">更改理赔人</Menu.Item>
+    <Menu.Item key="3">导出预览</Menu.Item>
   </Menu>
 );
 
 const action = (
   <div>
     <ButtonGroup>
-      <Button>操作</Button>
-      <Button>操作</Button>
+      <Button>影像件投影</Button>
+      <Button>标记为问题件</Button>
+      <Button>审核不通过</Button>
       <Dropdown overlay={menu} placement="bottomRight">
         <Button><Icon type="ellipsis" /></Button>
       </Dropdown>
     </ButtonGroup>
-    <Button type="primary">主操作</Button>
+    <Button type="primary">审核完毕</Button>
   </div>
 );
 
-const extra = (
-  <Row>
-    <Col xs={24} sm={12}>
-      <div className={styles.textSecondary}>状态</div>
-      <div className={styles.heading}>待审批</div>
-    </Col>
-    <Col xs={24} sm={12}>
-      <div className={styles.textSecondary}>订单金额</div>
-      <div className={styles.heading}>¥ 568.08</div>
-    </Col>
-  </Row>
-);
+const extra = ({ detail }) => {
+  const {
+    auditConclusion,
+    eventResponseList,
+  } = detail;
+  const claimPay = eventResponseList.reduce((a, b) => {
+    return (a || 0) + +b.claimPay;
+  }, 0).toFixed(2);
+  return (
+    <Row>
+      <Col xs={24} sm={12}>
+        <div className={styles.textSecondary}>当前结论</div>
+        <div className={styles.heading}>{auditConclusion.value}</div>
+      </Col>
+      <Col xs={24} sm={12}>
+        <div className={styles.textSecondary}>申请金额</div>
+        <div className={styles.heading}>
+          ¥ {claimPay}
+        </div>
+        <div className={styles.textSecondary}>核定金额</div>
+        <div className={styles.heading}>
+          ¥ {claimPay}
+        </div>
+      </Col>
+    </Row>
+  );
+};
 
-const description = (
-  <DescriptionList className={styles.headerList} size="small" col="2">
-    <Description term="创建人">曲丽丽</Description>
-    <Description term="订购产品">XX 服务</Description>
-    <Description term="创建时间">2017-07-07</Description>
-    <Description term="关联单据"><a href="">12421</a></Description>
-    <Description term="生效日期">2017-07-07 ~ 2017-08-08</Description>
-    <Description term="备注">请于两个工作日内确认</Description>
-  </DescriptionList>
-);
-
-const tabList = [{
-  key: 'detail',
-  tab: '详情',
-}, {
-  key: 'rule',
-  tab: '规则',
-}];
-
+const description = ({ detail, claimId }) => {
+  const {
+    companyId,
+    accidentDate,
+    firstDate,
+    accidentProvince,
+    accidentCity,
+    accidentArea,
+    accidentAddress,
+    accidentInfo,
+    accidentSubtype,
+  } = detail;
+  return (
+    <DescriptionList className={styles.headerList} size="small" col="2">
+      <Description term="保险公司">{companyId.value}</Description>
+      <Description term="赔案号"><a href="">{claimId}</a></Description>
+      <Description term="被保人">{detail.insuredPerson.name}</Description>
+      <Description term="申请人">{detail.reportPerson.name}</Description>
+      <Description term="出险日期">{moment(accidentDate).format('YYYY年MM月DD日')}</Description>
+      <Description term="初次就诊时间">{moment(firstDate).format('YYYY年MM月DD日')}</Description>
+      <Description term="出险类型">{accidentSubtype.value}</Description>
+      <Description term="出险地区">{accidentProvince.value}{accidentCity.value}{accidentArea.value}</Description>
+      <Description term="出险详细地址">{accidentAddress}</Description>
+      <Description term="出险经过">{accidentInfo}</Description>
+    </DescriptionList>
+  );
+};
 const desc1 = (
   <div className={classNames(styles.textSecondary, styles.stepDescription)}>
     <div>
-      曲丽丽
+      李文杰
       <Icon type="dingding-o" style={{ marginLeft: 8 }} />
     </div>
     <div>2016-12-12 12:32</div>
@@ -80,7 +106,7 @@ const desc1 = (
 const desc2 = (
   <div className={styles.stepDescription}>
     <div>
-      周毛毛
+      理赔丁
       <Icon type="dingding-o" style={{ color: '#00A0E9', marginLeft: 8 }} />
     </div>
     <div><a href="">催一下</a></div>
@@ -106,55 +132,99 @@ const customDot = (dot, { status }) => (status === 'process' ?
 
 const operationTabList = [{
   key: 'tab1',
-  tab: '操作日志一',
+  tab: '住院事件一',
 }, {
   key: 'tab2',
-  tab: '操作日志二',
+  tab: '住院事件二',
 }, {
   key: 'tab3',
-  tab: '操作日志三',
+  tab: '住院事件三',
 }];
 
 const columns = [{
-  title: '操作类型',
+  title: '发票日期',
   dataIndex: 'type',
   key: 'type',
 }, {
-  title: '操作人',
+  title: '收据类型',
   dataIndex: 'name',
   key: 'name',
 }, {
-  title: '执行结果',
+  title: '总金额',
   dataIndex: 'status',
   key: 'status',
   render: text => (
     text === 'agree' ? <Badge status="success" text="成功" /> : <Badge status="error" text="驳回" />
   ),
 }, {
-  title: '操作时间',
+  title: '分类自负金额',
   dataIndex: 'updatedAt',
   key: 'updatedAt',
 }, {
-  title: '备注',
+  title: '自费支付金额',
+  dataIndex: 'updatedAt',
+  key: 'updatedAt',
+}, {
+  title: '分类自负金额',
+  dataIndex: 'updatedAt',
+  key: 'updatedAt',
+}, {
+  title: '统筹支付金额',
+  dataIndex: 'updatedAt',
+  key: 'updatedAt',
+}, {
+  title: '附加支付金额',
+  dataIndex: 'updatedAt',
+  key: 'updatedAt',
+}, {
+  title: '第三方支付金额',
+  dataIndex: 'updatedAt',
+  key: 'updatedAt',
+}, {
+  title: '现金支付金额',
+  dataIndex: 'updatedAt',
+  key: 'updatedAt',
+}, {
+  title: '医保账户支付金额',
+  dataIndex: 'updatedAt',
+  key: 'updatedAt',
+}, {
+  title: '操作',
   dataIndex: 'memo',
   key: 'memo',
 }];
 
 @connect(state => ({
-  profile: state.profile,
+  claim: state.claim,
 }))
 export default class AdvancedProfile extends Component {
   state = {
     operationkey: 'tab1',
     stepDirection: 'horizontal',
+    loading: true,
   }
-
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'profile/fetchAdvanced',
+      type: 'claim/fetchAdvanced',
     });
-
+    const payload = parse(location.hash.split('?')[1]);
+    this.state = {
+      operationkey: 'tab1',
+      stepDirection: 'horizontal',
+      currentItem: payload,
+      loading: true,
+    };
+    dispatch({
+      type: 'claim/fetchDetail',
+      payload,
+      callback: (claim) => {
+        this.setState({
+          currentItem: claim,
+          loading: false,
+        });
+      },
+    });
     this.setStepDirection();
     window.addEventListener('resize', this.setStepDirection);
   }
@@ -185,16 +255,30 @@ export default class AdvancedProfile extends Component {
   }
 
   render() {
-    const { stepDirection } = this.state;
-    const { profile } = this.props;
-    const { advancedLoading, advancedOperation1, advancedOperation2, advancedOperation3 } = profile;
+    const { stepDirection, currentItem, loading } = this.state;
+    const { claim } = this.props;
+    const { advancedLoading, advancedOperation1, advancedOperation2, advancedOperation3 } = claim;
     const contentList = {
-      tab1: <Table
-        pagination={false}
-        loading={advancedLoading}
-        dataSource={advancedOperation1}
-        columns={columns}
-      />,
+      tab1: (
+        <div>
+          <DescriptionList style={{ marginBottom: 24 }}>
+            <Description term="入院日期">付小小</Description>
+            <Description term="出院日期">32943898021309809423</Description>
+            <Description term="住院天数">3321944288191034921</Description>
+            <Description term="收据总数">18112345678</Description>
+            <Description term="就诊日期">3213</Description>
+            <Description term="费用类别">3213</Description>
+            <Description term="就诊医院">3213</Description>
+            <Description term="主要诊断">3213</Description>
+            <Description term="次要诊断">321</Description>
+          </DescriptionList>
+          <Table
+            pagination={false}
+            loading={advancedLoading}
+            dataSource={advancedOperation1}
+            columns={columns}
+          />
+        </div>),
       tab2: <Table
         pagination={false}
         loading={advancedLoading}
@@ -208,25 +292,31 @@ export default class AdvancedProfile extends Component {
         columns={columns}
       />,
     };
-
+    if (loading) {
+      return (
+        <div className={styles.centerSpin}>
+          <Spin size="large" tip="我在很努力的加载..." />
+        </div>);
+    }
+    const { claimDataId } = currentItem;
     return (
       <PageHeaderLayout
-        title="单号：234231029431"
+        title={`编号：${claimDataId}`}
         logo={<img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/nxkuOJlFJuAUhzlMTCEe.png" />}
         action={action}
-        content={description}
-        extraContent={extra}
-        tabList={tabList}
+        content={description(currentItem)}
+        extraContent={extra(currentItem)}
       >
-        <Card title="流程进度" style={{ marginBottom: 24 }} bordered={false}>
-          <Steps direction={stepDirection} progressDot={customDot} current={1}>
-            <Step title="创建项目" description={desc1} />
-            <Step title="部门初审" description={desc2} />
-            <Step title="财务复核" />
-            <Step title="完成" />
-          </Steps>
+        <Card
+          title="事件信息"
+          className={styles.tabsCard}
+          bordered={false}
+          tabList={operationTabList}
+          onTabChange={this.onOperationTabChange}
+        >
+          {contentList[this.state.operationkey]}
         </Card>
-        <Card title="用户信息" style={{ marginBottom: 24 }} bordered={false}>
+        <Card title="保单信息" style={{ marginBottom: 24 }} bordered={false}>
           <DescriptionList style={{ marginBottom: 24 }}>
             <Description term="用户姓名">付小小</Description>
             <Description term="会员卡号">32943898021309809423</Description>
@@ -273,18 +363,22 @@ export default class AdvancedProfile extends Component {
             </DescriptionList>
           </Card>
         </Card>
-        <Card title="用户近半年来电记录" style={{ marginBottom: 24 }} bordered={false}>
+        <Card title="被保人历史理赔记录" style={{ marginBottom: 24 }} bordered={false}>
           <div className={styles.noData}>
             <Icon type="frown-o" />暂无数据
           </div>
         </Card>
-        <Card
-          className={styles.tabsCard}
-          bordered={false}
-          tabList={operationTabList}
-          onTabChange={this.onOperationTabChange}
-        >
-          {contentList[this.state.operationkey]}
+        <Card title="流程进度" style={{ marginBottom: 24 }} bordered={false}>
+          <Steps direction={stepDirection} progressDot={customDot} current={5}>
+            <Step title="创建" description={desc1} />
+            <Step title="扫描" description={desc1} />
+            <Step title="预审" description={desc1} />
+            <Step title="录入" description={desc1} />
+            <Step title="质检" description={desc1} />
+            <Step title="审核" description={desc2} />
+            <Step title="导出" />
+            <Step title="完成" />
+          </Steps>
         </Card>
       </PageHeaderLayout>
     );

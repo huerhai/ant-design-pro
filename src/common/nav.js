@@ -56,7 +56,7 @@ export const getNavData = app => [
           },
           {
             path: 'detail',
-            component: dynamicWrapper(app, ['caseList', 'profile'], () => import('../routes/CaseDetail/AdvancedProfile')),
+            component: dynamicWrapper(app, ['caseList', 'claim'], () => import('../routes/CaseDetail/AdvancedProfile')),
           },
         ],
       },

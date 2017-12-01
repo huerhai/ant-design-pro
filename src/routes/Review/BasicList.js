@@ -2,7 +2,6 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { routerRedux } from 'dva/router';
 import { Form, Select, List, Card, Row, Col, Radio, Input, Icon, Dropdown, Menu, Avatar, message, Table } from 'antd';
 
 import { caseState } from '../../utils/utils';
@@ -382,7 +381,7 @@ export default class BasicList extends PureComponent {
       dataSource: list,
       pagination: paginationProps,
       onRowDoubleClick: (record) => {
-        dispatch(routerRedux.push(`/review/detail?claimId=${record.claimId}`));
+        window.open(`/#/review/detail?claimDataId=${record.claimDataId}&claimId=${record.claimId}`);
       },
       rowKey: 'claimDataId',
     };
