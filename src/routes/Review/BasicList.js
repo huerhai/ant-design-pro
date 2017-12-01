@@ -291,6 +291,11 @@ export default class BasicList extends PureComponent {
     };
 
     const columns = [{
+      title: '序号',
+      dataIndex: 'claimDataId',
+      align: 'center',
+      width: 60,
+    }, {
       title: '收单',
       dataIndex: 'receiveTime',
       align: 'center',
@@ -340,8 +345,8 @@ export default class BasicList extends PureComponent {
       }],
       filterMultiple: true,
       onFilter: (value, record) => record.auditConclusion.value.indexOf(value) === 0,
-      render: (text) => {
-        return <span>{text.value}</span>;
+      render: (text, record) => {
+        return <span className={styles[`res-${text.value}`]}>{text.value}{record.invalidateType && <Icon type="question-circle" />}</span>;
       },
     }, {
       title: '赔付金额',
@@ -365,7 +370,7 @@ export default class BasicList extends PureComponent {
       render: (text, record) => {
         return (
           <div>
-            {record.invalidateType && <span>问题件</span>}
+            {record.invalidateDetail && <span>{record.invalidateDetail}</span>}
             {text !== '低' && <span>{text}风险</span>}
           </div>);
       },
