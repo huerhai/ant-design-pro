@@ -2,6 +2,7 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
+import { routerRedux } from 'dva/router';
 import { Form, Select, List, Card, Row, Col, Radio, Input, Icon, Dropdown, Menu, Avatar, message, Table } from 'antd';
 
 import { caseState } from '../../utils/utils';
@@ -133,38 +134,6 @@ export default class BasicList extends PureComponent {
         currentItemRiskNumber: this.state.currentItemRiskNumber + 1,
       });
     };
-    const paginationProps = {
-      showSizeChanger: true,
-      showQuickJumper: true,
-      pageSizeOptions: ['10', '50', '100', '200', '500', '1000'],
-      pageSize: this.state.filter.size,
-      current: this.state.filter.page + 1,
-      total,
-      showTotal: (totalNumber) => {
-        return `共计${totalNumber}件`;
-      },
-      onChange: (page, pageSize) => {
-        this.setState({
-          filter: {
-            ...this.state.filter,
-            page: page - 1,
-            size: pageSize || this.state.filter.size,
-          },
-        });
-        this.fetch();
-      },
-      onShowSizeChange: (current, size, filters, sorter) => {
-        this.setState({
-          filter: {
-            ...this.state.filter,
-            page: current - 1,
-            size,
-          },
-        });
-        this.fetch();
-      },
-    };
-
     const ListContent =
       ({ data: {
         insuredPersonName,
@@ -375,6 +344,48 @@ export default class BasicList extends PureComponent {
           </div>);
       },
     }];
+    const paginationProps = {
+      showSizeChanger: true,
+      showQuickJumper: true,
+      pageSizeOptions: ['10', '50', '100', '200', '500', '1000'],
+      pageSize: this.state.filter.size,
+      current: this.state.filter.page + 1,
+      total,
+      showTotal: (totalNumber) => {
+        return `共计${totalNumber}件`;
+      },
+      onChange: (page, pageSize) => {
+        this.setState({
+          filter: {
+            ...this.state.filter,
+            page: page - 1,
+            size: pageSize || this.state.filter.size,
+          },
+        });
+        this.fetch();
+      },
+      onShowSizeChange: (current, size, filters, sorter) => {
+        this.setState({
+          filter: {
+            ...this.state.filter,
+            page: current - 1,
+            size,
+          },
+        });
+        this.fetch();
+      },
+    };
+    const gridTableProps = {
+      size: 'small',
+      columns,
+      loading,
+      dataSource: list,
+      pagination: paginationProps,
+      onRowDoubleClick: (record) => {
+        dispatch(routerRedux.push(`/review/detail?claimId=${record.claimId}`));
+      },
+      rowKey: 'claimDataId',
+    };
     return (
       <PageHeaderLayout>
         <div className={styles.standardList}>
@@ -504,7 +515,7 @@ export default class BasicList extends PureComponent {
             bodyStyle={{ padding: '0 32px 40px 32px' }}
             extra={extraContent}
           >
-            { this.state.gridStyle === 'grid' ? <Table size="small" columns={columns} loading={loading} dataSource={list} pagination={paginationProps} rowKey="claimDataId" /> : null }
+            { this.state.gridStyle === 'grid' ? <Table {...gridTableProps} /> : null }
             { this.state.gridStyle === 'middle' ?
               <List
                 size="large"
