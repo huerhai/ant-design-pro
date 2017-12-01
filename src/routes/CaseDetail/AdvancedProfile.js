@@ -4,8 +4,11 @@ import Bind from 'lodash-decorators/bind';
 import moment from 'moment';
 import { parse } from 'qs';
 import { connect } from 'dva';
-import { Button, Menu, Dropdown, Icon, Row, Col, Steps, Card, Popover, Badge, Table, Tooltip, Divider, Spin } from 'antd';
+import { Button, Menu, Dropdown, Icon, Row, Col, Steps, Card, Popover, Badge, Table, Divider, Spin } from 'antd';
 import classNames from 'classnames';
+
+import Zeren from './zeren';
+import { date } from '../../utils/utils';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DescriptionList from '../../components/DescriptionList';
 import styles from './AdvancedProfile.less';
@@ -27,9 +30,12 @@ const menu = (
 const action = (
   <div>
     <ButtonGroup>
+      <Button>发送消息</Button>
+      <Button>复制链接</Button>
       <Button>影像件投影</Button>
       <Button>标记为问题件</Button>
       <Button>审核不通过</Button>
+      <Button>刷新</Button>
       <Dropdown overlay={menu} placement="bottomRight">
         <Button><Icon type="ellipsis" /></Button>
       </Dropdown>
@@ -130,64 +136,56 @@ const customDot = (dot, { status }) => (status === 'process' ?
   : dot
 );
 
-const operationTabList = [{
-  key: 'tab1',
-  tab: '住院事件一',
-}, {
-  key: 'tab2',
-  tab: '住院事件二',
-}, {
-  key: 'tab3',
-  tab: '住院事件三',
-}];
-
 const columns = [{
   title: '发票日期',
-  dataIndex: 'type',
-  key: 'type',
+  dataIndex: 'billDate',
+  key: 'billDate',
+  render: text => <span>{moment(text).format('YYYY年MM月DD日')}</span>,
 }, {
   title: '收据类型',
-  dataIndex: 'name',
-  key: 'name',
+  dataIndex: 'billType',
+  key: 'billType',
+  render: text => <span>{text.value}</span>,
 }, {
   title: '总金额',
-  dataIndex: 'status',
-  key: 'status',
-  render: text => (
-    text === 'agree' ? <Badge status="success" text="成功" /> : <Badge status="error" text="驳回" />
-  ),
+  dataIndex: 'billAmt',
+  key: 'billAmt',
+  align: 'right',
 }, {
   title: '分类自负金额',
-  dataIndex: 'updatedAt',
-  key: 'updatedAt',
+  dataIndex: 'classificationPayAmt',
+  key: 'classificationPayAmt',
+  align: 'right',
 }, {
   title: '自费支付金额',
-  dataIndex: 'updatedAt',
-  key: 'updatedAt',
-}, {
-  title: '分类自负金额',
-  dataIndex: 'updatedAt',
-  key: 'updatedAt',
+  dataIndex: 'selfPayAmt',
+  key: 'selfPayAmt',
+  align: 'right',
 }, {
   title: '统筹支付金额',
-  dataIndex: 'updatedAt',
-  key: 'updatedAt',
+  dataIndex: 'overallPayAmt',
+  key: 'overallPayAmt',
+  align: 'right',
 }, {
   title: '附加支付金额',
-  dataIndex: 'updatedAt',
-  key: 'updatedAt',
+  dataIndex: 'accountPayAmt',
+  key: 'accountPayAmt',
+  align: 'right',
 }, {
   title: '第三方支付金额',
-  dataIndex: 'updatedAt',
-  key: 'updatedAt',
+  dataIndex: 'thirdPayAmt',
+  key: 'thirdPayAmt',
+  align: 'right',
 }, {
   title: '现金支付金额',
-  dataIndex: 'updatedAt',
-  key: 'updatedAt',
+  dataIndex: 'cashPayAmt',
+  key: 'cashPayAmt',
+  align: 'right',
 }, {
   title: '医保账户支付金额',
-  dataIndex: 'updatedAt',
-  key: 'updatedAt',
+  dataIndex: 'attachPayAmt',
+  key: 'attachPayAmt',
+  align: 'right',
 }, {
   title: '操作',
   dataIndex: 'memo',
@@ -199,7 +197,7 @@ const columns = [{
 }))
 export default class AdvancedProfile extends Component {
   state = {
-    operationkey: 'tab1',
+    operationkey: 1,
     stepDirection: 'horizontal',
     loading: true,
   }
@@ -210,7 +208,7 @@ export default class AdvancedProfile extends Component {
     });
     const payload = parse(location.hash.split('?')[1]);
     this.state = {
-      operationkey: 'tab1',
+      operationkey: 1,
       stepDirection: 'horizontal',
       currentItem: payload,
       loading: true,
@@ -256,49 +254,120 @@ export default class AdvancedProfile extends Component {
 
   render() {
     const { stepDirection, currentItem, loading } = this.state;
-    const { claim } = this.props;
-    const { advancedLoading, advancedOperation1, advancedOperation2, advancedOperation3 } = claim;
-    const contentList = {
-      tab1: (
-        <div>
-          <DescriptionList style={{ marginBottom: 24 }}>
-            <Description term="入院日期">付小小</Description>
-            <Description term="出院日期">32943898021309809423</Description>
-            <Description term="住院天数">3321944288191034921</Description>
-            <Description term="收据总数">18112345678</Description>
-            <Description term="就诊日期">3213</Description>
-            <Description term="费用类别">3213</Description>
-            <Description term="就诊医院">3213</Description>
-            <Description term="主要诊断">3213</Description>
-            <Description term="次要诊断">321</Description>
-          </DescriptionList>
-          <Table
-            pagination={false}
-            loading={advancedLoading}
-            dataSource={advancedOperation1}
-            columns={columns}
-          />
-        </div>),
-      tab2: <Table
-        pagination={false}
-        loading={advancedLoading}
-        dataSource={advancedOperation2}
-        columns={columns}
-      />,
-      tab3: <Table
-        pagination={false}
-        loading={advancedLoading}
-        dataSource={advancedOperation3}
-        columns={columns}
-      />,
-    };
     if (loading) {
       return (
         <div className={styles.centerSpin}>
           <Spin size="large" tip="我在很努力的加载..." />
         </div>);
     }
-    const { claimDataId } = currentItem;
+    const { claimDataId, detail } = currentItem;
+    const {
+      eventResponseList,
+      insuredPerson,
+      reportPerson,
+      applyPerson,
+      benefitPersonList,
+    } = detail;
+    const eventList = eventResponseList.map((item, index) => {
+      return {
+        ...item,
+        key: index + 1,
+        tab: `${index + 1}-${item.coverageCode.value}`,
+      };
+    });
+    const contentList = () => {
+      if (!this.state.operationkey) {
+        return <div>加载中</div>;
+      }
+      const event = eventList.filter(item => +item.key === +this.state.operationkey)[0];
+      const {
+        hospitalName,
+        illCode,
+        inDate,
+        outDate,
+        inDays,
+        mainDoctor,
+        resOpinion,
+        resReason,
+        subIllCode,
+        billCnt,
+        claimPay,
+        payType,
+      } = event;
+      return (
+        <div>
+          <DescriptionList style={{ marginBottom: 24 }}>
+            <Description term="医院名称">{hospitalName}</Description>
+            <Description term="主要疾病">{illCode}</Description>
+            <Description term="次要疾病">{subIllCode.join(',')}</Description>
+            <Description term="入院日期">{date(inDate)}</Description>
+            <Description term="出院日期">{date(outDate)}</Description>
+            <Description term="住院天数">{inDays}天</Description>
+            <Description term="主治医生">{mainDoctor}</Description>
+            <Description term="收据总数">18112345678</Description>
+            <Description term="费用类型">{payType.value}</Description>
+            <Description term="收据数量">{billCnt}</Description>
+          </DescriptionList>
+          <Table
+            pagination={false}
+            dataSource={event.invoiceResponseList}
+            columns={columns}
+            rowKey="invoiceDataId"
+          />
+          <DescriptionList style={{ marginBottom: 24, marginTop: 24 }}>
+            <Description term="赔付金额">{claimPay}</Description>
+            <Description term="审核结论">{resOpinion}</Description>
+            <Description term="结论原因">{resReason}</Description>
+          </DescriptionList>
+        </div>);
+    };
+    const nameInfo = (person, title) => {
+      const {
+        name,
+        address,
+        bankAccount,
+        bankBranch,
+        bankSubbranch,
+        bankType,
+        birthday,
+        email,
+        gender,
+        id,
+        idType,
+        idValidateFrom,
+        idValidateTo,
+        job,
+        mobilePhone,
+        organization,
+        payType,
+        relationship,
+        telephone,
+        type,
+        zip,
+      } = person;
+      return (
+        <DescriptionList style={{ marginBottom: 24 }} title={title}>
+          <Description term="与被保人关系">{relationship.value}</Description>
+          <Description term="姓名">{name}</Description>
+          <Description term="证件类型">{idType.value}</Description>
+          <Description term="证件号码">{id}</Description>
+          <Description term="证件有效期">{date(idValidateFrom)}至{date(idValidateTo)}</Description>
+          <Description term="手机号">{mobilePhone}</Description>
+          <Description term="联系号码">{telephone}</Description>
+          <Description term="人员性质">{type.value}</Description>
+          <Description term="单位">{organization}</Description>
+          <Description term="工作">{job}</Description>
+          <Description term="生日">{date(birthday)}</Description>
+          <Description term="邮箱">{email}</Description>
+          <Description term="性别">{gender.value}</Description>
+          <Description term="地址">{address}</Description>
+          <Description term="邮编">{zip}</Description>
+          <Description term="付款方式">{payType.value}</Description>
+          <Description term="银行">{bankType.value}{bankBranch.value}{bankSubbranch.value}</Description>
+          <Description term="银行账号">{bankAccount}</Description>
+        </DescriptionList>
+      );
+    };
     return (
       <PageHeaderLayout
         title={`编号：${claimDataId}`}
@@ -311,56 +380,22 @@ export default class AdvancedProfile extends Component {
           title="事件信息"
           className={styles.tabsCard}
           bordered={false}
-          tabList={operationTabList}
+          tabList={eventList}
           onTabChange={this.onOperationTabChange}
         >
-          {contentList[this.state.operationkey]}
+          {contentList()}
         </Card>
-        <Card title="保单信息" style={{ marginBottom: 24 }} bordered={false}>
-          <DescriptionList style={{ marginBottom: 24 }}>
-            <Description term="用户姓名">付小小</Description>
-            <Description term="会员卡号">32943898021309809423</Description>
-            <Description term="身份证">3321944288191034921</Description>
-            <Description term="联系方式">18112345678</Description>
-            <Description term="联系地址">曲丽丽 18100000000 浙江省杭州市西湖区黄姑山路工专路交叉路口</Description>
-          </DescriptionList>
-          <DescriptionList style={{ marginBottom: 24 }} title="信息组">
-            <Description term="某某数据">725</Description>
-            <Description term="该数据更新时间">2017-08-08</Description>
-            <Description>&nbsp;</Description>
-            <Description term={
-              <span>
-                某某数据
-                <Tooltip title="数据说明">
-                  <Icon style={{ color: 'rgba(0, 0, 0, 0.43)', marginLeft: 4 }} type="info-circle-o" />
-                </Tooltip>
-              </span>
-              }
-            >
-              725
-            </Description>
-            <Description term="该数据更新时间">2017-08-08</Description>
-          </DescriptionList>
-          <h4 style={{ marginBottom: 16 }}>信息组</h4>
-          <Card type="inner" title="多层级信息组">
-            <DescriptionList size="small" style={{ marginBottom: 16 }} title="组名称">
-              <Description term="负责人">林东东</Description>
-              <Description term="角色码">1234567</Description>
-              <Description term="所属部门">XX公司 - YY部</Description>
-              <Description term="过期时间">2017-08-08</Description>
-              <Description term="描述">这段描述很长很长很长很长很长很长很长很长很长很长很长很长很长很长...</Description>
-            </DescriptionList>
+        <Card title="理赔汇总" style={{ marginBottom: 24 }} bordered={false}>
+          <Zeren item={currentItem} />
+        </Card>
+        <Card title="人员信息" style={{ marginBottom: 24 }} bordered={false}>
+          {nameInfo(insuredPerson, '被保人')}
+          <Card type="inner" title="其他人员">
+            {reportPerson.id !== insuredPerson.id ? nameInfo(reportPerson, '报案人') : '报案人 同 被保人'}
             <Divider style={{ margin: '16px 0' }} />
-            <DescriptionList size="small" style={{ marginBottom: 16 }} title="组名称" col="1">
-              <Description term="学名">
-                Citrullus lanatus (Thunb.) Matsum. et Nakai一年生蔓生藤本；茎、枝粗壮，具明显的棱。卷须较粗..
-              </Description>
-            </DescriptionList>
+            {applyPerson.id !== insuredPerson.id ? nameInfo(applyPerson, '申请人') : '申请人 同 被保人'}
             <Divider style={{ margin: '16px 0' }} />
-            <DescriptionList size="small" title="组名称">
-              <Description term="负责人">付小小</Description>
-              <Description term="角色码">1234568</Description>
-            </DescriptionList>
+            {benefitPersonList[0].id !== insuredPerson.id ? nameInfo(benefitPersonList[0], '领款人') : '领款人 同 被保人'}
           </Card>
         </Card>
         <Card title="被保人历史理赔记录" style={{ marginBottom: 24 }} bordered={false}>
