@@ -38,7 +38,6 @@ export default {
           ...response1.insuredPerson.idType,
         },
       });
-      console.log(response3);
       const newItem = {
         ...payload,
         detail: response1,
@@ -172,7 +171,6 @@ export default {
       };
     },
     saveStatus(state, { payload: { items, to } }) {
-      console.log(items, to);
       const list = state.list.map((item) => {
         if (items.indexOf(item.claimDataId) > -1) {
           return Object.assign({}, item, { status: to });

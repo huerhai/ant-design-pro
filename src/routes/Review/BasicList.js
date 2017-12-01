@@ -2,7 +2,7 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Form, Select, List, Card, Row, Col, Radio, Input, Icon, Dropdown, Menu, Avatar, message } from 'antd';
+import { Form, Select, List, Card, Row, Col, Radio, Input, Icon, Dropdown, Menu, Avatar, message, Table } from 'antd';
 
 import { caseState } from '../../utils/utils';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
@@ -26,9 +26,10 @@ export default class BasicList extends PureComponent {
     currentItem: {},
     currentItemRiskNumber: 1,
     modalVisible: false,
+    gridStyle: 'grid',
     filter: {
       page: this.props.caseList.page || 0,
-      size: 40,
+      size: 500,
     },
   };
   componentDidMount() {
@@ -87,6 +88,16 @@ export default class BasicList extends PureComponent {
           刷新
         </a>
         <RadioGroup
+          style={{ marginRight: 10 }}
+          value={this.state.gridStyle}
+          onChange={(e) => {
+            this.setState({ gridStyle: e.target.value });
+          }}
+        >
+          <RadioButton value="middle">缩略图</RadioButton>
+          <RadioButton value="grid">列表式</RadioButton>
+        </RadioGroup>
+        <RadioGroup
           defaultValue={undefined}
           onChange={(e) => {
             this.fetch({ statusCodes: e.target.value ? e.target.value.split(',').map(item => +item) : undefined, page: 0 });
@@ -125,15 +136,29 @@ export default class BasicList extends PureComponent {
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
+      pageSizeOptions: ['10', '50', '100', '200', '500', '1000'],
       pageSize: this.state.filter.size,
       current: this.state.filter.page + 1,
       total,
+      showTotal: (totalNumber) => {
+        return `共计${totalNumber}件`;
+      },
       onChange: (page, pageSize) => {
         this.setState({
           filter: {
             ...this.state.filter,
             page: page - 1,
-            size: pageSize,
+            size: pageSize || this.state.filter.size,
+          },
+        });
+        this.fetch();
+      },
+      onShowSizeChange: (current, size, filters, sorter) => {
+        this.setState({
+          filter: {
+            ...this.state.filter,
+            page: current - 1,
+            size,
           },
         });
         this.fetch();
@@ -265,6 +290,86 @@ export default class BasicList extends PureComponent {
       },
     };
 
+    const columns = [{
+      title: '收单',
+      dataIndex: 'receiveTime',
+      align: 'center',
+      render: (text) => {
+        return <span>{moment(text).format('MM-DD')}</span>;
+      },
+    }, {
+      title: '来源',
+      dataIndex: 'companyName',
+      align: 'center',
+      render: (text) => {
+        return <span>{text.value === '易安财产保险股份有限公司' ? '易安' : '人保'}</span>;
+      },
+    }, {
+      title: '赔案号',
+      dataIndex: 'claimId',
+      render: (text) => {
+        return <span>{text}</span>;
+      },
+      sorter: (a, b) => +a.claimId - +b.claimId,
+    }, {
+      title: '姓名',
+      dataIndex: 'insuredPersonName',
+      render: (text) => {
+        return <span>{text}</span>;
+      },
+      sorter: (a, b) => a.insuredPersonName.localeCompare(b.insuredPersonName, 'zh'),
+    }, {
+      title: '事故性质',
+      dataIndex: 'coverages',
+      render: (text) => {
+        return <span>{text.map(item => item.value).join(',')}</span>;
+      },
+    }, {
+      title: '当前结论',
+      dataIndex: 'auditConclusion',
+      align: 'center',
+      filters: [{
+        text: '赔付',
+        value: '赔付',
+      }, {
+        text: '部分',
+        value: '部分',
+      }, {
+        text: '拒赔',
+        value: '拒赔',
+      }],
+      filterMultiple: true,
+      onFilter: (value, record) => record.auditConclusion.value.indexOf(value) === 0,
+      render: (text) => {
+        return <span>{text.value}</span>;
+      },
+    }, {
+      title: '赔付金额',
+      dataIndex: 'claimPay',
+      align: 'right',
+      render: (text) => {
+        return <span>{text ? (+text).toFixed(2) : '-'}</span>;
+      },
+      sorter: (a, b) => +a.claimPay - +b.claimPay,
+    }, {
+      title: '备注',
+      dataIndex: 'riskLevel',
+      filters: [{
+        text: '高风险',
+        value: '高',
+      }, {
+        text: '中风险',
+        value: '中',
+      }],
+      onFilter: (value, record) => record.riskLevel.indexOf(value) === 0,
+      render: (text, record) => {
+        return (
+          <div>
+            {record.invalidateType && <span>问题件</span>}
+            {text !== '低' && <span>{text}风险</span>}
+          </div>);
+      },
+    }];
     return (
       <PageHeaderLayout>
         <div className={styles.standardList}>
@@ -394,89 +499,93 @@ export default class BasicList extends PureComponent {
             bodyStyle={{ padding: '0 32px 40px 32px' }}
             extra={extraContent}
           >
-            <List
-              size="large"
-              rowKey="id"
-              itemLayout="vertical"
-              loading={loading}
-              pagination={paginationProps}
-              dataSource={list}
-              renderItem={item => (
-                <List.Item
-                  actions={[
-                    ...caseState(item.status).toDo.map((todo) => {
-                      return (
-                        <a
-                          key={todo.label}
-                          className={styles[`action-${todo.css}`]}
-                          onClick={() => {
-                            dispatch(
-                              {
-                                type: 'caseList/changeStatus',
-                                payload: {
-                                  items: [item.claimDataId],
-                                  to: todo.to,
-                                },
+            { this.state.gridStyle === 'grid' ? <Table size="small" columns={columns} loading={loading} dataSource={list} pagination={paginationProps} rowKey="claimDataId" /> : null }
+            { this.state.gridStyle === 'middle' ?
+              <List
+                size="large"
+                rowKey="id"
+                itemLayout="vertical"
+                loading={loading}
+                pagination={paginationProps}
+                dataSource={list}
+                renderItem={item => (
+                  <List.Item
+                    actions={[
+                      ...caseState(item.status).toDo.map((todo) => {
+                        return (
+                          <a
+                            key={todo.label}
+                            className={styles[`action-${todo.css}`]}
+                            onClick={() => {
+                              dispatch(
+                                {
+                                  type: 'caseList/changeStatus',
+                                  payload: {
+                                    items: [item.claimDataId],
+                                    to: todo.to,
+                                  },
+                                }
+                              );
+                              if (todo.fn) {
+                               this[todo.fn](item);
                               }
-                            );
-                            if (todo.fn) {
-                             this[todo.fn](item);
-                            }
-                          }}
-                        >{todo.label}
-                        </a>);
-                    }),
-                    <a onClick={() => {
-                      dispatch({
-                        type: 'caseList/fetchDetail',
-                        payload: item,
-                        callback: () => {
-                          this.setState(
-                            {
-                              currentItem: this.props.caseList.currentItem,
-                              modalVisible: true,
-                            });
-                        },
-                      });
-                    }}
-                    >
-                      编辑责任
-                    </a>,
-                    <a onClick={() => {
-                      this.setState(
-                        {
-                          currentItem: item,
-                          currentItemRiskNumber: item.riskDimension ? item.riskDimension.split('||').length : 1,
-                          modalVisible: true,
-                        });
-                    }}
-                    >
-                      查看
-                    </a>,
-                    <a onClick={() => {
-                      window.open(
-                        `/gw/am/attachment/getclaimFileByCalimId?claimId=${item.claimId}`
-                      );
-                    }}
-                    >
-                      影像
-                    </a>,
-                  ]}
-                >
-                  <List.Item.Meta
-                    title={
+                            }}
+                          >{todo.label}
+                          </a>);
+                      }),
                       <a onClick={() => {
-                        this.setState({ modalVisible: true, currentItem: item });
+                        dispatch({
+                          type: 'caseList/fetchDetail',
+                          payload: item,
+                          callback: () => {
+                            this.setState(
+                              {
+                                currentItem: this.props.caseList.currentItem,
+                                modalVisible: true,
+                              });
+                          },
+                        });
                       }}
                       >
-                        {item.insuredPersonName}
-                      </a>}
-                    description={item.claimId}
-                  />
-                  <ListContent data={item} />
-                </List.Item>
-              )}
-            />
+                        编辑责任
+                      </a>,
+                      <a onClick={() => {
+                        this.setState(
+                          {
+                            currentItem: item,
+                            currentItemRiskNumber: item.riskDimension ? item.riskDimension.split('||').length : 1,
+                            modalVisible: true,
+                          });
+                      }}
+                      >
+                        查看
+                      </a>,
+                      <a onClick={() => {
+                        window.open(
+                          `/gw/am/attachment/getclaimFileByCalimId?claimId=${item.claimId}`
+                        );
+                      }}
+                      >
+                        影像
+                      </a>,
+                    ]}
+                  >
+                    <List.Item.Meta
+                      title={
+                        <a onClick={() => {
+                          this.setState({ modalVisible: true, currentItem: item });
+                        }}
+                        >
+                          {item.insuredPersonName}
+                        </a>}
+                      description={item.claimId}
+                    />
+                    <ListContent data={item} />
+                  </List.Item>
+                )}
+              />
+                : null
+            }
           </Card>
         </div>
         <EditModal
