@@ -33,9 +33,21 @@ export async function updateStatusCodes({ items, to }) {
   });
 }
 
-// 获取预审案件列表
+// 获取 案件信息
+export async function getClaimById(claimDataId) {
+  return request(`/gw/cs/claim/getClaimById?claimDataId=${claimDataId}`);
+}
+
+// 获取 预审信息
 export async function getDutyByClaimId(claimId) {
   return request(`/gw/cs/duty/getDutyByClaimId?claimId=${claimId}`);
+}
+// 获取 保单信息
+export async function getPolicyById(body) {
+  return request('/gw/cs/policy/getPolicyById', {
+    method: 'POST',
+    body,
+  });
 }
 
 // 案件 修改责任

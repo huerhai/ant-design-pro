@@ -26,9 +26,36 @@ const EditableCell = ({ value, onChange }) => (
 export default class EditableTable extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      data: props.item.dutyList || [],
+      insurancePlanList: props.item.insurancePlanList,
+    };
     this.columns = [{
       title: '责任',
       dataIndex: 'dutyCode',
+      render: (text) => {
+        return (this.state.insurancePlanList.find(item => item.dutyCode === text).dutyName);
+      },
+    }, {
+      title: '责任详细描述',
+      dataIndex: 'dutyCode',
+      width: '25%',
+      render: (text) => {
+        const ze = this.state.insurancePlanList.find(item => item.dutyCode === text);
+        return (
+          <div>
+            {ze.insurancePlanName ? <p>保障方案:{ze.insurancePlanName}</p> : ''}
+            {ze.diseaseObservationDays ? <p>疾病观察日:{ze.diseaseObservationDays}</p> : ''}
+            {ze.sumInsured ? <p>保障金额:{ze.sumInsured}</p> : ''}
+            {ze.aggregateDeductible ? <p>年免赔额:{ze.aggregateDeductible}</p> : ''}
+            {ze.deductiblePerOccurrence ? <p>次免赔额:{ze.deductiblePerOccurrence}</p> : ''}
+            {ze.limitPerOccurrence ? <p>次限额:{ze.limitPerOccurrence}</p> : ''}
+            {ze.deductibleDays ? <p>约定免赔天数:{ze.deductibleDays}天</p> : ''}
+            {ze.payoutRatio ? <p>赔付比例:{ze.payoutRatio * 100}%</p> : ''}
+            {ze.dailyBenefit ? <p>每日津贴:{ze.dailyBenefit}</p> : ''}
+            {ze.specialAgreement ? <p>{ze.specialAgreement}</p> : ''}
+          </div>);
+      },
     }, {
       title: '赔付金额',
       dataIndex: 'dutyPay',
@@ -70,7 +97,6 @@ export default class EditableTable extends React.Component {
         />);
       },
     }];
-    this.state = { data: props.item.dutyList || [] };
     this.cacheData = this.state.data.map(item => ({ ...item }));
   }
   componentWillReceiveProps(nextProps) {

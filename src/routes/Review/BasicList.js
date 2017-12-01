@@ -167,7 +167,6 @@ export default class BasicList extends PureComponent {
                 <Avatar icon={icon(result.value).icon} shape="square" size="large" style={icon(result.value).style} />
               </div>
               <div className={styles.plainDiv}>
-                <p>被保人:{insuredPersonName}</p>
                 <p>性别:{insuredPersonGender && insuredPersonGender.value}</p>
                 <p>出险日期:{moment(accidentDate).format('YYYY-MM-DD')}</p>
               </div>
@@ -225,18 +224,6 @@ export default class BasicList extends PureComponent {
       </Dropdown>
     );
     // eslint-disable-next-line no-unused-vars
-    const ListTitle = ({ riskDimension, description, suggestion, riskScore }) => {
-      let temp = '';
-      // if (riskDimension) temp = ` ┃ 维度:${riskDimension.split('||')[0]}`;
-      if (suggestion) {
-        temp = `${suggestion.split('||').map((item) => {
-          return `${item}`;
-        }).join('┃   ')}`;
-      }
-      // if (description) temp = `${temp} ┃ 说明:${description.split('||')[0]}`;
-
-      return temp;
-    };
     const icon = (value) => {
       if (value) {
         switch (value) {
@@ -441,7 +428,7 @@ export default class BasicList extends PureComponent {
                     }),
                     <a onClick={() => {
                       dispatch({
-                        type: 'caseList/fetchDutyDetail',
+                        type: 'caseList/fetchDetail',
                         payload: item,
                         callback: () => {
                           this.setState(
@@ -482,9 +469,9 @@ export default class BasicList extends PureComponent {
                         this.setState({ modalVisible: true, currentItem: item });
                       }}
                       >
-                        {item.insuredPersonName} [{item.claimId}]
+                        {item.insuredPersonName}
                       </a>}
-                    description={ListTitle(item)}
+                    description={item.claimId}
                   />
                   <ListContent data={item} />
                 </List.Item>

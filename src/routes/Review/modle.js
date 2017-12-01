@@ -4,11 +4,13 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, Modal, Radio, Alert, Button, Icon, Cascader } from 'antd';
+import { Form, Input, Modal, Radio, Alert, Button, Icon, Cascader, Table } from 'antd';
 import EditTable from './zeren';
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
+const { TextArea } = Input;
+
 
 const FormItem = Form.Item;
 

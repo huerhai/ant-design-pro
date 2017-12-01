@@ -1,5 +1,5 @@
 import { updatePreCase, freshRreList } from '../services/Basic';
-import { queryList, updateStatusCodes, getDutyByClaimId, updateDutyByClaimId } from '../services/case';
+import { queryList, updateStatusCodes, getClaimById, getDutyByClaimId, updateDutyByClaimId, getPolicyById } from '../services/case';
 
 export default {
   namespace: 'caseList',
@@ -26,11 +26,25 @@ export default {
         payload: false,
       });
     },
-    *fetchDutyDetail({ payload, callback }, { call, put }) {
-      const response = yield call(getDutyByClaimId, payload.claimId);
+    *fetchDetail({ payload, callback }, { call, put }) {
+      const response1 = yield call(getClaimById, payload.claimDataId);
+      const response2 = yield call(getDutyByClaimId, payload.claimId);
+      const response3 = yield call(getPolicyById, {
+        companyId: {
+          ...payload.companyName,
+        },
+        id: response1.insuredPerson.id,
+        idType: {
+          ...response1.insuredPerson.idType,
+        },
+      });
+      console.log(response3);
       const newItem = {
         ...payload,
-        dutyList: response,
+        detail: response1,
+        dutyList: response2,
+        policyList: response3,
+        insurancePlanList: response3.reduce((a, b) => a.concat(b.insurancePlanResponseList), []),
       };
       yield put({
         type: 'updatePorps',
