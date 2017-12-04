@@ -342,6 +342,20 @@ export default class BasicList extends PureComponent {
             {text !== '低' && <span>{text}风险</span>}
           </div>);
       },
+    }, {
+      title: '操作',
+      dataIndex: 'option',
+      render: (text, record) => {
+        return (
+          <div>
+            <a onClick={() => {
+              window.open(`/#/review/detail?claimDataId=${record.claimDataId}&claimId=${record.claimId}`);
+            }}
+            >
+              查看
+            </a>
+          </div>);
+      },
     }];
     const paginationProps = {
       showSizeChanger: true,
