@@ -11,7 +11,7 @@ import Zeren from './zeren';
 import { date } from '../../utils/utils';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DescriptionList from '../../components/DescriptionList';
-import styles from './AdvancedProfile.less';
+import styles from './style.less';
 
 const { Step } = Steps;
 const { Description } = DescriptionList;

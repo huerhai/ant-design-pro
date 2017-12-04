@@ -3,7 +3,10 @@
  * Created by liwenjie on 2017/11/30.
  */
 import React from 'react';
-import { Table, Input } from 'antd';
+import { connect } from 'dva';
+import { Table, Input, Button, message } from 'antd';
+import styles from './style.less';
+
 
 const { TextArea } = Input;
 
@@ -13,12 +16,16 @@ const EditableCell = ({ value, onChange }) => (
   </div>
 );
 
+@connect(state => ({
+  claim: state.claim,
+}))
 export default class EditableTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       data: props.item.dutyList || [],
       insurancePlanList: props.item.insurancePlanList,
+      loading: false,
     };
     this.columns = [{
       title: '责任',
@@ -140,7 +147,41 @@ export default class EditableTable extends React.Component {
     );
   }
   render() {
-    console.log(this.state.data);
-    return <Table bordered dataSource={this.state.data} columns={this.columns} rowKey="dutyDataId" pagination={false} />;
+    const { dispatch } = this.props;
+    const { loading } = this.state;
+    return (
+      <div>
+        <Table
+          bordered
+          dataSource={this.state.data}
+          columns={this.columns}
+          rowKey="dutyDataId"
+          pagination={false}
+          loading={loading}
+        />
+        <Button
+          className={styles.saveBtn}
+          type="primary"
+          onClick={() => {
+            this.setState({
+              loading: true,
+            });
+            this.state.data.forEach((duty) => {
+              dispatch({
+                type: 'caseList/updateDutyByClaimId',
+                payload: duty,
+                callback: () => {
+                  message.success('理赔汇总 修改成功');
+                  this.setState({
+                    loading: false,
+                  });
+                },
+              });
+            });
+          }}
+        >
+          保存
+        </Button>
+      </div>);
   }
 }
