@@ -359,6 +359,19 @@ export default class BasicList extends PureComponent {
           </div>);
       },
     }];
+
+    if (this.state.filter.statusCodes === undefined) {
+      columns.push({
+        title: '状态',
+        dataIndex: 'status',
+        render: (status) => {
+          return (
+            <div>
+              {caseState(status).label}
+            </div>);
+        },
+      });
+    }
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
