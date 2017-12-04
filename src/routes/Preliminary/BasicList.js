@@ -202,8 +202,8 @@ export default class BasicList extends PureComponent {
               <p>修改人:{lastName}</p>
             </div>
             <div style={{ width: 130 }}>
-              <p>{moment(createdAt).format('YYYY-MM-DD hh:mm')}</p>
-              <p>{moment(modifiedAt).format('YYYY-MM-DD hh:mm')}</p>
+              <p>{moment(createdAt).format('YYYY-MM-DD HH:mm')}</p>
+              <p>{moment(modifiedAt).fromNow()}</p>
               <p style={{ color: pretreatmentStatus !== '0' ? 'green' : '' }}>{pretreatmentStatus !== '0' ? '已审' : '待审' }</p>
             </div>
           </div>);
