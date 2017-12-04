@@ -252,6 +252,10 @@ export default class AdvancedProfile extends Component {
       type: 'claim/fetchDetail',
       payload,
       callback: (claim) => {
+        if (claim.insurancePlanList.length === 0) {
+          message.error('此人数据异常, insurancePlanList为空');
+          return;
+        }
         this.setState({
           currentItem: claim,
           loading: false,
@@ -387,8 +391,8 @@ export default class AdvancedProfile extends Component {
           <Description term="性别">{gender.value}</Description>
           <Description term="地址">{address}</Description>
           <Description term="邮编">{zip}</Description>
-          <Description term="付款方式">{payType.value}</Description>
-          <Description term="银行">{bankType.value}{bankBranch.value}{bankSubbranch.value}</Description>
+          <Description term="付款方式">{payType ? payType.value : '无'}</Description>
+          <Description term="银行">{bankType && bankType.value}{bankBranch && bankBranch.value}{bankSubbranch && bankSubbranch.value}</Description>
           <Description term="银行账号">{bankAccount}</Description>
         </DescriptionList>
       );
