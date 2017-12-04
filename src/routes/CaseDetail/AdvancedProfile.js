@@ -4,7 +4,7 @@ import Bind from 'lodash-decorators/bind';
 import moment from 'moment';
 import { parse } from 'qs';
 import { connect } from 'dva';
-import { Button, Menu, Dropdown, Icon, Row, Col, Steps, Card, Popover, Badge, Table, Divider, Spin } from 'antd';
+import { Button, Menu, Dropdown, Icon, Row, Col, Steps, Card, Popover, Badge, Table, Divider, Spin, message } from 'antd';
 import classNames from 'classnames';
 
 import Zeren from './zeren';
@@ -215,16 +215,7 @@ export default class AdvancedProfile extends Component {
       currentItem: payload,
       loading: true,
     };
-    dispatch({
-      type: 'claim/fetchDetail',
-      payload,
-      callback: (claim) => {
-        this.setState({
-          currentItem: claim,
-          loading: false,
-        });
-      },
-    });
+    this.fetchDetail();
     this.setStepDirection();
     window.addEventListener('resize', this.setStepDirection);
   }
@@ -252,6 +243,38 @@ export default class AdvancedProfile extends Component {
         stepDirection: 'horizontal',
       });
     }
+  }
+
+  fetchDetail() {
+    const { dispatch } = this.props;
+    const payload = parse(location.hash.split('?')[1]);
+    dispatch({
+      type: 'claim/fetchDetail',
+      payload,
+      callback: (claim) => {
+        this.setState({
+          currentItem: claim,
+          loading: false,
+        });
+        // 填坑
+        if (claim.policyList.length) {
+          if (claim.dutyList.length === 0) {
+            this.setState({
+              loading: true,
+            });
+            dispatch({
+              type: 'claim/createDuty',
+              payload: claim,
+              callback: () => {
+                this.fetchDetail();
+              },
+            });
+          }
+        } else {
+          message.error('此人数据异常, 没有保单数据, 所以无法进行理赔汇总');
+        }
+      },
+    });
   }
 
   render() {
