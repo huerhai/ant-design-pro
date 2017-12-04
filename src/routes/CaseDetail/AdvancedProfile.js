@@ -85,18 +85,20 @@ const description = ({ detail, claimId }) => {
     accidentSubtype,
   } = detail;
   return (
-    <DescriptionList className={styles.headerList} size="small" col="2">
-      <Description term="保险公司">{companyId.value}</Description>
-      <Description term="赔案号"><a href="">{claimId}</a></Description>
-      <Description term="被保人">{detail.insuredPerson.name}</Description>
-      <Description term="申请人">{detail.reportPerson.name}</Description>
-      <Description term="出险日期">{moment(accidentDate).format('YYYY年MM月DD日')}</Description>
-      <Description term="初次就诊时间">{moment(firstDate).format('YYYY年MM月DD日')}</Description>
-      <Description term="出险类型">{accidentSubtype.value}</Description>
-      <Description term="出险地区">{accidentProvince.value}{accidentCity.value}{accidentArea.value}</Description>
-      <Description term="出险详细地址">{accidentAddress}</Description>
-      <Description term="出险经过">{accidentInfo}</Description>
-    </DescriptionList>
+    <div>
+      <DescriptionList className={styles.headerList} size="small" col="2">
+        <Description term="保险公司">{companyId.value}</Description>
+        <Description term="赔案号"><a href="">{claimId}</a></Description>
+        <Description term="被保人">{detail.insuredPerson.name}</Description>
+        <Description term="申请人">{detail.reportPerson.name}</Description>
+        <Description term="出险日期">{moment(accidentDate).format('YYYY年MM月DD日')}</Description>
+        <Description term="初次就诊时间">{moment(firstDate).format('YYYY年MM月DD日')}</Description>
+        <Description term="出险类型">{accidentSubtype.value}</Description>
+        <Description term="出险地区">{accidentProvince.value}{accidentCity.value}{accidentArea.value}</Description>
+        <Description term="出险详细地址">{accidentAddress}</Description>
+        <Description term="出险经过">{accidentInfo}</Description>
+      </DescriptionList>
+    </div>
   );
 };
 const desc1 = (
@@ -371,7 +373,6 @@ export default class AdvancedProfile extends Component {
     return (
       <PageHeaderLayout
         title={`编号：${claimDataId}`}
-        logo={<img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/nxkuOJlFJuAUhzlMTCEe.png" />}
         action={action}
         content={description(currentItem)}
         extraContent={extra(currentItem)}
@@ -400,7 +401,7 @@ export default class AdvancedProfile extends Component {
         </Card>
         <Card title="被保人历史理赔记录" style={{ marginBottom: 24 }} bordered={false}>
           <div className={styles.noData}>
-            <Icon type="frown-o" />暂无数据
+            <Icon type="frown-o" />暂无数据(未开发)
           </div>
         </Card>
         <Card title="流程进度" style={{ marginBottom: 24 }} bordered={false}>
