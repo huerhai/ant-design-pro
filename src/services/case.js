@@ -57,3 +57,11 @@ export async function updateDutyByClaimId(body) {
     body,
   });
 }
+
+// 案件 新增责任
+export async function createDutyByClaimId(body) {
+  return request('/gw/cs/duty/createDutyByClaimId', {
+    method: 'POST',
+    body,
+  });
+}

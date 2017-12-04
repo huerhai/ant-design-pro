@@ -1,5 +1,5 @@
 import { updatePreCase, freshRreList } from '../services/Basic';
-import { queryList, updateStatusCodes, getClaimById, getDutyByClaimId, updateDutyByClaimId, getPolicyById } from '../services/case';
+import { queryList, updateStatusCodes, getClaimById, getDutyByClaimId, updateDutyByClaimId, getPolicyById, createDutyByClaimId } from '../services/case';
 
 export default {
   namespace: 'caseList',
@@ -38,6 +38,11 @@ export default {
           ...response1.insuredPerson.idType,
         },
       });
+      console.log('填坑');
+      console.log(response3);
+      if (response2.length === 0) {
+        yield call(createDutyByClaimId, payload.claimId);
+      }
       const newItem = {
         ...payload,
         detail: response1,

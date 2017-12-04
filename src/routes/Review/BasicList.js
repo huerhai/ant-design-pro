@@ -268,14 +268,15 @@ export default class BasicList extends PureComponent {
       dataIndex: 'receiveTime',
       align: 'center',
       render: (text) => {
-        return <span>{moment(text).format('MM-DD')}</span>;
+        return <span>{moment(text).format('MM/DD')}</span>;
       },
     }, {
       title: '来源',
       dataIndex: 'companyName',
       align: 'center',
       render: (text) => {
-        return <span>{text.value === '易安财产保险股份有限公司' ? '易安' : '人保'}</span>;
+        const temp = text || { value: '异常' };
+        return <span>{temp.value === '易安财产保险股份有限公司' ? '易安' : '人保'}</span>;
       },
     }, {
       title: '赔案号',
@@ -314,7 +315,8 @@ export default class BasicList extends PureComponent {
       filterMultiple: true,
       onFilter: (value, record) => record.auditConclusion.value.indexOf(value) === 0,
       render: (text, record) => {
-        return <span className={styles[`res-${text.value}`]}>{text.value}{record.invalidateType && <Icon type="question-circle" />}</span>;
+        const temp = text || { value: '异常' };
+        return <span className={styles[`res-${temp.value}`]}>{temp.value}{record.invalidateType && <Icon type="question-circle" />}</span>;
       },
     }, {
       title: '赔付金额',
