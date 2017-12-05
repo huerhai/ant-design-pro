@@ -22,7 +22,6 @@ const modal = ({
     validateFields,
     getFieldsValue,
     setFieldsValue,
-    resetFields,
   },
   ...modalProps
 }) => {
@@ -48,6 +47,9 @@ const modal = ({
       const description = [];
       const riskAmout = [];
       for (let i = 0; i < riskNumber; i += 1) {
+        if (!values[`riskDimension-${i}`] || values[`riskDimension-${i}`].length < 2) {
+          return;
+        }
         riskDimension.push(values[`riskDimension-${i}`][0]);
         suggestion.push(values[`riskDimension-${i}`][1]);
         des.push(values[`riskDimension-${i}`][2]);
@@ -69,9 +71,6 @@ const modal = ({
         pretreatmentStatus: bool ? '1' : item.pretreatmentStatus,
       };
       onOk(data);
-      setTimeout(() => {
-        resetFields();
-      }, 900);
     });
   };
 
@@ -334,7 +333,11 @@ const modal = ({
   const muban = (value, i) => {
     setFieldsValue({ [`description-${i}`]: value[2] });
   };
-
+  const initialValue = (i) => {
+    return item.riskDimension ?
+      [item.riskDimension ? item.riskDimension.split('||')[i] : '', item.suggestion ? item.suggestion.split('||')[i] : '', item.des ? item.des.split('||')[i] : '']
+      : [];
+  };
   const RiskFormItem = () => {
     const tem = [];
     for (let i = 0; i < riskNumber; i += 1) {
@@ -342,9 +345,7 @@ const modal = ({
         <div key={i}>
           <FormItem {...formItemLayout} label="风险模板">
             {getFieldDecorator(`riskDimension-${i}`, {
-              initialValue: item.riskDimension ?
-                [item.riskDimension ? item.riskDimension.split('||')[i] : '', item.suggestion ? item.suggestion.split('||')[i] : '', item.des ? item.des.split('||')[i] : '']
-                : [],
+              initialValue: initialValue(i),
               rules: [{ required: true, message: '必须选择风险场景' }],
             })(
               <Cascader options={options} onChange={value => muban(value, i)} placeholder="请选择 风险维度 风险场景" />
@@ -364,6 +365,7 @@ const modal = ({
           <FormItem {...formItemLayout} label="风险说明">
             {getFieldDecorator(`description-${i}`, {
               initialValue: item.description ? item.description.split('||')[i] : '',
+              rules: [{ required: true, message: '必须填写说明' }],
             })(
               <Input.TextArea rows={4} />
             )}
@@ -385,17 +387,17 @@ const modal = ({
   return (
     <Modal
       {...modalOpts}
-      width={800}
+      width="100%"
       footer={[
         <Button key="back" size="large" onClick={onCancel}>取消</Button>,
-        <Button key="delete" size="large" onClick={() => handleOk(true, true)}>
+        <Button key="submit" type="large" size="large" onClick={() => handleOk(false)}>
+          仅保存(有)
+        </Button>,
+        <Button key="delete" type="primary" size="large" onClick={() => handleOk(true, true)}>
           无风险
         </Button>,
-        <Button key="submit" type="primary" size="large" onClick={() => handleOk(false)}>
-          保存
-        </Button>,
         <Button key="submit2" type="primary" size="large" onClick={() => handleOk(true)}>
-          保存并发布
+          有风险
         </Button>,
       ]}
     >
@@ -404,21 +406,24 @@ const modal = ({
         type="info"
         style={{ marginBottom: 15 }}
       />
-      <Form key={item.claimId}>
-        <FormItem {...formItemLayout} label="被保人">
-          {getFieldDecorator('para1', {
-            initialValue: item.para1,
-          })(
-            <Input />
-          )}
-        </FormItem>
-        {RiskFormItem()}
-        <FormItem {...formItemLayoutWithOutLabel}>
-          <Button type="dashed" onClick={onAdd} style={{ width: '60%' }}>
-            <Icon type="plus" /> 添加一个风险提示
-          </Button>
-        </FormItem>
-      </Form>
+      <div className={styles.iframeWrap}>
+        <iframe title="影像件" src={`/gw/am/attachment/getclaimFileByCalimId?claimId=${item.claimId}`} height={700} />
+        <Form key={item.claimId}>
+          <FormItem {...formItemLayout} label="被保人">
+            {getFieldDecorator('para1', {
+              initialValue: item.para1,
+            })(
+              <Input />
+            )}
+          </FormItem>
+          {RiskFormItem()}
+          <FormItem {...formItemLayoutWithOutLabel}>
+            <Button type="dashed" onClick={onAdd} style={{ width: '60%' }}>
+              <Icon type="plus" /> 添加一个风险提示
+            </Button>
+          </FormItem>
+        </Form>
+      </div>
     </Modal>
   );
 };

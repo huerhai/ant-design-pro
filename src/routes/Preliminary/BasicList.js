@@ -216,7 +216,7 @@ export default class BasicList extends PureComponent {
               type: 'preList/publish',
               payload: { ...item },
               callback: () => {
-                message.success('发布成功');
+                message.success('有风险成功');
                 this.fetch();
               },
             });
@@ -350,7 +350,7 @@ export default class BasicList extends PureComponent {
                       label="排序方式"
                     >
                       {getFieldDecorator('sortBy', {
-                        initialValue: 'claimId',
+                        initialValue: 'modifiedAt',
                       })(
                         <Select
                           onChange={this.handleFormSubmit}
@@ -419,19 +419,6 @@ export default class BasicList extends PureComponent {
                     >
                       影像
                     </a>,
-                    <a onClick={() => {
-                      this.props.dispatch({
-                        type: 'preList/publish',
-                        payload: { ...item },
-                        callback: () => {
-                          message.success('发布成功');
-                          this.fetch();
-                        },
-                      });
-                    }}
-                    >
-                      发布
-                    </a>,
                     <MoreBtn item={item} />]}
                 >
                   <List.Item.Meta
@@ -451,15 +438,17 @@ export default class BasicList extends PureComponent {
             />
           </Card>
         </div>
-        <EditModal
-          title="编辑"
-          visible={modalVisible}
-          item={this.state.currentItem}
-          riskNumber={this.state.currentItemRiskNumber}
-          onOk={handleEdit}
-          onAdd={handleAdd}
-          onCancel={() => this.setState({ modalVisible: false })}
-        />
+        {modalVisible &&
+          <EditModal
+            title="编辑"
+            visible={modalVisible}
+            item={this.state.currentItem}
+            riskNumber={this.state.currentItemRiskNumber}
+            onOk={handleEdit}
+            onAdd={handleAdd}
+            onCancel={() => this.setState({ modalVisible: false })}
+          />
+        }
       </PageHeaderLayout>
     );
   }
