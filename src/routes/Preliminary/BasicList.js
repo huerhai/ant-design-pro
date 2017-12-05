@@ -156,7 +156,6 @@ export default class BasicList extends PureComponent {
       current: this.state.filter.page + 1,
       total,
       onChange: (page, pageSize) => {
-        console.log(page, pageSize);
         this.setState({
           filter: {
             ...this.state.filter,
