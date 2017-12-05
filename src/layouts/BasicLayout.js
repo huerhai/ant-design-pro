@@ -275,7 +275,7 @@ class BasicLayout extends React.PureComponent {
           </div>
           <Menu
             theme="dark"
-            mode="inline"
+            mode="vertical"
             {...menuProps}
             onOpenChange={this.handleOpenChange}
             selectedKeys={this.getCurrentMenuSelectedKeys()}
