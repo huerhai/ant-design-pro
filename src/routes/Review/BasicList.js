@@ -27,6 +27,7 @@ export default class BasicList extends PureComponent {
     currentItemRiskNumber: 1,
     modalVisible: false,
     gridStyle: 'grid',
+    selectedRowKeys: [],
     filter: {
       page: this.props.caseList.page || 0,
       size: 500,
@@ -34,6 +35,10 @@ export default class BasicList extends PureComponent {
   };
   componentDidMount() {
     this.fetch();
+  }
+  onSelectChange = (selectedRowKeys) => {
+    console.log('selectedRowKeys changed: ', selectedRowKeys);
+    this.setState({ selectedRowKeys });
   }
   fetch(newFilter) {
     const { form } = this.props;
@@ -74,11 +79,75 @@ export default class BasicList extends PureComponent {
   exportCase = (item) => {
     window.open(`gw/cs/excelexport/excel?fileName=${new Date().toLocaleDateString()}.xls&companyId=${item.companyName.dictionaryDataId}&claimIds=${item.claimId}&afterUpdateStatus=40`);
   }
+  exportCases = (claimIds) => {
+    window.open(`gw/cs/excelexport/excel?fileName=${new Date().toLocaleDateString()}.xls&companyId=7428&claimIds=${claimIds.join(',')}&afterUpdateStatus=40`);
+  }
   render() {
     const { caseList: { list, loading, total, currentItem }, dispatch } = this.props;
-    const { modalVisible } = this.state;
+    const { modalVisible, selectedRowKeys } = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
+    const hasSelected = selectedRowKeys.length > 0;
+    const batchMeneOnClick = ({ key }) => {
+      if (+key < 100) {
+        dispatch(
+          {
+            type: 'caseList/changeStatus',
+            payload: {
+              items: this.state.selectedRowKeys,
+              to: key,
+            },
+          }
+        );
+      } else if (key === '200') {
+        this.exportCases(this.state.selectedRowKeys);
+      } else if (key === '300') {
+        this.exportCases(this.state.selectedRowKeys);
+      }
+    };
+    const dropdownMenu = (
+      <Menu onClick={batchMeneOnClick}>
+        <Menu.Item key="11">
+          <a rel="noopener noreferrer" >→质检</a>
+        </Menu.Item>
+        <Menu.Item key="91">
+          <a rel="noopener noreferrer" >→质检不通过</a>
+        </Menu.Item>
+        <Menu.Item key="21">
+          <a rel="noopener noreferrer" >→待审核</a>
+        </Menu.Item>
+        <Menu.Item key="92">
+          <a rel="noopener noreferrer" >→审核未通过</a>
+        </Menu.Item>
+        <Menu.Item key="30">
+          <a rel="noopener noreferrer" >→审核通过</a>
+        </Menu.Item>
+        <Menu.Item key="40">
+          <a rel="noopener noreferrer" >→已导出</a>
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item key="200">
+          <a rel="noopener noreferrer" >↓批量导出案件(易安) →已导出</a>
+        </Menu.Item>
+        <Menu.Item key="300" disabled>
+          <a rel="noopener noreferrer" >↓批量导出明细</a>
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item key="9" disabled>请谨慎操作</Menu.Item>
+      </Menu>
+    );
     const extraContent = (
       <div className={styles.extraContent}>
+        <span style={{ marginRight: 8 }}>
+          {hasSelected ? `选择了 ${selectedRowKeys.length} 件` : ''}
+        </span>
+        <Dropdown overlay={dropdownMenu} disabled={!hasSelected}>
+          <a className="ant-dropdown-link" href="#" style={{ marginRight: 15 }} >
+            批量操作 <Icon type="down" />
+          </a>
+        </Dropdown>
         <a
           onClick={() => {
             this.fetch();
@@ -108,7 +177,7 @@ export default class BasicList extends PureComponent {
           </RadioButton>
           <RadioButton value="10,11" >质检{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(10) ? total : ''}</RadioButton>
           <RadioButton value="91" >质检不通过{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(91) ? total : ''}</RadioButton>
-          <RadioButton value="20,21,92" >待审核{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(20) ? total : ''}</RadioButton>
+          <RadioButton value="20,21" >待审核{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(20) ? total : ''}</RadioButton>
           <RadioButton value="92" >审核未通过{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(92) ? total : ''}</RadioButton>
           <RadioButton value="30" >审核通过{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(30) ? total : ''}</RadioButton>
           <RadioButton value="40" >已导出{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(40) ? total : ''}</RadioButton>
@@ -132,6 +201,9 @@ export default class BasicList extends PureComponent {
       this.setState({
         currentItemRiskNumber: this.state.currentItemRiskNumber + 1,
       });
+    };
+    const handleCheck = (record) => {
+      window.open(`/#/review/detail?claimDataId=${record.claimDataId}&claimId=${record.claimId}`);
     };
     const ListContent =
       ({ data: {
@@ -350,12 +422,7 @@ export default class BasicList extends PureComponent {
       render: (text, record) => {
         return (
           <div>
-            <a onClick={() => {
-              window.open(`/#/review/detail?claimDataId=${record.claimDataId}&claimId=${record.claimId}`);
-            }}
-            >
-              查看
-            </a>
+            <a onClick={() => handleCheck(record)}>查看</a>
           </div>);
       },
     }];
@@ -413,6 +480,7 @@ export default class BasicList extends PureComponent {
         window.open(`/#/review/detail?claimDataId=${record.claimDataId}&claimId=${record.claimId}`);
       },
       rowKey: 'claimDataId',
+      rowSelection,
     };
     return (
       <PageHeaderLayout>
