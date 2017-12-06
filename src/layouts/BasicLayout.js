@@ -265,7 +265,7 @@ class BasicLayout extends React.PureComponent {
           collapsed={collapsed}
           breakpoint="md"
           onCollapse={this.onCollapse}
-          width={130}
+          width={160}
           className={styles.sider}
         >
           <div className={styles.logo}>
@@ -275,7 +275,7 @@ class BasicLayout extends React.PureComponent {
           </div>
           <Menu
             theme="dark"
-            mode="vertical"
+            mode="inline"
             {...menuProps}
             onOpenChange={this.handleOpenChange}
             selectedKeys={this.getCurrentMenuSelectedKeys()}

@@ -203,7 +203,7 @@ export default class BasicList extends PureComponent {
       });
     };
     const handleCheck = (record) => {
-      window.open(`/#/review/detail?claimDataId=${record.claimDataId}&claimId=${record.claimId}`);
+      window.open(`/#/case/review/detail?claimDataId=${record.claimDataId}&claimId=${record.claimId}`);
     };
     const ListContent =
       ({ data: {
@@ -477,7 +477,7 @@ export default class BasicList extends PureComponent {
       dataSource: list,
       pagination: paginationProps,
       onRowDoubleClick: (record) => {
-        window.open(`/#/review/detail?claimDataId=${record.claimDataId}&claimId=${record.claimId}`);
+        handleCheck(record);
       },
       rowKey: 'claimDataId',
       rowSelection,

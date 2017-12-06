@@ -5,6 +5,9 @@ function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     return response;
   }
+  if (response.status === 302) {
+    window.location.href = '/#/user/login';
+  }
   notification.error({
     message: `请求错误 ${response.status}: ${response.url}`,
     description: response.statusText,
@@ -37,7 +40,9 @@ export default function request(url, options) {
 
   return fetch(url, newOptions)
     .then(checkStatus)
-    .then(response => response.json())
+    .then((response) => {
+      return response.json();
+    })
     .catch((error) => {
       if (error.code) {
         notification.error({
@@ -46,6 +51,14 @@ export default function request(url, options) {
         });
       }
       if ('stack' in error && 'message' in error) {
+        if (error.message === 'Failed to fetch') {
+          window.location.href = '/#/user/login';
+          notification.error({
+            message: `请求错误: ${url}`,
+            description: '请重新登录',
+          });
+          return;
+        }
         notification.error({
           message: `请求错误: ${url}`,
           description: error.message,
