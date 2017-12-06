@@ -28,6 +28,7 @@ export default class BasicList extends PureComponent {
     modalVisible: false,
     gridStyle: 'grid',
     selectedRowKeys: [],
+    selectedRow: [],
     filter: {
       page: this.props.caseList.page || 0,
       size: 500,
@@ -36,9 +37,8 @@ export default class BasicList extends PureComponent {
   componentDidMount() {
     this.fetch();
   }
-  onSelectChange = (selectedRowKeys) => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
-    this.setState({ selectedRowKeys });
+  onSelectChange = (selectedRowKeys, selectedRow) => {
+    this.setState({ selectedRowKeys, selectedRow });
   }
   fetch(newFilter) {
     const { form } = this.props;
@@ -82,6 +82,23 @@ export default class BasicList extends PureComponent {
   exportCases = (claimIds) => {
     window.open(`gw/cs/excelexport/excel?fileName=${new Date().toLocaleDateString()}.xls&companyId=7428&claimIds=${claimIds.join(',')}&afterUpdateStatus=40`);
   }
+  exportCasesDetail = (selectedRow) => {
+    const { dispatch } = this.props;
+    dispatch(
+      {
+        type: 'caseList/exportCasesDetail',
+        payload: {
+          fileName: new Date().toLocaleDateString(),
+          subSheet: selectedRow.map((item) => {
+            return {
+              claimId: item.claimId,
+              insuredPerson: item.insuredPersonName || '未知',
+            };
+          }),
+        },
+      }
+    );
+  }
   render() {
     const { caseList: { list, loading, total, currentItem }, dispatch } = this.props;
     const { modalVisible, selectedRowKeys } = this.state;
@@ -104,7 +121,7 @@ export default class BasicList extends PureComponent {
       } else if (key === '200') {
         this.exportCases(this.state.selectedRowKeys);
       } else if (key === '300') {
-        this.exportCases(this.state.selectedRowKeys);
+        this.exportCasesDetail(this.state.selectedRow);
       }
     };
     const dropdownMenu = (
@@ -131,7 +148,7 @@ export default class BasicList extends PureComponent {
         <Menu.Item key="200">
           <a rel="noopener noreferrer" >↓批量导出案件(易安) →已导出</a>
         </Menu.Item>
-        <Menu.Item key="300" disabled>
+        <Menu.Item key="300">
           <a rel="noopener noreferrer" >↓批量导出明细</a>
         </Menu.Item>
         <Menu.Divider />
@@ -482,6 +499,14 @@ export default class BasicList extends PureComponent {
       rowKey: 'claimDataId',
       rowSelection,
     };
+    const detaile = () => {
+      return JSON.stringify(this.state.selectedRow.map((item) => {
+        return {
+          claimId: item.claimId,
+          insuredPerson: item.insuredPersonName || '未知',
+        };
+      }));
+    };
     return (
       <PageHeaderLayout>
         <div className={styles.standardList}>
@@ -721,6 +746,22 @@ export default class BasicList extends PureComponent {
           }}
           onCancel={() => this.setState({ modalVisible: false })}
         />
+        <form
+          method="POST"
+          target="_blank"
+          name="downExcel"
+          encType="multipart/form-data"
+          action="/gw/cs/excelexport/excelmutidetail"
+        >
+          <p>
+            <input type="text" name="fileName" value="案件清单明细" readOnly />
+            <input type="text" name="claimInfo" value={detaile()} readOnly />
+          </p>
+
+          <p>
+            <input type="submit" value="下载" />
+          </p>
+        </form>
       </PageHeaderLayout>
     );
   }

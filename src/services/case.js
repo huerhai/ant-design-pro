@@ -65,3 +65,11 @@ export async function createDutyByClaimId(body) {
     body,
   });
 }
+
+// 案件 新增责任
+export async function exportCasesDetail(body) {
+  return request('/gw/cs/excelexport/excelmutidetail', {
+    method: 'POST',
+    body,
+  });
+}
