@@ -124,6 +124,14 @@ export default class BasicList extends PureComponent {
         this.exportCasesDetail(this.state.selectedRow);
       }
     };
+    const detaile = () => {
+      return JSON.stringify(this.state.selectedRow.map((item) => {
+        return {
+          claimId: item.claimId,
+          insuredPerson: item.insuredPersonName || '未知',
+        };
+      }));
+    };
     const dropdownMenu = (
       <Menu onClick={batchMeneOnClick}>
         <Menu.Item key="11">
@@ -149,7 +157,21 @@ export default class BasicList extends PureComponent {
           <a rel="noopener noreferrer" >↓批量导出案件(易安) →已导出</a>
         </Menu.Item>
         <Menu.Item key="300">
-          <a rel="noopener noreferrer" >↓批量导出明细</a>
+          <form
+            method="POST"
+            target="_blank"
+            name="downExcel"
+            encType="multipart/form-data"
+            action="/gw/cs/excelexport/formexcelmutidetail"
+          >
+            <p style={{ display: 'none' }}>
+              <input type="text" name="fileName" value="案件清单明细.xls" readOnly />
+              <input type="text" name="claimInfo" value={detaile()} readOnly />
+            </p>
+            <p>
+              <input type="submit" value="↓批量导出明细" className="ant-dropdown-link" disabled={!hasSelected} />
+            </p>
+          </form>
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="9" disabled>请谨慎操作</Menu.Item>
@@ -161,7 +183,7 @@ export default class BasicList extends PureComponent {
           {hasSelected ? `选择了 ${selectedRowKeys.length} 件` : ''}
         </span>
         <Dropdown overlay={dropdownMenu} disabled={!hasSelected}>
-          <a className="ant-dropdown-link" href="#" style={{ marginRight: 15 }} >
+          <a className="ant-dropdown-link" style={{ marginRight: 15 }} >
             批量操作 <Icon type="down" />
           </a>
         </Dropdown>
@@ -499,14 +521,6 @@ export default class BasicList extends PureComponent {
       rowKey: 'claimDataId',
       rowSelection,
     };
-    const detaile = () => {
-      return JSON.stringify(this.state.selectedRow.map((item) => {
-        return {
-          claimId: item.claimId,
-          insuredPerson: item.insuredPersonName || '未知',
-        };
-      }));
-    };
     return (
       <PageHeaderLayout>
         <div className={styles.standardList}>
@@ -746,22 +760,6 @@ export default class BasicList extends PureComponent {
           }}
           onCancel={() => this.setState({ modalVisible: false })}
         />
-        <form
-          method="POST"
-          target="_blank"
-          name="downExcel"
-          encType="multipart/form-data"
-          action="/gw/cs/excelexport/formexcelmutidetail"
-        >
-          <p>
-            <input type="text" name="fileName" value="案件清单明细.xls" readOnly />
-            <input type="text" name="claimInfo" value={detaile()} readOnly />
-          </p>
-
-          <p>
-            <input type="submit" value="下载" />
-          </p>
-        </form>
       </PageHeaderLayout>
     );
   }
