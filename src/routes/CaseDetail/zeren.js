@@ -138,6 +138,31 @@ export default class EditableTable extends React.Component {
       dataIndex: 'specialAgreement',
       key: 'specialAgreement',
     }];
+    this.deductionsColumns = [{
+      title: '扣减项目',
+      dataIndex: '1',
+      width: '15%',
+      key: '1',
+    }, {
+      title: '扣减人',
+      dataIndex: '6',
+      width: '15%',
+      key: '6',
+    }, {
+      title: '扣减内容',
+      dataIndex: '2',
+      key: '2',
+    }, {
+      title: '扣减金额',
+      dataIndex: '3',
+      width: '15%',
+      key: '3',
+    }, {
+      title: '扣减原因',
+      dataIndex: '4',
+      key: '4',
+    }];
+    this.deductionsDate = [];
     this.cacheData = this.state.data.map(item => ({ ...item }));
   }
   componentWillReceiveProps(nextProps) {
@@ -205,8 +230,20 @@ export default class EditableTable extends React.Component {
           loading={loading}
           size="small"
         />
-        <div className={styles.tableTitle}>理算详情</div>
+        <div className={styles.tableTitle}>扣减详情</div>
         <Table
+          className={styles.policyTable}
+          bordered
+          dataSource={this.deductionsDate}
+          columns={this.deductionsColumns}
+          rowKey="dutyDataId"
+          pagination={false}
+          loading={loading}
+          size="small"
+        />
+        <div className={styles.tableTitle}>理算结论</div>
+        <Table
+          style={{ marginBottom: 16 }}
           bordered
           dataSource={this.state.data}
           columns={this.columns}
