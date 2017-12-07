@@ -8,6 +8,7 @@ import { Button, Menu, Dropdown, Icon, Row, Col, Steps, Card, Popover, Badge, Ta
 import classNames from 'classnames';
 
 import Zeren from './zeren';
+import InvoiceModle from './invoiceDetail';
 import { date } from '../../utils/utils';
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import DescriptionList from '../../components/DescriptionList';
@@ -138,61 +139,6 @@ const customDot = (dot, { status }) => (status === 'process' ?
   : dot
 );
 
-const columns = [{
-  title: '发票日期',
-  dataIndex: 'billDate',
-  key: 'billDate',
-  render: text => <span>{moment(text).format('YYYY年MM月DD日')}</span>,
-}, {
-  title: '收据类型',
-  dataIndex: 'billType',
-  key: 'billType',
-  render: text => <span>{text.value}</span>,
-}, {
-  title: '总金额',
-  dataIndex: 'billAmt',
-  key: 'billAmt',
-  align: 'right',
-}, {
-  title: '分类自负',
-  dataIndex: 'classificationPayAmt',
-  key: 'classificationPayAmt',
-  align: 'right',
-}, {
-  title: '自费支付',
-  dataIndex: 'selfPayAmt',
-  key: 'selfPayAmt',
-  align: 'right',
-}, {
-  title: '统筹支付',
-  dataIndex: 'overallPayAmt',
-  key: 'overallPayAmt',
-  align: 'right',
-}, {
-  title: '附加支付',
-  dataIndex: 'accountPayAmt',
-  key: 'accountPayAmt',
-  align: 'right',
-}, {
-  title: '第三方支付',
-  dataIndex: 'thirdPayAmt',
-  key: 'thirdPayAmt',
-  align: 'right',
-}, {
-  title: '现金支付',
-  dataIndex: 'cashPayAmt',
-  key: 'cashPayAmt',
-  align: 'right',
-}, {
-  title: '医保账户支付',
-  dataIndex: 'attachPayAmt',
-  key: 'attachPayAmt',
-  align: 'right',
-}, {
-  title: '操作',
-  dataIndex: 'memo',
-  key: 'memo',
-}];
 
 @connect(state => ({
   claim: state.claim,
@@ -202,6 +148,8 @@ export default class AdvancedProfile extends Component {
     operationkey: 1,
     stepDirection: 'horizontal',
     loading: true,
+    showDetailModle: false,
+    currentInvoice: {},
   }
   componentDidMount() {
     const { dispatch } = this.props;
@@ -214,6 +162,8 @@ export default class AdvancedProfile extends Component {
       stepDirection: 'horizontal',
       currentItem: payload,
       loading: true,
+      showDetailModle: false,
+      currentInvoice: {},
     };
     this.fetchDetail();
     this.setStepDirection();
@@ -280,9 +230,9 @@ export default class AdvancedProfile extends Component {
       },
     });
   }
-
   render() {
     const { stepDirection, currentItem, loading } = this.state;
+    const { dispatch } = this.props;
     if (loading) {
       return (
         <div className={styles.centerSpin}>
@@ -304,6 +254,79 @@ export default class AdvancedProfile extends Component {
         tab: `${index + 1}-${item.coverageCode.value}`,
       };
     });
+    const columns = [{
+      title: '发票日期',
+      dataIndex: 'billDate',
+      key: 'billDate',
+      render: text => <span>{moment(text).format('YYYY年MM月DD日')}</span>,
+    }, {
+      title: '收据类型',
+      dataIndex: 'billType',
+      key: 'billType',
+      render: text => <span>{text.value}</span>,
+    }, {
+      title: '总金额',
+      dataIndex: 'billAmt',
+      key: 'billAmt',
+      align: 'right',
+    }, {
+      title: '分类自负',
+      dataIndex: 'classificationPayAmt',
+      key: 'classificationPayAmt',
+      align: 'right',
+    }, {
+      title: '自费支付',
+      dataIndex: 'selfPayAmt',
+      key: 'selfPayAmt',
+      align: 'right',
+    }, {
+      title: '统筹支付',
+      dataIndex: 'overallPayAmt',
+      key: 'overallPayAmt',
+      align: 'right',
+    }, {
+      title: '附加支付',
+      dataIndex: 'accountPayAmt',
+      key: 'accountPayAmt',
+      align: 'right',
+    }, {
+      title: '第三方支付',
+      dataIndex: 'thirdPayAmt',
+      key: 'thirdPayAmt',
+      align: 'right',
+    }, {
+      title: '现金支付',
+      dataIndex: 'cashPayAmt',
+      key: 'cashPayAmt',
+      align: 'right',
+    }, {
+      title: '医保账户支付',
+      dataIndex: 'attachPayAmt',
+      key: 'attachPayAmt',
+      align: 'right',
+    }, {
+      title: '操作',
+      dataIndex: 'memo',
+      key: 'memo',
+      render: (text, record) => {
+        return (
+          <div>
+            <a onClick={() => handleCheckInvoice(record)}>查看</a>
+          </div>);
+      },
+    }];
+    const handleCheckInvoice = (record) => {
+      dispatch({
+        type: 'claim/fetchInvoice',
+        payload: record,
+        callback: (data) => {
+          this.setState({
+            showDetailModle: true,
+            currentInvoice: Object.assign({}, record, { list: data }),
+          });
+        },
+      });
+    };
     const contentList = () => {
       if (!this.state.operationkey) {
         return <div>加载中</div>;
@@ -376,14 +399,14 @@ export default class AdvancedProfile extends Component {
       } = person;
       return (
         <DescriptionList style={{ marginBottom: 24 }} title={title}>
-          <Description term="与被保人关系">{relationship.value}</Description>
+          <Description term="与被保人关系">{relationship && relationship.value}</Description>
           <Description term="姓名">{name}</Description>
           <Description term="证件类型">{idType.value}</Description>
           <Description term="证件号码">{id}</Description>
           <Description term="证件有效期">{date(idValidateFrom)}至{date(idValidateTo)}</Description>
           <Description term="手机号">{mobilePhone}</Description>
           <Description term="联系号码">{telephone}</Description>
-          <Description term="人员性质">{type.value}</Description>
+          <Description term="人员性质">{type && type.value}</Description>
           <Description term="单位">{organization}</Description>
           <Description term="工作">{job}</Description>
           <Description term="生日">{date(birthday)}</Description>
@@ -396,6 +419,20 @@ export default class AdvancedProfile extends Component {
           <Description term="银行账号">{bankAccount}</Description>
         </DescriptionList>
       );
+    };
+    const OtherPerson = () => {
+      if (reportPerson.id === applyPerson.id && applyPerson.id === benefitPersonList[0].id) {
+        return nameInfo(reportPerson, '报案人-申请人-领款人');
+      } else {
+        return (
+          <div>
+            {reportPerson.id !== insuredPerson.id ? nameInfo(reportPerson, '报案人') : '报案人 同 被保人'}
+            <Divider style={{ margin: '16px 0' }} />
+            {applyPerson.id !== insuredPerson.id ? nameInfo(applyPerson, '申请人') : '申请人 同 被保人'}
+            <Divider style={{ margin: '16px 0' }} />
+            {benefitPersonList[0].id !== insuredPerson.id ? nameInfo(benefitPersonList[0], '领款人') : '领款人 同 被保人'}
+          </div>);
+      }
     };
     return (
       <PageHeaderLayout
@@ -419,11 +456,7 @@ export default class AdvancedProfile extends Component {
         <Card title="人员信息" style={{ marginBottom: 24 }} bordered={false}>
           {nameInfo(insuredPerson, '被保人')}
           <Card type="inner" title="其他人员">
-            {reportPerson.id !== insuredPerson.id ? nameInfo(reportPerson, '报案人') : '报案人 同 被保人'}
-            <Divider style={{ margin: '16px 0' }} />
-            {applyPerson.id !== insuredPerson.id ? nameInfo(applyPerson, '申请人') : '申请人 同 被保人'}
-            <Divider style={{ margin: '16px 0' }} />
-            {benefitPersonList[0].id !== insuredPerson.id ? nameInfo(benefitPersonList[0], '领款人') : '领款人 同 被保人'}
+            {OtherPerson()}
           </Card>
         </Card>
         <Card title="被保人历史理赔记录" style={{ marginBottom: 24 }} bordered={false}>
@@ -443,6 +476,18 @@ export default class AdvancedProfile extends Component {
             <Step title="完成" />
           </Steps>
         </Card>
+        {this.state.showDetailModle &&
+          <InvoiceModle
+            title="收据清单"
+            visible={this.state.showDetailModle}
+            item={this.state.currentItem}
+            list={this.state.currentInvoice}
+            onCancel={() => {
+              this.setState({
+                showDetailModle: false,
+              });
+           }}
+          />}
       </PageHeaderLayout>
     );
   }

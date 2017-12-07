@@ -66,10 +66,15 @@ export async function createDutyByClaimId(body) {
   });
 }
 
-// 案件 新增责任
+// 案件 导出清单明细
 export async function exportCasesDetail(body) {
   return request('/gw/cs/excelexport/excelmutidetail', {
     method: 'POST',
     body,
   });
+}
+
+// 案件 查看收据的清单明细
+export async function getClaimInvoiceDetail(id) {
+  return request(`/gw/cs/item/getItemsByInvoiceId?invoiceId=${id}`);
 }

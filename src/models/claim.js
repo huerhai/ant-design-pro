@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { queryBasicProfile, queryAdvancedProfile } from '../services/api';
-import { getClaimById, getDutyByClaimId, getPolicyById, createDutyByClaimId } from '../services/case';
+import { getClaimById, getDutyByClaimId, getPolicyById, createDutyByClaimId, getClaimInvoiceDetail } from '../services/case';
 
 export default {
   namespace: 'claim',
@@ -42,6 +42,10 @@ export default {
         },
       });
       if (callback) callback(newItem);
+    },
+    *fetchInvoice({ payload, callback }, { call }) {
+      const response = yield call(getClaimInvoiceDetail, payload.invoiceDataId);
+      if (callback) callback(response);
     },
     *createDuty({ payload, callback }, { call }) {
       const { detail, policyList, claimId } = payload;
