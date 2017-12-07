@@ -214,7 +214,6 @@ export default class EditableTable extends React.Component {
     );
   }
   render() {
-    console.log(this.state.insurancePlanList);
     const { dispatch } = this.props;
     const { loading } = this.state;
     return (
