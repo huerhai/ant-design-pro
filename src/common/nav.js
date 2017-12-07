@@ -28,6 +28,12 @@ export const getNavData = app => [
         path: 'system',
         children: [
           {
+            name: '公司管理',
+            path: 'company',
+            icon: 'usb',
+            component: dynamicWrapper(app, ['list'], () => import('../routes/BasicInfo/company/SearchList.js')),
+          },
+          {
             name: '用户管理',
             path: 'users',
             icon: 'copy',
@@ -38,12 +44,6 @@ export const getNavData = app => [
             path: 'role',
             icon: 'copy',
             component: dynamicWrapper(app, ['policy'], () => import('../routes/BasicInfo/policy')),
-          },
-          {
-            name: '公司管理',
-            path: 'company',
-            icon: 'usb',
-            component: dynamicWrapper(app, ['list'], () => import('../routes/BasicInfo/company/SearchList.js')),
           },
         ],
       },
@@ -96,6 +96,12 @@ export const getNavData = app => [
             component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
           },
           {
+            name: '扫描质检',
+            path: 'zhijian',
+            icon: 'scan',
+            component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
+          },
+          {
             name: '案件预审',
             path: 'preliminary',
             icon: 'customer-service',
@@ -108,7 +114,7 @@ export const getNavData = app => [
             component: dynamicWrapper(app, ['group'], () => import('../routes/EntrySystem/universalInput')),
           },
           {
-            name: '案件质审',
+            name: '录入质检',
             path: 'review2',
             icon: 'customer-service',
             children: [
@@ -122,7 +128,7 @@ export const getNavData = app => [
             ],
           },
           {
-            name: '案件审核',
+            name: '案件初审',
             path: 'review',
             icon: 'customer-service',
             children: [
@@ -136,7 +142,21 @@ export const getNavData = app => [
             ],
           },
           {
-            name: '所有案件',
+            name: '案件复审',
+            path: 'review',
+            icon: 'customer-service',
+            children: [
+              {
+                component: dynamicWrapper(app, ['caseList'], () => import('../routes/Review/BasicList')),
+              },
+              {
+                path: 'detail',
+                component: dynamicWrapper(app, ['caseList', 'claim'], () => import('../routes/CaseDetail/AdvancedProfile')),
+              },
+            ],
+          },
+          {
+            name: '案件汇总',
             path: 'allCase',
             icon: 'customer-service',
             children: [
@@ -150,13 +170,13 @@ export const getNavData = app => [
             ],
           },
           {
-            name: '案件导出历史',
+            name: '导出历史',
             path: 'exportHistory',
             icon: 'solution',
             component: dynamicWrapper(app, ['group'], () => import('../routes/EntrySystem/universalInput')),
           },
           {
-            name: '理赔历史',
+            name: '历史案件',
             path: 'history',
             icon: 'customer-service',
             component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
