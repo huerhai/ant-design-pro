@@ -115,7 +115,7 @@ export const getNavData = app => [
           },
           {
             name: '录入质检',
-            path: 'review2',
+            path: 'review1',
             icon: 'customer-service',
             children: [
               {
@@ -129,7 +129,7 @@ export const getNavData = app => [
           },
           {
             name: '案件初审',
-            path: 'review',
+            path: 'review2',
             icon: 'customer-service',
             children: [
               {
@@ -143,7 +143,7 @@ export const getNavData = app => [
           },
           {
             name: '案件复审',
-            path: 'review2',
+            path: 'review3',
             icon: 'customer-service',
             children: [
               {
