@@ -452,7 +452,7 @@ export default class AdvancedProfile extends Component {
         >
           {contentList()}
         </Card>
-        <Card title="理赔汇总" style={{ marginBottom: 24 }} bordered={false}>
+        <Card title="理赔过程" style={{ marginBottom: 24 }} bordered={false}>
           <Zeren item={currentItem} />
         </Card>
         <Card title="人员信息" style={{ marginBottom: 24 }} bordered={false}>

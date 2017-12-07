@@ -4,11 +4,12 @@
  */
 import React from 'react';
 import { connect } from 'dva';
-import { Table, Input, Button, message } from 'antd';
+import { Table, Input, Button, message, Select } from 'antd';
 import styles from './style.less';
 
 
 const { TextArea } = Input;
+const { Option } = Select;
 
 const EditableCell = ({ value, onChange }) => (
   <div>
@@ -68,12 +69,14 @@ export default class EditableTable extends React.Component {
     }, {
       title: '赔付结论',
       dataIndex: 'resCode',
-      width: 250,
+      width: 200,
       render: (text, record) => {
-        return (<Input
-          value={record.resCode}
-          onChange={e => this.handleChange(e.target.value, record.dutyCode, 'resCode')}
-        />);
+        return (
+          <Select defaultValue="lucy" style={{ width: 200 }} value={record.resCode} onChange={value => this.handleChange(value, record.dutyCode, 'resCode')}>
+            <Option value="赔付">赔付</Option>
+            <Option value="拒赔">拒赔</Option>
+            <Option value="部分赔付">部分赔付</Option>
+          </Select>);
       },
     }, {
       title: '结论原因',
@@ -95,6 +98,45 @@ export default class EditableTable extends React.Component {
           onChange={e => this.handleChange(e.target.value, record.dutyCode, 'resOpinion')}
         />);
       },
+    }];
+    this.policyColumns = [{
+      title: '保障方案',
+      dataIndex: 'insurancePlanName',
+      key: 'insurancePlanName',
+    }, {
+      title: '保障金额',
+      dataIndex: 'sumInsured',
+      key: 'sumInsured',
+    }, {
+      title: '免赔条款',
+      dataIndex: 'aggregateDeductible',
+      key: 'aggregateDeductible',
+      render: (text, record) => {
+        return (
+          <div>
+            {record.diseaseObservationDays ? <div>疾病观察日:{record.diseaseObservationDays}天</div> : ''}
+            {record.aggregateDeductible ? <div>年免赔额:{record.aggregateDeductible}</div> : ''}
+            {record.deductiblePerOccurrence ? <div>次免赔额:{record.deductiblePerOccurrence}</div> : ''}
+            {record.limitPerOccurrence ? <div>次限额:{record.limitPerOccurrence}</div> : ''}
+            {record.deductibleDays ? <div>约定免赔天数:{record.deductibleDays}天</div> : ''}
+          </div>);
+      },
+    }, {
+      title: '赔付条款',
+      dataIndex: 'payoutRatio',
+      key: 'payoutRatio',
+      width: '25%',
+      render: (payoutRatio, record) => {
+        return (
+          <div>
+            {payoutRatio ? <div>赔付比例:{payoutRatio * 100}%</div> : ''}
+            {record.dailyBenefit ? <div>每日津贴:{record.dailyBenefit}</div> : ''}
+          </div>);
+      },
+    }, {
+      title: '其他条款',
+      dataIndex: 'specialAgreement',
+      key: 'specialAgreement',
     }];
     this.cacheData = this.state.data.map(item => ({ ...item }));
   }
@@ -147,10 +189,23 @@ export default class EditableTable extends React.Component {
     );
   }
   render() {
+    console.log(this.state.insurancePlanList);
     const { dispatch } = this.props;
     const { loading } = this.state;
     return (
       <div>
+        <div className={styles.tableTitle}>保单详情</div>
+        <Table
+          className={styles.policyTable}
+          bordered
+          dataSource={this.state.insurancePlanList}
+          columns={this.policyColumns}
+          rowKey="dutyDataId"
+          pagination={false}
+          loading={loading}
+          size="small"
+        />
+        <div className={styles.tableTitle}>理算详情</div>
         <Table
           bordered
           dataSource={this.state.data}
