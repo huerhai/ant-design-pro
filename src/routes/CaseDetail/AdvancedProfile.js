@@ -421,7 +421,9 @@ export default class AdvancedProfile extends Component {
       );
     };
     const OtherPerson = () => {
-      if (reportPerson.id === applyPerson.id && applyPerson.id === benefitPersonList[0].id) {
+      if (insuredPerson.id !== applyPerson.id
+        && reportPerson.id === applyPerson.id
+        && applyPerson.id === benefitPersonList[0].id) {
         return nameInfo(reportPerson, '报案人-申请人-领款人');
       } else {
         return (
