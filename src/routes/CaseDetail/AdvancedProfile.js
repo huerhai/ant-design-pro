@@ -94,7 +94,7 @@ const description = ({ detail, claimId }) => {
         <Description term="出险日期">{moment(accidentDate).format('YYYY年MM月DD日')}</Description>
         <Description term="初次就诊时间">{moment(firstDate).format('YYYY年MM月DD日')}</Description>
         <Description term="出险类型">{accidentSubtype.value}</Description>
-        <Description term="出险地区">{accidentProvince.value}{accidentCity.value}{accidentArea.value}</Description>
+        <Description term="出险地区">{accidentProvince && accidentProvince.value}{accidentCity && accidentCity.value}{accidentArea && accidentArea.value}</Description>
         <Description term="出险详细地址">{accidentAddress}</Description>
         <Description term="出险经过">{accidentInfo}</Description>
       </DescriptionList>

@@ -751,10 +751,10 @@ export default class BasicList extends PureComponent {
           target="_blank"
           name="downExcel"
           encType="multipart/form-data"
-          action="/gw/cs/excelexport/excelmutidetail"
+          action="/gw/cs/excelexport/formexcelmutidetail"
         >
           <p>
-            <input type="text" name="fileName" value="案件清单明细" readOnly />
+            <input type="text" name="fileName" value="案件清单明细.xls" readOnly />
             <input type="text" name="claimInfo" value={detaile()} readOnly />
           </p>
 
