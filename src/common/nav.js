@@ -143,7 +143,7 @@ export const getNavData = app => [
           },
           {
             name: '案件复审',
-            path: 'review3',
+            path: 'review',
             icon: 'customer-service',
             children: [
               {
