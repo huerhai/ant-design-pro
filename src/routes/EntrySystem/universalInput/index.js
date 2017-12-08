@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-vars,react/no-unused-state */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Select, Radio, DatePicker, Cascader, InputNumber, Tabs, Icon, Button, Dropdown, Menu, message } from 'antd';
@@ -9,7 +9,7 @@ import UniversalForm from '../../../components/UniversalForm';
 import InvoiceTable from './InvoiceTable';
 import styles from './index.less';
 
-import { claim as claimSchema, event as eventSchema, person as personSchema } from './claim';
+import { basicInfo, claim as claimSchema, event as eventSchema, person as personSchema } from './claim';
 
 const { TabPane } = Tabs;
 
@@ -34,6 +34,7 @@ export default class UniversalClaim extends PureComponent {
         key: '被保人 申请人 报案人 领款人',
         title: '被保人 申请人 报案人 领款人',
       }],
+      basicInfo,
       claimSchema,
       eventSchema,
       personSchema,
@@ -57,22 +58,15 @@ export default class UniversalClaim extends PureComponent {
   getInputForm(data) {
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 6 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-      },
+      labelCol: { span: 6 },
+      wrapperCol: { span: 18 },
     };
     const children = [];
     Object.keys(data.properties)
-      .sort((a, b) => data.properties[a].order - data.properties[b].order)
       .forEach((key) => {
         const item = data.properties[key];
         children.push(
-          <Col span={8} key={key}>
+          <Col span={6} key={key}>
             <FormItem {...formItemLayout} label={item.title}>
               {getFieldDecorator(key, {
                 initialValue: item.defaultValue,
@@ -84,7 +78,7 @@ export default class UniversalClaim extends PureComponent {
           </Col>
         );
       });
-    return <Row gutter={40}>{children}</Row>;
+    return <Row gutter={8}>{children}</Row>;
   }
   add = (name) => {
     const { events } = this.state;
@@ -155,74 +149,8 @@ export default class UniversalClaim extends PureComponent {
     return (
       <PageHeaderLayout title="数据录入">
         <Form>
-          <Card className={styles.card} bordered={false}>
-            {this.getInputForm(this.state.claimSchema)}
-          </Card>
-          <Card className={styles.card} bordered={false} style={{ marginTop: 16 }}>
-            <div style={{ marginBottom: 16 }}>
-              <span>添加:</span>
-              {~persons[0].title.indexOf('申请人') ? <Button onClick={this.addPerson.bind(this, '申请人')}>+申请人</Button> : null}
-              {~persons[0].title.indexOf('领款人') ? <Button onClick={this.addPerson.bind(this, '领款人')}>+领款人</Button> : null}
-              {~persons[0].title.indexOf('报案人') ? <Button onClick={this.addPerson.bind(this, '报案人')}>+报案人</Button> : null}
-            </div>
-            <Tabs
-              hideAdd
-              onChange={key => this.setState({ personActiveKey: key })}
-              activeKey={this.state.personActiveKey}
-              type="editable-card"
-              onEdit={this.onPeasonEdit}
-            >
-              {this.state.persons.map((pane, index) => {
-                return (
-                  <TabPane tab={pane.title} key={pane.key}>
-                    <Card className={styles.card} bordered={false}>
-                      <UniversalForm
-                        schema={this.state.personSchema}
-                        {...this.state.persons[index]}
-                        onChange={this.handleFormChange.bind(this, index)}
-                      />
-                    </Card>
-                  </TabPane>);
-              })}
-            </Tabs>
-          </Card>
-          <Card className={styles.card} bordered={false} style={{ marginTop: 16 }}>
-            <div style={{ marginBottom: 16 }}>
-              <span>添加:</span>
-              <Button onClick={this.add.bind(this, '疾病门诊')}>+疾病门诊事件</Button>
-              <Button onClick={this.add.bind(this, '疾病住院')}>+疾病住院事件</Button>
-              <Button onClick={this.add.bind(this, '意外门诊')}>+意外门诊事件</Button>
-              <Button onClick={this.add.bind(this, '意外住院')}>+意外住院事件</Button>
-              <Button onClick={this.add.bind(this, '伤残')}>+伤残事件</Button>
-              <Button onClick={this.add.bind(this, '生育')}>+生育事件</Button>
-              <Button onClick={this.add.bind(this, '身故')}>+身故事件</Button>
-            </div>
-            <Tabs
-              hideAdd
-              onChange={this.onChange}
-              activeKey={this.state.activeKey}
-              type="editable-card"
-              onEdit={this.onEdit}
-            >
-              {this.state.events.map((pane, index) => {
-                return (
-                  <TabPane tab={pane.title} key={pane.key}>
-                    <Card className={styles.card} bordered={false}>
-                      <UniversalForm
-                        filter={this.state.events[index].type}
-                        schema={this.state.eventSchema}
-                        {...this.state.events[index]}
-                        onChange={this.handleFormChange.bind(this, index)}
-                      />
-                    </Card>
-                  </TabPane>);
-              })}
-            </Tabs>
-          </Card>
-          <Card className={styles.card} bordered={false} style={{ marginTop: 16 }}>
-            {getFieldDecorator('invoiceList', {
-              initialValue: [],
-            })(<InvoiceTable />)}
+          <Card className={styles.card} bordered={false} title="基本信息">
+            {this.getInputForm(this.state.basicInfo)}
           </Card>
         </Form>
         <FooterToolbar>

@@ -825,4 +825,174 @@ const event = {
     },
   },
 };
-export { claim, person, event };
+
+const basicInfo = {
+  title: '一个案件对象',
+  type: 'object',
+  properties: {
+    accidentDate: {
+      type: 'date',
+      title: '收单日期',
+      defaultValue: moment(),
+      description: '自动生成',
+      rules: [],
+      style: {},
+    },
+    保险公司: {
+      type: 'select',
+      title: '保险公司',
+      defaultValue: 1,
+      description: '描述',
+      rules: [],
+      style: {},
+      enum: [{
+        label: '易安',
+        value: 1,
+      }, {
+        label: '人保',
+        value: 2,
+      }],
+    },
+    claimId: {
+      type: 'string',
+      title: '报案号',
+      defaultValue: (Math.random() * 10000000).toFixed(0),
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    保单号: {
+      type: 'string',
+      title: '保单号',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    投保单位: {
+      type: 'string',
+      title: '投保单位',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    idType: {
+      type: 'select',
+      title: '证件类型',
+      defaultValue: 1,
+      description: '描述',
+      rules: [],
+      style: {},
+      enum: [{
+        label: '身份证',
+        value: 1,
+      }, {
+        label: '驾驶证',
+        value: 2,
+      }, {
+        label: '港澳台胞证',
+        value: 3,
+      }],
+    },
+    id: {
+      type: 'string',
+      title: '证件号码',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    被保人姓名: {
+      type: 'string',
+      title: '被保人姓名',
+      description: '',
+      rules: [],
+      style: {},
+    },
+    gender: {
+      type: 'radioBtn',
+      title: '性别',
+      defaultValue: 1,
+      description: '描述',
+      rules: [],
+      style: {},
+      enum: [{
+        label: '男',
+        value: 1,
+      }, {
+        label: '女',
+        value: 2,
+      }, {
+        label: '未知',
+        value: 3,
+      }],
+    },
+    mobilePhone: {
+      type: 'string',
+      title: '联系电话',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    bankType: {
+      type: 'string',
+      title: '银行名称',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    bankAccount: {
+      type: 'string',
+      title: '银行账号',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    relationship: {
+      type: 'select',
+      title: '领款关系',
+      defaultValue: 1,
+      description: '描述',
+      order: 5,
+      rules: [],
+      style: {},
+      enum: [{
+        label: '本人',
+        value: 1,
+      }, {
+        label: '配偶',
+        value: 2,
+      }, {
+        label: '父母',
+        value: 3,
+      }, {
+        label: '子女',
+        value: 4,
+      }, {
+        label: '其他',
+        value: 5,
+      }],
+    },
+    领款人姓名: {
+      type: 'string',
+      title: '领款人姓名',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    领款人证件号: {
+      type: 'string',
+      title: '领款人姓名',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+  },
+};
+export { basicInfo, claim, person, event };
