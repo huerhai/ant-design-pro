@@ -8,6 +8,7 @@ import UniversalInput from '../../../components/UniversalInput';
 import UniversalForm from '../../../components/UniversalForm';
 import InvoiceTable from './InvoiceTable';
 import InvoiceDetailTable from './InvoiceDetailTable';
+import SelectNet from './selectNet';
 import styles from './index.less';
 
 import { basicInfo, basicEventInfo, invoiceInfo, claim as claimSchema, event as eventSchema, person as personSchema } from './claim';
@@ -68,18 +69,32 @@ export default class UniversalClaim extends PureComponent {
     Object.keys(data.properties)
       .forEach((key) => {
         const item = data.properties[key];
-        children.push(
-          <Col span={6} key={key}>
-            <FormItem {...formItemLayout} label={item.title}>
-              {getFieldDecorator(key, {
-                initialValue: item.defaultValue,
-                rules: item.rules,
-              })(
-                <UniversalInput schema={item} />
-              )}
-            </FormItem>
-          </Col>
-        );
+        if (data.properties[key].type === 'selectNET') {
+          children.push(
+            <Col span={6} key={key}>
+              <FormItem {...formItemLayout} label={item.title}>
+                {getFieldDecorator(key, {
+                  initialValue: item.defaultValue,
+                })(
+                  <SelectNet />
+                )}
+              </FormItem>
+            </Col>
+          );
+        } else {
+          children.push(
+            <Col span={6} key={key}>
+              <FormItem {...formItemLayout} label={item.title}>
+                {getFieldDecorator(key, {
+                  initialValue: item.defaultValue,
+                  rules: item.rules,
+                })(
+                  <UniversalInput schema={item} />
+                )}
+              </FormItem>
+            </Col>
+          );
+        }
       });
     return <Row gutter={8}>{children}</Row>;
   }

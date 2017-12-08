@@ -937,7 +937,7 @@ const basicInfo = {
       style: {},
     },
     bankType: {
-      type: 'string',
+      type: 'selectNET',
       title: '银行名称',
       defaultValue: '',
       description: '描述',
@@ -1003,7 +1003,7 @@ const basicInfo = {
       style: {},
     },
     bankType2: {
-      type: 'string',
+      type: 'selectNET',
       title: '银行名称',
       defaultValue: '',
       description: '描述',
@@ -1091,7 +1091,7 @@ const basicEventInfo = {
       style: {},
     },
     illCode: {
-      type: 'string',
+      type: 'selectNET',
       title: '疾病诊断',
       defaultValue: '',
       description: '描述',
@@ -1136,7 +1136,7 @@ const basicEventInfo = {
       style: {},
     },
     illCode2: {
-      type: 'string',
+      type: 'selectNET',
       title: '疾病诊断',
       defaultValue: '',
       description: '描述',
