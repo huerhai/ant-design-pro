@@ -7,7 +7,6 @@ import styles from './invoiceStyle.less';
 export default class TableForm extends PureComponent {
   constructor(props) {
     super(props);
-
     this.state = {
       data: props.value,
     };
@@ -17,6 +16,11 @@ export default class TableForm extends PureComponent {
       this.setState({
         data: nextProps.value,
       });
+      if (!nextProps.value) {
+        this.newMember();
+      }
+    } else if (this.state.data.length === 0) {
+      this.newMember();
     }
   }
   getRowByKey(key) {
@@ -52,20 +56,17 @@ export default class TableForm extends PureComponent {
     this.setState({ data: newData });
     this.props.onChange(newData);
   }
-  newMember = (收据类型) => {
+  newMember = () => {
     const newData = [...this.state.data];
     newData.push({
       key: `NEW_TEMP_ID_${this.index}`,
-      收据类型,
-      收据日期: '',
-      收据号: '',
-      费用总额: '0',
-      乙类自付: '0',
-      自费部分: '0',
-      统筹支付额: '0',
-      附加支付金额: '0',
-      大病支付: '0',
-      第三方支付: '0',
+      费用类型: '',
+      费用名称: '',
+      数量: '1',
+      单价: '0',
+      金额: '0',
+      自负比例: '0',
+      自负金额: '0',
       editable: true,
       isNew: true,
     });
@@ -98,8 +99,8 @@ export default class TableForm extends PureComponent {
         return;
       }
       const target = this.getRowByKey(key);
-      if (!target.费用总额) {
-        message.error('必须填写费用总额');
+      if (!target.费用名称) {
+        message.error('必须填写费用名称');
         e.target.focus();
         return;
       }
@@ -124,9 +125,9 @@ export default class TableForm extends PureComponent {
   }
   render() {
     const columns = [{
-      title: '收据类型',
-      dataIndex: '收据类型',
-      key: '收据类型',
+      title: '费用类型',
+      dataIndex: '费用类型',
+      key: '费用类型',
       width: 100,
       render: (text, record) => {
         if (record.editable) {
@@ -134,65 +135,64 @@ export default class TableForm extends PureComponent {
             <Input
               value={text}
               autoFocus
-              onChange={e => this.handleFieldChange(e, '收据类型', record.key)}
+              onChange={e => this.handleFieldChange(e, '费用类型', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
-              placeholder="收据类型"
+              placeholder="费用类型"
             />
           );
         }
         return `${text}`;
       },
     }, {
-      title: '收据日期',
-      dataIndex: '收据日期',
-      key: '收据日期',
-      width: 120,
+      title: '费用名称',
+      dataIndex: '费用名称',
+      key: '费用名称',
+      width: '25%',
       render: (text, record) => {
         if (record.editable) {
           return (
             <Input
               value={text}
               autoFocus
-              onChange={e => this.handleFieldChange(e, '收据日期', record.key)}
+              onChange={e => this.handleFieldChange(e, '费用名称', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
-              placeholder="YYYYMMDD"
+              placeholder="费用名称"
             />
           );
         }
         return `${text}`;
       },
     }, {
-      title: '收据号',
-      dataIndex: '收据号',
-      key: '收据号',
-      width: '12%',
+      title: '数量',
+      dataIndex: '数量',
+      key: '数量',
       render: (text, record) => {
         if (record.editable) {
           return (
             <Input
               value={text}
               autoFocus
-              onChange={e => this.handleFieldChange(e, '收据号', record.key)}
+              onChange={e => this.handleFieldChange(e, '数量', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
-              placeholder="收据号"
+              placeholder="数量"
             />
           );
         }
         return `${text}`;
       },
     }, {
-      title: '费用总额',
-      dataIndex: '费用总额',
-      key: '费用总额',
+      title: '单价',
+      dataIndex: '单价',
+      key: '单价',
       render: (text, record) => {
         if (record.editable) {
           return (
             <Input
               value={text}
               autoFocus
-              onChange={e => this.handleFieldChange(e, '费用总额', record.key)}
+              onChange={e => this.handleFieldChange(e, '单价', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
-              placeholder="费用总额"
+              placeholder="单价"
               addonAfter="元"
             />
           );
@@ -200,18 +200,18 @@ export default class TableForm extends PureComponent {
         return `${text}元`;
       },
     }, {
-      title: '乙类自付',
-      dataIndex: '乙类自付',
-      key: '乙类自付',
+      title: '金额(总价)',
+      dataIndex: '金额',
+      key: '金额(总价)',
       render: (text, record) => {
         if (record.editable) {
           return (
             <Input
               value={text}
               autoFocus
-              onChange={e => this.handleFieldChange(e, '乙类自付', record.key)}
+              onChange={e => this.handleFieldChange(e, '金额(总价)', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
-              placeholder="乙类自付"
+              placeholder="金额(总价)"
               addonAfter="元"
             />
           );
@@ -219,93 +219,37 @@ export default class TableForm extends PureComponent {
         return `${text}元`;
       },
     }, {
-      title: '自费部分',
-      dataIndex: '自费部分',
-      key: '自费部分',
+      title: '自付比例',
+      dataIndex: '自付比例',
+      key: '自付比例',
       render: (text, record) => {
         if (record.editable) {
           return (
             <Input
               value={text}
               autoFocus
-              onChange={e => this.handleFieldChange(e, '自费部分', record.key)}
+              onChange={e => this.handleFieldChange(e, '自付比例', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="自费部分"
-              addonAfter="元"
+              addonAfter="%"
             />
           );
         }
         return `${text}元`;
       },
     }, {
-      title: '统筹支付额',
-      dataIndex: '统筹支付额',
-      key: '统筹支付额',
+      title: '自负金额',
+      dataIndex: '自负金额',
+      key: '自负金额',
       render: (text, record) => {
         if (record.editable) {
           return (
             <Input
               value={text}
               autoFocus
-              onChange={e => this.handleFieldChange(e, '统筹支付额', record.key)}
+              onChange={e => this.handleFieldChange(e, '自负金额', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="统筹支付额"
-              addonAfter="元"
-            />
-          );
-        }
-        return `${text}元`;
-      },
-    }, {
-      title: '附加支付金额',
-      dataIndex: '附加支付金额',
-      key: '附加支付金额',
-      render: (text, record) => {
-        if (record.editable) {
-          return (
-            <Input
-              value={text}
-              autoFocus
-              onChange={e => this.handleFieldChange(e, '附加支付金额', record.key)}
-              onKeyPress={e => this.handleKeyPress(e, record.key)}
-              placeholder="附加支付金额"
-            />
-          );
-        }
-        return `${text}元`;
-      },
-    }, {
-      title: '大病支付',
-      dataIndex: '大病支付',
-      key: '大病支付',
-      render: (text, record) => {
-        if (record.editable) {
-          return (
-            <Input
-              value={text}
-              autoFocus
-              onChange={e => this.handleFieldChange(e, '大病支付', record.key)}
-              onKeyPress={e => this.handleKeyPress(e, record.key)}
-              placeholder="大病支付"
-              addonAfter="元"
-            />
-          );
-        }
-        return `${text}元`;
-      },
-    }, {
-      title: '第三方支付',
-      dataIndex: '第三方支付',
-      key: '第三方支付',
-      render: (text, record) => {
-        if (record.editable) {
-          return (
-            <Input
-              value={text}
-              autoFocus
-              onChange={e => this.handleFieldChange(e, '第三方支付', record.key)}
-              onKeyPress={e => this.handleKeyPress(e, record.key)}
-              placeholder="第三方支付"
               addonAfter="元"
             />
           );
