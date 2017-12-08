@@ -37,41 +37,76 @@ const modal = ({
       title: '单价(元)',
       dataIndex: 'itemUnitPay',
       key: 'itemUnitPay',
+      sorter: (a, b) => (+a) - (+b),
+      render: (text) => {
+        return <div style={{ textAlign: 'right' }}>{text ? (+text).toFixed(2) : '-'}</div>;
+      },
     },
     {
       title: '数量',
       dataIndex: 'itemCnt',
       key: 'itemCnt',
+      sorter: (a, b) => +a - +b,
+      render: (text) => {
+        return <div style={{ textAlign: 'right' }}>{text ? +text : '-'}</div>;
+      },
     },
     {
       title: '金额(元)',
       dataIndex: 'itemPay',
       key: 'itemPay',
+      sorter: (a, b) => +a - +b,
+      render: (text) => {
+        return <div style={{ textAlign: 'right' }}>{text ? (+text).toFixed(2) : '-'}</div>;
+      },
     },
     {
       title: '自付比例(%)',
       dataIndex: 'selfPayRate',
       key: 'selfPayRate',
+      render: (text) => {
+        return <div style={{ textAlign: 'right' }}>{text ? +text * 100 : '-'}</div>;
+      },
     },
     {
       title: '分类自负',
       dataIndex: 'classificationPayAmt',
       key: 'classificationPayAmt',
+      align: 'right',
+      sorter: (a, b) => +a - +b,
+      render: (text) => {
+        return <div style={{ textAlign: 'right' }}>{text ? (+text).toFixed(2) : '-'}</div>;
+      },
     },
     {
       title: '自费金额(元)',
       dataIndex: 'selfPayAmt',
       key: 'selfPayAmt',
+      align: 'right',
+      sorter: (a, b) => +a - +b,
+      render: (text) => {
+        return <div style={{ textAlign: 'right' }}>{text ? (+text).toFixed(2) : '-'}</div>;
+      },
     },
     {
       title: '医保给付(元)',
       dataIndex: 'medicalPayAmt',
       key: 'medicalPayAmt',
+      align: 'right',
+      sorter: (a, b) => +a - +b,
+      render: (text) => {
+        return <div style={{ textAlign: 'right' }}>{text ? (+text).toFixed(2) : '-'}</div>;
+      },
     },
     {
       title: '第三方支付(元)',
       dataIndex: 'thirdPayAmt',
       key: 'thirdPayAmt',
+      align: 'right',
+      sorter: (a, b) => +a - +b,
+      render: (text) => {
+        return <div style={{ textAlign: 'right' }}>{text ? (+text).toFixed(2) : '-'}</div>;
+      },
     },
     {
       title: '是否剔除',
