@@ -43,6 +43,7 @@
     "react-fittext": "^1.0.0"
   },
   "devDependencies": {
+    "fetch-jsonp": "^1.1.3",
     "babel-eslint": "^8.0.1",
     "babel-jest": "^21.0.0",
     "babel-plugin-dva-hmr": "^0.3.2",
