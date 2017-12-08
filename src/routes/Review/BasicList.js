@@ -31,7 +31,7 @@ export default class BasicList extends PureComponent {
     selectedRow: [],
     filter: {
       page: this.props.caseList.page || 0,
-      size: 500,
+      size: 100,
     },
   };
   componentDidMount() {
