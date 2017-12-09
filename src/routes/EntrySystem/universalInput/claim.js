@@ -1031,19 +1031,41 @@ const basicInfo = {
       description: '描述',
       hide: [{
         key: 'relationship',
-        value: 1,
+        value: '1',
       }],
       rules: [],
       style: {},
     },
+    领款人证件类型: {
+      type: 'select',
+      title: '证件类型',
+      defaultValue: '111',
+      description: '描述',
+      rules: [],
+      style: {},
+      hide: [{
+        key: 'relationship',
+        value: '1',
+      }],
+      enum: [{
+        label: '身份证',
+        value: '111',
+      }, {
+        label: '驾驶证',
+        value: '112',
+      }, {
+        label: '港澳台胞证',
+        value: '113',
+      }],
+    },
     领款人证件号: {
       type: 'string',
-      title: '领款人证件号',
+      title: '证件号',
       defaultValue: '',
       description: '描述',
       hide: [{
         key: 'relationship',
-        value: 1,
+        value: '1',
       }],
       rules: [],
       style: {},
@@ -1054,7 +1076,7 @@ const basicInfo = {
       description: '描述',
       hide: [{
         key: 'relationship',
-        value: 1,
+        value: '1',
       }],
       rules: [],
       style: {},
@@ -1073,7 +1095,7 @@ const basicInfo = {
       description: '描述',
       hide: [{
         key: 'relationship',
-        value: 1,
+        value: '1',
       }],
       rules: [],
       style: {},
@@ -1085,7 +1107,7 @@ const basicInfo = {
       description: '描述',
       hide: [{
         key: 'relationship',
-        value: 1,
+        value: '1',
       }],
       rules: [],
       style: {
@@ -1105,7 +1127,9 @@ const basicEventInfo = {
       description: '描述',
       order: 1,
       rules: [],
-      style: {},
+      style: {
+        span: 8,
+      },
       enum: [{
         label: '疾病',
         value: 1,
@@ -1124,7 +1148,9 @@ const basicEventInfo = {
       description: '描述',
       order: 1,
       rules: [],
-      style: {},
+      style: {
+        span: 8,
+      },
       enum: [{
         label: '门诊',
         value: 1,
@@ -1135,6 +1161,16 @@ const basicEventInfo = {
         label: '其他',
         value: 3,
       }],
+    },
+    referral: {
+      type: 'bool',
+      title: '是否转诊',
+      defaultValue: false,
+      description: '描述',
+      rules: [],
+      style: {
+        span: 8,
+      },
     },
     firstDate: {
       type: 'dateString',
@@ -1169,22 +1205,14 @@ const basicEventInfo = {
       description: '描述',
       rules: [],
       style: {
-        span: 18,
+        span: 24,
         formItem: {
-          labelCol: { span: 3 },
-          wrapperCol: { span: 21 },
+          labelCol: { span: 2 },
+          wrapperCol: { span: 22 },
         },
       },
       enum: ICD10,
 
-    },
-    referral: {
-      type: 'bool',
-      title: '是否转诊',
-      defaultValue: false,
-      description: '描述',
-      rules: [],
-      style: {},
     },
     referralHospitalName: {
       type: 'string',
@@ -1235,8 +1263,8 @@ const basicEventInfo = {
       style: {
         span: 24,
         formItem: {
-          labelCol: { span: 3 },
-          wrapperCol: { span: 21 },
+          labelCol: { span: 2 },
+          wrapperCol: { span: 22 },
         },
       },
       enum: ICD10,

@@ -257,6 +257,7 @@ export default class UniversalClaim extends PureComponent {
           </Card>
         </Form>
         <FooterToolbar>
+          {document.body.clientWidth < 1440 && <Alert message="您使用的屏幕太小了,可能会影响录入,建议你窗口全屏" type="warning" style={{ margin: 10, display: 'inline-block', float: 'left' }} />}
           <Button
             onClick={() => {
               window.open('http://hic.leapstack.cn/gw/am/attachment/getclaimFileByCalimId?claimId=0000000180');
