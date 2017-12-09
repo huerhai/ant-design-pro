@@ -193,7 +193,6 @@ export default class TableForm extends PureComponent {
               onChange={e => this.handleFieldChange(e, '费用总额', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="费用总额"
-              addonAfter="元"
             />
           );
         }
@@ -212,7 +211,6 @@ export default class TableForm extends PureComponent {
               onChange={e => this.handleFieldChange(e, '乙类自付', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="乙类自付"
-              addonAfter="元"
             />
           );
         }
@@ -231,7 +229,6 @@ export default class TableForm extends PureComponent {
               onChange={e => this.handleFieldChange(e, '自费部分', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="自费部分"
-              addonAfter="元"
             />
           );
         }
@@ -250,7 +247,6 @@ export default class TableForm extends PureComponent {
               onChange={e => this.handleFieldChange(e, '统筹支付额', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="统筹支付额"
-              addonAfter="元"
             />
           );
         }
@@ -287,7 +283,6 @@ export default class TableForm extends PureComponent {
               onChange={e => this.handleFieldChange(e, '大病支付', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="大病支付"
-              addonAfter="元"
             />
           );
         }
@@ -306,7 +301,6 @@ export default class TableForm extends PureComponent {
               onChange={e => this.handleFieldChange(e, '第三方支付', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="第三方支付"
-              addonAfter="元"
             />
           );
         }
@@ -351,6 +345,7 @@ export default class TableForm extends PureComponent {
     return (
       <div>
         <Table
+          size="small"
           columns={columns}
           dataSource={this.state.data}
           pagination={false}

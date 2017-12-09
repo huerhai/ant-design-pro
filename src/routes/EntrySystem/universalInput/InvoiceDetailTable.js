@@ -66,7 +66,7 @@ export default class TableForm extends PureComponent {
       数量: '1',
       单价: '0',
       金额: '0',
-      自负比例: '0',
+      自付比例: '0',
       自负金额: '0',
       editable: true,
       isNew: true,
@@ -182,7 +182,7 @@ export default class TableForm extends PureComponent {
         return `${text}`;
       },
     }, {
-      title: '单价',
+      title: '单价(元)',
       dataIndex: '单价',
       key: '单价',
       render: (text, record) => {
@@ -194,33 +194,31 @@ export default class TableForm extends PureComponent {
               onChange={e => this.handleFieldChange(e, '单价', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="单价"
-              addonAfter="元"
             />
           );
         }
         return `${text}元`;
       },
     }, {
-      title: '金额(总价)',
+      title: '金额(元)',
       dataIndex: '金额',
-      key: '金额(总价)',
+      key: '金额',
       render: (text, record) => {
         if (record.editable) {
           return (
             <Input
               value={text}
               autoFocus
-              onChange={e => this.handleFieldChange(e, '金额(总价)', record.key)}
+              onChange={e => this.handleFieldChange(e, '金额', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
-              placeholder="金额(总价)"
-              addonAfter="元"
+              placeholder="金额"
             />
           );
         }
         return `${text}元`;
       },
     }, {
-      title: '自付比例',
+      title: '自付比例(%)',
       dataIndex: '自付比例',
       key: '自付比例',
       render: (text, record) => {
@@ -231,15 +229,14 @@ export default class TableForm extends PureComponent {
               autoFocus
               onChange={e => this.handleFieldChange(e, '自付比例', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
-              placeholder="自费部分"
-              addonAfter="%"
+              placeholder="自付比例"
             />
           );
         }
         return `${text}元`;
       },
     }, {
-      title: '自负金额',
+      title: '自负金额(元)',
       dataIndex: '自负金额',
       key: '自负金额',
       render: (text, record) => {
@@ -251,7 +248,6 @@ export default class TableForm extends PureComponent {
               onChange={e => this.handleFieldChange(e, '自负金额', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="统筹支付额"
-              addonAfter="元"
             />
           );
         }
@@ -296,6 +292,7 @@ export default class TableForm extends PureComponent {
     return (
       <div>
         <Table
+          size="small"
           columns={columns}
           dataSource={this.state.data}
           pagination={false}

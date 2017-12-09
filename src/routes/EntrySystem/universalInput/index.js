@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars,react/no-unused-state */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Select, Radio, DatePicker, Cascader, InputNumber, Tabs, Icon, Button, Dropdown, Menu, message, Divider } from 'antd';
+import { Row, Col, Card, Form, Input, Select, Radio, DatePicker, Cascader, InputNumber, Tabs, Icon, Button, Dropdown, Menu, message, Divider, Collapse } from 'antd';
 import FooterToolbar from '../../../components/FooterToolbar';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 import UniversalInput from '../../../components/UniversalInput';
@@ -14,6 +14,7 @@ import styles from './index.less';
 import { basicInfo, basicEventInfo, invoiceInfo, claim as claimSchema, event as eventSchema, person as personSchema } from './claim';
 
 const { TabPane } = Tabs;
+const { Panel } = Collapse;
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -96,7 +97,7 @@ export default class UniversalClaim extends PureComponent {
           );
         }
       });
-    return <Row gutter={8}>{children}</Row>;
+    return <Row gutter={8} >{children}</Row>;
   }
   add = (name) => {
     const { events } = this.state;
@@ -173,42 +174,37 @@ export default class UniversalClaim extends PureComponent {
           <Card className={styles.card} title="事件信息">
             {this.getInputForm(this.state.basicEventInfo)}
             <Divider>收据信息</Divider>
-            <Card className={styles.card} bordered={false} style={{ marginTop: 16 }}>
-              {getFieldDecorator('invoiceList', {
-                initialValue: [{
-                  key: '0',
-                  收据类型: '',
-                  收据日期: '',
-                  收据号: '',
-                  费用总额: '0',
-                  乙类自付: '0',
-                  自费部分: '0',
-                  统筹支付额: '0',
-                  附加支付金额: '0',
-                  大病支付: '0',
-                  第三方支付: '0',
-                  editable: true,
-                  isNew: true,
-                }],
-              })(<InvoiceTable />)}
-            </Card>
-            <Divider>清单信息</Divider>
-            <Card className={styles.card} bordered={false} style={{ marginTop: 16 }}>
-              {getFieldDecorator('invoiceDetailList', {
-                initialValue: [{
-                  key: '0',
-                  费用类型: '',
-                  费用名称: '',
-                  数量: '1',
-                  单价: '0',
-                  金额: '0',
-                  自负比例: '0',
-                  自负金额: '0',
-                  editable: true,
-                  isNew: true,
-                }],
-              })(<InvoiceDetailTable />)}
-            </Card>
+            <Collapse defaultActiveKey={['1']}>
+              <Panel header="收据1" key="1">
+                <div>
+                  {this.getInputForm(this.state.invoiceInfo)}
+                </div>
+                <div>
+                  {getFieldDecorator('invoiceDetailList', {
+                    initialValue: [{
+                      key: '0',
+                      费用类型: '',
+                      费用名称: '',
+                      数量: '1',
+                      单价: '0',
+                      金额: '0',
+                      自付比例: '0',
+                      自负金额: '0',
+                      editable: true,
+                      isNew: true,
+                    }],
+                  })(<InvoiceDetailTable />)}
+                </div>
+              </Panel>
+            </Collapse>
+            <Button
+              style={{ width: '100%', marginTop: 16, marginBottom: 8 }}
+              type="dashed"
+              onClick={() => {}}
+              icon="plus"
+            >
+              新增收据
+            </Button>
           </Card>
         </Form>
         <FooterToolbar>
