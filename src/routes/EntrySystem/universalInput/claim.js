@@ -993,7 +993,6 @@ const basicInfo = {
     bankAccountCity: {
       type: 'city',
       title: '银行省市区',
-      defaultValue: undefined,
       description: '描述',
       order: 4,
       rules: [],
@@ -1004,32 +1003,31 @@ const basicInfo = {
     relationship: {
       type: 'select',
       title: '领款关系',
-      defaultValue: 1,
+      defaultValue: '1',
       description: '描述',
       order: 5,
       rules: [],
       style: {},
       enum: [{
         label: '本人',
-        value: 1,
+        value: '1',
       }, {
         label: '配偶',
-        value: 2,
+        value: '2',
       }, {
         label: '父母',
-        value: 3,
+        value: '3',
       }, {
         label: '子女',
-        value: 4,
+        value: '4',
       }, {
         label: '其他',
-        value: 5,
+        value: '5',
       }],
     },
     领款人姓名: {
       type: 'string',
       title: '领款人姓名',
-      defaultValue: '',
       description: '描述',
       hide: [{
         key: 'relationship',
@@ -1053,7 +1051,6 @@ const basicInfo = {
     bankType2: {
       type: 'select',
       title: '银行名称',
-      defaultValue: '',
       description: '描述',
       hide: [{
         key: 'relationship',
