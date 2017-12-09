@@ -72,7 +72,7 @@ export default class UniversalClaim extends PureComponent {
         if (data.properties[key].type === 'selectNET') {
           children.push(
             <Col span={item.style.span || 6} key={key} style={{ display: item.hide ? (getFieldValue(item.hide[0].key) === item.hide[0].value ? 'none' : 'inline-block') : 'inline-block' }}>
-              <FormItem {...formItemLayout} label={item.title}>
+              <FormItem {...{ ...formItemLayout, ...item.style.formItem }} label={item.title}>
                 {getFieldDecorator(key, {
                   initialValue: item.defaultValue,
                 })(
@@ -214,7 +214,6 @@ export default class UniversalClaim extends PureComponent {
     );
     return (
       <PageHeaderLayout
-        title="数据录入"
         content={pageHeaderContent}
       >
         <Form>

@@ -1,9 +1,11 @@
 /* eslint-disable no-unused-vars */
 import React, { PureComponent } from 'react';
-import { Table, Button, Input, message, Popconfirm, Divider } from 'antd';
+import { Table, Button, Input, message, Popconfirm, Divider, Select } from 'antd';
 import SelectNet from './selectNet';
-
 import styles from './invoiceStyle.less';
+
+const { Option } = Select;
+
 
 export default class TableForm extends PureComponent {
   constructor(props) {
@@ -133,13 +135,46 @@ export default class TableForm extends PureComponent {
       render: (text, record) => {
         if (record.editable) {
           return (
-            <Input
+            <Select
+              showSearch
+              style={{ width: 130 }}
+              optionFilterProp="children"
               value={text}
-              autoFocus
               onChange={e => this.handleFieldChange(e, '费用类型', record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="费用类型"
-            />
+              filterOption={(input, option) => {
+                return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+              }}
+            >
+              <Option value="01西药费">西药费</Option>
+              <Option value="02中成药费">中成药费</Option>
+              <Option value="03中草药费">中草药费</Option>
+              <Option value="04民族药费">民族药费</Option>
+              <Option value="05自制制剂">自制制剂</Option>
+              <Option value="06挂号费">挂号费</Option>
+              <Option value="07诊察费">诊察费</Option>
+              <Option value="08检查费">检查费</Option>
+              <Option value="09化验费">化验费</Option>
+              <Option value="10放射检查费">放射检查费</Option>
+              <Option value="11特检费">特检费</Option>
+              <Option value="12治疗费">治疗费</Option>
+              <Option value="13麻醉费">麻醉费</Option>
+              <Option value="14手术费">手术费</Option>
+              <Option value="15输血费">输血费</Option>
+              <Option value="16输氧费">输氧费</Option>
+              <Option value="17材料费">材料费</Option>
+              <Option value="18护理费">护理费</Option>
+              <Option value="19床位费">床位费</Option>
+              <Option value="20抢救费">抢救费</Option>
+              <Option value="21救护车费">救护车费</Option>
+              <Option value="22生育费">生育费</Option>
+              <Option value="23诊疗费">诊疗费</Option>
+              <Option value="24医事服务费">医事服务费</Option>
+              <Option value="25药事服务费">药事服务费</Option>
+              <Option value="26查勘费">查勘费</Option>
+              <Option value="99其它费">其它费</Option>
+            </Select>
           );
         }
         return `${text}`;

@@ -793,7 +793,7 @@ const event = {
     },
     referralClinical: {
       type: 'string',
-      title: '转来科室名称',
+      title: '转科室名称',
       defaultValue: '',
       description: '描述',
       order: 5,
@@ -802,7 +802,7 @@ const event = {
     },
     referralDoctor: {
       type: 'string',
-      title: '转来医生姓名',
+      title: '转医生姓名',
       defaultValue: '',
       description: '描述',
       order: 5,
@@ -811,7 +811,7 @@ const event = {
     },
     referralHospitalName: {
       type: 'string',
-      title: '转来医院名称',
+      title: '转医院名称',
       defaultValue: '',
       description: '描述',
       order: 5,
@@ -1147,20 +1147,6 @@ const basicEventInfo = {
       rules: [],
       style: {},
     },
-    inDays: {
-      type: 'number',
-      unit: '天',
-      title: '住院天数',
-      defaultValue: '',
-      description: '描述',
-      hide: [{
-        key: 'billType',
-        value: 1,
-      }],
-      rules: [],
-      style: {},
-      filter: '住院',
-    },
     hospitalName: {
       type: 'string',
       title: '就诊医院',
@@ -1203,9 +1189,21 @@ const basicEventInfo = {
       rules: [],
       style: {},
     },
+    referralHospitalName: {
+      type: 'string',
+      title: '转医院',
+      defaultValue: '',
+      description: '描述',
+      hide: [{
+        key: 'referral',
+        value: false,
+      }],
+      rules: [],
+      style: {},
+    },
     referralClinical: {
       type: 'string',
-      title: '转来科室名称',
+      title: '转科室',
       defaultValue: '',
       description: '描述',
       hide: [{
@@ -1217,19 +1215,7 @@ const basicEventInfo = {
     },
     referralDoctor: {
       type: 'string',
-      title: '转来医生姓名',
-      defaultValue: '',
-      description: '描述',
-      hide: [{
-        key: 'referral',
-        value: false,
-      }],
-      rules: [],
-      style: {},
-    },
-    referralHospitalName: {
-      type: 'string',
-      title: '转来医院名称',
+      title: '转医生',
       defaultValue: '',
       description: '描述',
       hide: [{
@@ -1241,7 +1227,7 @@ const basicEventInfo = {
     },
     illCode2: {
       type: 'selectNET',
-      title: '疾病诊断',
+      title: '转诊 疾病诊断',
       defaultValue: undefined,
       description: '描述',
       hide: [{
@@ -1250,7 +1236,7 @@ const basicEventInfo = {
       }],
       rules: [],
       style: {
-        span: 18,
+        span: 24,
         formItem: {
           labelCol: { span: 3 },
           wrapperCol: { span: 21 },
@@ -1267,7 +1253,7 @@ const invoiceInfo = {
   properties: {
     hospitalName: {
       type: 'string',
-      title: '收据号码',
+      title: '收据号',
       defaultValue: '',
       description: '描述',
       rules: [],
