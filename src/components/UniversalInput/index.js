@@ -9,6 +9,7 @@ const RadioGroup = Radio.Group;
 const UniversalInput = ({ schema, ...otherProp }) => {
   switch (schema.type) {
     case 'string':
+    case 'dateString':
       return <Input {...otherProp} />;
     case 'bool':
       return (
@@ -32,6 +33,13 @@ const UniversalInput = ({ schema, ...otherProp }) => {
             return <Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>;
           })}
         </Select>);
+    case 'selectTag':
+      return (
+        <Select mode="tags" tokenSeparators={[',']} {...otherProp}>
+          {schema.enum.map((item) => {
+            return <Select.Option value={item.value} key={item.value}>{item.label}</Select.Option>;
+          })}
+        </Select>);
     case 'multipleSelect':
       return (
         <Select mode="multiple" {...otherProp}>
@@ -42,9 +50,11 @@ const UniversalInput = ({ schema, ...otherProp }) => {
     case 'city':
       return (
         <Cascader
+          showSearch
+          changeOnSelect
           {...otherProp}
           options={city}
-          placeholder="请选择出险地区"
+          placeholder="支持搜索"
         />);
     case 'number':
       return (
@@ -56,7 +66,7 @@ const UniversalInput = ({ schema, ...otherProp }) => {
       return (
         <InputNumber
           {...otherProp}
-          style={{ width: 130 }}
+          style={{ width: '100%' }}
           min={0}
           max={9999999}
           formatter={value => `¥${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}

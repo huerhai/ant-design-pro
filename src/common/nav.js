@@ -111,7 +111,7 @@ export const getNavData = app => [
             name: '案件录入',
             path: 'input',
             icon: 'solution',
-            component: dynamicWrapper(app, ['group'], () => import('../routes/EntrySystem/universalInput')),
+            component: dynamicWrapper(app, ['group', 'entry'], () => import('../routes/EntrySystem/universalInput')),
           },
           {
             name: '录入质检',

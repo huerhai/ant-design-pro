@@ -1,5 +1,67 @@
 import moment from 'moment';
 
+const ICD10 = [
+  {
+    label: '慢性呼吸道感染 J98.951',
+    value: '慢性呼吸道感染 J98.951',
+  },
+  {
+    label: '胸腔肿物 J98.902',
+    value: '胸腔肿物 J98.902',
+  },
+  {
+    label: '胸腔占位性病变 J98.901',
+    value: '胸腔占位性病变 J98.901',
+  },
+  {
+    label: '其他特指的呼吸性疾患 J98.851',
+    value: '其他特指的呼吸性疾患 J98.851',
+  },
+  {
+    label: '胸部肿物 J98.804',
+    value: '胸部肿物 J98.804',
+  },
+  {
+    label: '呼吸道梗阻 J98.803',
+    value: '呼吸道梗阻 J98.803',
+  },
+  {
+    label: '呼吸道感染 J98.802',
+    value: '呼吸道感染 J98.802',
+  },
+  {
+    label: '鼻咽肿物 J98.801',
+    value: '鼻咽肿物 J98.801',
+  },
+  {
+    label: '膈松弛 J98.653',
+    value: '膈松弛 J98.653',
+  },
+  {
+    label: '膈麻痹 J98.652',
+    value: '膈麻痹 J98.652',
+  },
+  {
+    label: '膈肌囊肿 J98.651',
+    value: '膈肌囊肿 J98.651',
+  },
+  {
+    label: '横膈麻痹 J98.603',
+    value: '横膈麻痹 J98.603',
+  },
+  {
+    label: '膈肌麻痹 J98.602',
+    value: '膈肌麻痹 J98.602',
+  },
+  {
+    label: '膈(横膈)膨升 J98.601',
+    value: '膈(横膈)膨升 J98.601',
+  },
+  {
+    label: '纵隔退缩 J98.553',
+    value: '纵隔退缩 J98.553',
+  },
+];
 const claim = {
   title: '一个案件对象',
   type: 'object',
@@ -830,38 +892,7 @@ const basicInfo = {
   title: '基本信息',
   type: 'object',
   properties: {
-    accidentDate: {
-      type: 'date',
-      title: '收单日期',
-      defaultValue: moment(),
-      description: '自动生成',
-      rules: [],
-      style: {},
-    },
-    保险公司: {
-      type: 'select',
-      title: '保险公司',
-      defaultValue: 1,
-      description: '描述',
-      rules: [],
-      style: {},
-      enum: [{
-        label: '易安',
-        value: 1,
-      }, {
-        label: '人保',
-        value: 2,
-      }],
-    },
-    claimId: {
-      type: 'string',
-      title: '报案号',
-      defaultValue: (Math.random() * 10000000).toFixed(0),
-      description: '描述',
-      rules: [],
-      style: {},
-    },
-    保单号: {
+    policyId: {
       type: 'string',
       title: '保单号',
       defaultValue: '',
@@ -869,7 +900,7 @@ const basicInfo = {
       rules: [],
       style: {},
     },
-    投保单位: {
+    policyHolderName: {
       type: 'string',
       title: '投保单位',
       defaultValue: '',
@@ -880,19 +911,19 @@ const basicInfo = {
     idType: {
       type: 'select',
       title: '证件类型',
-      defaultValue: 1,
+      defaultValue: '111',
       description: '描述',
       rules: [],
       style: {},
       enum: [{
         label: '身份证',
-        value: 1,
+        value: '111',
       }, {
         label: '驾驶证',
-        value: 2,
+        value: '112',
       }, {
         label: '港澳台胞证',
-        value: 3,
+        value: '113',
       }],
     },
     id: {
@@ -903,7 +934,7 @@ const basicInfo = {
       rules: [],
       style: {},
     },
-    被保人姓名: {
+    name: {
       type: 'string',
       title: '被保人姓名',
       description: '',
@@ -913,19 +944,19 @@ const basicInfo = {
     gender: {
       type: 'radioBtn',
       title: '性别',
-      defaultValue: 1,
+      defaultValue: '2',
       description: '描述',
       rules: [],
       style: {},
       enum: [{
         label: '男',
-        value: 1,
+        value: '2',
       }, {
         label: '女',
-        value: 2,
+        value: '3',
       }, {
         label: '未知',
-        value: 3,
+        value: '4',
       }],
     },
     mobilePhone: {
@@ -937,12 +968,19 @@ const basicInfo = {
       style: {},
     },
     bankType: {
-      type: 'selectNET',
+      type: 'select',
       title: '银行名称',
-      defaultValue: '',
+      defaultValue: '002',
       description: '描述',
       rules: [],
       style: {},
+      enum: [{
+        label: '中国工商银行',
+        value: '001',
+      }, {
+        label: '中国建设银行',
+        value: '002',
+      }],
     },
     bankAccount: {
       type: 'string',
@@ -959,7 +997,9 @@ const basicInfo = {
       description: '描述',
       order: 4,
       rules: [],
-      style: {},
+      style: {
+        span: 12,
+      },
     },
     relationship: {
       type: 'select',
@@ -991,6 +1031,10 @@ const basicInfo = {
       title: '领款人姓名',
       defaultValue: '',
       description: '描述',
+      hide: [{
+        key: 'relationship',
+        value: 1,
+      }],
       rules: [],
       style: {},
     },
@@ -999,22 +1043,41 @@ const basicInfo = {
       title: '领款人证件号',
       defaultValue: '',
       description: '描述',
+      hide: [{
+        key: 'relationship',
+        value: 1,
+      }],
       rules: [],
       style: {},
     },
     bankType2: {
-      type: 'selectNET',
+      type: 'select',
       title: '银行名称',
       defaultValue: '',
       description: '描述',
+      hide: [{
+        key: 'relationship',
+        value: 1,
+      }],
       rules: [],
       style: {},
+      enum: [{
+        label: '中国工商银行',
+        value: '001',
+      }, {
+        label: '中国建设银行',
+        value: '002',
+      }],
     },
     bankAccount2: {
       type: 'string',
       title: '银行账号',
       defaultValue: '',
       description: '描述',
+      hide: [{
+        key: 'relationship',
+        value: 1,
+      }],
       rules: [],
       style: {},
     },
@@ -1023,9 +1086,14 @@ const basicInfo = {
       title: '银行省市区',
       defaultValue: undefined,
       description: '描述',
-      order: 4,
+      hide: [{
+        key: 'relationship',
+        value: 1,
+      }],
       rules: [],
-      style: {},
+      style: {
+        span: 12,
+      },
     },
   },
 };
@@ -1052,12 +1120,30 @@ const basicEventInfo = {
         value: 3,
       }],
     },
-    firstDate: {
-      type: 'date',
-      title: '就诊日期',
-      defaultValue: moment(),
+    billType: {
+      type: 'radioBtn',
+      title: '收据类型',
+      defaultValue: 1,
       description: '描述',
-      order: 8,
+      order: 1,
+      rules: [],
+      style: {},
+      enum: [{
+        label: '门诊',
+        value: 1,
+      }, {
+        label: '住院',
+        value: 2,
+      }, {
+        label: '其他',
+        value: 3,
+      }],
+    },
+    firstDate: {
+      type: 'dateString',
+      title: '就诊日期',
+      defaultValue: '',
+      description: '描述',
       rules: [],
       style: {},
     },
@@ -1067,7 +1153,10 @@ const basicEventInfo = {
       title: '住院天数',
       defaultValue: '',
       description: '描述',
-      order: 5,
+      hide: [{
+        key: 'billType',
+        value: 1,
+      }],
       rules: [],
       style: {},
       filter: '住院',
@@ -1091,20 +1180,26 @@ const basicEventInfo = {
       style: {},
     },
     illCode: {
-      type: 'selectNET',
+      type: 'selectTag',
       title: '疾病诊断',
-      defaultValue: '',
+      defaultValue: undefined,
       description: '描述',
-      order: 5,
       rules: [],
-      style: {},
+      style: {
+        span: 18,
+        formItem: {
+          labelCol: { span: 3 },
+          wrapperCol: { span: 21 },
+        },
+      },
+      enum: ICD10,
+
     },
     referral: {
       type: 'bool',
       title: '是否转诊',
       defaultValue: false,
       description: '描述',
-      order: 999,
       rules: [],
       style: {},
     },
@@ -1113,7 +1208,10 @@ const basicEventInfo = {
       title: '转来科室名称',
       defaultValue: '',
       description: '描述',
-      order: 5,
+      hide: [{
+        key: 'referral',
+        value: false,
+      }],
       rules: [],
       style: {},
     },
@@ -1122,7 +1220,10 @@ const basicEventInfo = {
       title: '转来医生姓名',
       defaultValue: '',
       description: '描述',
-      order: 5,
+      hide: [{
+        key: 'referral',
+        value: false,
+      }],
       rules: [],
       style: {},
     },
@@ -1131,18 +1232,31 @@ const basicEventInfo = {
       title: '转来医院名称',
       defaultValue: '',
       description: '描述',
-      order: 5,
+      hide: [{
+        key: 'referral',
+        value: false,
+      }],
       rules: [],
       style: {},
     },
     illCode2: {
       type: 'selectNET',
       title: '疾病诊断',
-      defaultValue: '',
+      defaultValue: undefined,
       description: '描述',
-      order: 5,
+      hide: [{
+        key: 'referral',
+        value: false,
+      }],
       rules: [],
-      style: {},
+      style: {
+        span: 18,
+        formItem: {
+          labelCol: { span: 3 },
+          wrapperCol: { span: 21 },
+        },
+      },
+      enum: ICD10,
     },
   },
 };
@@ -1159,32 +1273,15 @@ const invoiceInfo = {
       rules: [],
       style: {},
     },
-    accidentSubtype: {
-      type: 'radioBtn',
-      title: '收据类型',
-      defaultValue: 1,
-      description: '描述',
-      order: 1,
-      rules: [],
-      style: {},
-      enum: [{
-        label: '门诊',
-        value: 1,
-      }, {
-        label: '住院',
-        value: 2,
-      }, {
-        label: '其他',
-        value: 3,
-      }],
-    },
-    发票总金额: {
+    总金额: {
       type: 'money',
-      title: '发票总金额',
+      title: '总金额',
       defaultValue: 0,
       description: '描述',
       rules: [],
-      style: {},
+      style: {
+        span: 4,
+      },
     },
     自费: {
       type: 'money',
@@ -1192,47 +1289,59 @@ const invoiceInfo = {
       defaultValue: 0,
       description: '描述',
       rules: [],
-      style: {},
+      style: {
+        span: 4,
+      },
     },
-    分类自负: {
+    自负: {
       type: 'money',
-      title: '分类自负',
+      title: '自负',
       defaultValue: 0,
       description: '描述',
       rules: [],
-      style: {},
+      style: {
+        span: 4,
+      },
     },
-    统筹支付: {
+    统筹: {
       type: 'money',
-      title: '统筹支付',
+      title: '统筹',
       defaultValue: 0,
       description: '描述',
       rules: [],
-      style: {},
+      style: {
+        span: 4,
+      },
     },
-    附加支付: {
+    附加: {
       type: 'money',
-      title: '附加支付',
+      title: '附加',
       defaultValue: 0,
       description: '描述',
       rules: [],
-      style: {},
+      style: {
+        span: 4,
+      },
     },
-    大病支付: {
+    大病: {
       type: 'money',
-      title: '大病支付',
+      title: '大病',
       defaultValue: 0,
       description: '描述',
       rules: [],
-      style: {},
+      style: {
+        span: 4,
+      },
     },
-    第三方支付: {
+    第三方: {
       type: 'money',
-      title: '第三方支付',
+      title: '第三方',
       defaultValue: 0,
       description: '描述',
       rules: [],
-      style: {},
+      style: {
+        span: 4,
+      },
     },
   },
 };

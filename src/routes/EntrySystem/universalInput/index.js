@@ -1,12 +1,14 @@
 /* eslint-disable no-unused-vars,react/no-unused-state */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Select, Radio, DatePicker, Cascader, InputNumber, Tabs, Icon, Button, Dropdown, Menu, message, Divider, Collapse } from 'antd';
+import { Row, Col, Card, Form, Input, Select, Radio, DatePicker, Cascader, InputNumber, Tabs, Icon, Button, Dropdown, Menu, message, Divider, Collapse, Alert } from 'antd';
 import FooterToolbar from '../../../components/FooterToolbar';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 import UniversalInput from '../../../components/UniversalInput';
 import UniversalForm from '../../../components/UniversalForm';
 import InvoiceTable from './InvoiceTable';
+import { date } from '../../../utils/utils';
+
 import InvoiceDetailTable from './InvoiceDetailTable';
 import SelectNet from './selectNet';
 import styles from './index.less';
@@ -23,6 +25,7 @@ const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 
 @connect(state => ({
   group: state.group,
+  entry: state.entry,
 }))
 @Form.create()
 export default class UniversalClaim extends PureComponent {
@@ -30,13 +33,9 @@ export default class UniversalClaim extends PureComponent {
     super(props);
     this.newTabIndex = 1;
     this.state = {
-      activeKey: '1 事件',
-      events: [],
-      personActiveKey: '被保人 申请人 报案人 领款人',
-      persons: [{
-        key: '被保人 申请人 报案人 领款人',
-        title: '被保人 申请人 报案人 领款人',
-      }],
+      policyFromNet: undefined,
+      policyValidate: undefined,
+      insurancePlanResponseList: [],
       basicInfo,
       basicEventInfo,
       invoiceInfo,
@@ -61,7 +60,7 @@ export default class UniversalClaim extends PureComponent {
     if (action === 'remove') this.removePeason(targetKey);
   }
   getInputForm(data) {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, getFieldValue } = this.props.form;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
@@ -72,7 +71,7 @@ export default class UniversalClaim extends PureComponent {
         const item = data.properties[key];
         if (data.properties[key].type === 'selectNET') {
           children.push(
-            <Col span={6} key={key}>
+            <Col span={item.style.span || 6} key={key} style={{ display: item.hide ? (getFieldValue(item.hide[0].key) === item.hide[0].value ? 'none' : 'inline-block') : 'inline-block' }}>
               <FormItem {...formItemLayout} label={item.title}>
                 {getFieldDecorator(key, {
                   initialValue: item.defaultValue,
@@ -84,8 +83,8 @@ export default class UniversalClaim extends PureComponent {
           );
         } else {
           children.push(
-            <Col span={6} key={key}>
-              <FormItem {...formItemLayout} label={item.title}>
+            <Col span={item.style.span || 6} key={key} style={{ display: item.hide ? (getFieldValue(item.hide[0].key) === item.hide[0].value ? 'none' : 'inline-block') : 'inline-block' }}>
+              <FormItem {...{ ...formItemLayout, ...item.style.formItem }} label={item.title}>
                 {getFieldDecorator(key, {
                   initialValue: item.defaultValue,
                   rules: item.rules,
@@ -153,9 +152,41 @@ export default class UniversalClaim extends PureComponent {
       events: newEvents,
     });
   }
+  handleIDSubmit = (value) => {
+    const { dispatch, form: { setFieldsValue } } = this.props;
+    const { entry } = this.state;
+    dispatch({
+      type: 'entry/fetchPolicy',
+      payload: {
+        id: value,
+      },
+      callback: (res) => {
+        if (res.length === 1) {
+          message.success('获取成功,请核实申请书与系统的是否一致');
+          const policy = res[0];
+          this.setState({
+            policyFromNet: res[0],
+            policyValidate: `${date(policy.policyValidateFrom)}-${date(policy.policyValidateTo)}`,
+            insurancePlanResponseList: res[0].insurancePlanResponseList,
+          });
+          setFieldsValue({
+            policyId: policy.policyId,
+            policyHolderName: policy.policyHolder.name,
+            id: policy.insuredPerson.id,
+            idType: policy.insuredPerson.idType.referenceCode,
+            name: policy.insuredPerson.name,
+            gender: policy.insuredPerson.gender.referenceCode,
+            mobilePhone: policy.insuredPerson.mobilePhone,
+            bankType: policy.insuredPerson.bankType.referenceCode,
+            bankAccount: policy.insuredPerson.bankAccount,
+          });
+        }
+      },
+    });
+  };
   render() {
     const { form, submitting = false } = this.props;
-    const { persons } = this.state;
+    const { persons, policyFromNet, policyValidate, insurancePlanResponseList } = this.state;
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError } = form;
     const validate = () => {
       validateFieldsAndScroll((error, values) => {
@@ -165,8 +196,27 @@ export default class UniversalClaim extends PureComponent {
         // }
       });
     };
+    const AlertMessge = `${policyFromNet && policyFromNet.insuredPerson.name} 保单有效期:${policyValidate}`;
+
+    const pageHeaderContent = (
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Input.Search
+          placeholder="请输入被保人身份证号码"
+          enterButton="获取"
+          size="large"
+          defaultValue="410804198701160085"
+          onSearch={this.handleIDSubmit}
+          style={{ width: 422, height: 40 }}
+        />
+        {policyValidate && <Alert message={AlertMessge} type="success" style={{ margin: '0 10px' }} />}
+        {policyValidate && <a>查看</a>}
+      </div>
+    );
     return (
-      <PageHeaderLayout title="数据录入">
+      <PageHeaderLayout
+        title="数据录入"
+        content={pageHeaderContent}
+      >
         <Form>
           <Card className={styles.card} title="基本信息">
             {this.getInputForm(this.state.basicInfo)}
