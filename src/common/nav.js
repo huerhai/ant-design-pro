@@ -106,7 +106,13 @@ export const getNavData = app => [
         name: '用户管理',
         path: 'users',
         icon: 'copy',
-        component: dynamicWrapper(app, ['policy'], () => import('../routes/BasicInfo/policy')),
+        component: dynamicWrapper(app, ['group'], () => import('../routes/BasicInfo/user/Userboard.js')),
+      },
+      {
+        name: '角色管理',
+        path: 'roles',
+        icon: 'copy',
+        component: dynamicWrapper(app, ['group'], () => import('../routes/BasicInfo/role/Roleboard.js')),
       },
       {
         name: '退出',
