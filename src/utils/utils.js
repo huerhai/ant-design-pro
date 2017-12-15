@@ -242,3 +242,10 @@ export function caseState(value) {
       };
   }
 }
+
+export function date(value) {
+  if (!value) {
+    return '无';
+  }
+  return moment(value).format('YYYY年MM月DD日');
+}

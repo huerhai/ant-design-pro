@@ -23,102 +23,173 @@ export const getNavData = app => [
         component: dynamicWrapper(app, ['project', 'activities', 'chart'], () => import('../routes/Home/Workplace')),
       },
       {
-        name: '保单管理',
-        path: 'Policies',
+        name: '系统设置',
         icon: 'copy',
-        component: dynamicWrapper(app, ['policy'], () => import('../routes/BasicInfo/policy')),
-      },
-      {
-        name: '影像导入',
-        path: 'todo',
-        icon: 'scan',
-        component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
-      },
-      {
-        name: '案件录入',
-        path: 'input',
-        icon: 'solution',
-        component: dynamicWrapper(app, ['group'], () => import('../routes/EntrySystem/universalInput')),
-      },
-      {
-        name: '案件预审',
-        path: 'preliminary',
-        icon: 'customer-service',
-        component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
-      },
-      {
-        name: '案件审核',
-        path: 'review',
-        icon: 'customer-service',
+        path: 'system',
         children: [
           {
-            component: dynamicWrapper(app, ['caseList'], () => import('../routes/Review/BasicList')),
+            name: '公司管理',
+            path: 'company',
+            icon: 'usb',
+            component: dynamicWrapper(app, ['list'], () => import('../routes/BasicInfo/company/SearchList.js')),
           },
           {
-            path: 'detail',
-            component: dynamicWrapper(app, ['caseList', 'profile'], () => import('../routes/CaseDetail/AdvancedProfile')),
+            name: '用户管理',
+            path: 'users',
+            icon: 'copy',
+            component: dynamicWrapper(app, ['group'], () => import('../routes/BasicInfo/user/Userboard.js')),
+          },
+          {
+            name: '角色管理',
+            path: 'roles',
+            icon: 'copy',
+            component: dynamicWrapper(app, ['group'], () => import('../routes/BasicInfo/role/Roleboard.js')),
           },
         ],
       },
       {
-        name: '案件导出',
-        path: 'export',
-        icon: 'customer-service',
-        component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
-      },
-      {
-        name: '理赔历史',
-        path: 'history',
-        icon: 'customer-service',
-        component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
-      },
-      {
-        name: '公司管理',
-        path: 'company',
-        icon: 'usb',
-        component: dynamicWrapper(app, ['company'], () => import('../routes/BasicInfo/company')),
-      },
-      {
-        name: '公司管理2',
-        path: 'company2',
-        icon: 'usb',
-        component: dynamicWrapper(app, ['list'], () => import('../routes/BasicInfo/company/SearchList.js')),
-      },
-      {
-        name: '产品管理',
-        path: 'product',
-        icon: 'bars',
-        component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
-      },
-      {
-        name: '险种管理',
-        path: 'planted',
-        icon: 'bars',
-        component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
-      },
-      {
-        name: '团体管理',
-        path: 'Group',
-        icon: 'team',
-        component: dynamicWrapper(app, ['group'], () => import('../routes/BasicInfo/group')),
-      },
-      {
-        name: '用户管理',
-        path: 'users',
+        name: '基础信息',
         icon: 'copy',
-        component: dynamicWrapper(app, ['group'], () => import('../routes/BasicInfo/user/Userboard.js')),
+        path: 'basic',
+        children: [
+          {
+            name: '保险公司管理',
+            path: 'company',
+            icon: 'usb',
+            component: dynamicWrapper(app, ['list'], () => import('../routes/BasicInfo/company/SearchList.js')),
+          },
+          {
+            name: '险种管理',
+            path: 'planted',
+            icon: 'bars',
+            component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
+          },
+          {
+            name: '产品管理',
+            path: 'product',
+            icon: 'bars',
+            component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
+          },
+          {
+            name: '团体管理',
+            path: 'Group',
+            icon: 'team',
+            component: dynamicWrapper(app, ['group'], () => import('../routes/BasicInfo/group')),
+          },
+          {
+            name: '保单管理',
+            path: 'Policies',
+            icon: 'copy',
+            component: dynamicWrapper(app, ['policy'], () => import('../routes/BasicInfo/policy')),
+          },
+        ],
       },
       {
-        name: '角色管理',
-        path: 'roles',
+        name: '赔案管理',
         icon: 'copy',
-        component: dynamicWrapper(app, ['group'], () => import('../routes/BasicInfo/role/Roleboard.js')),
-      },
-      {
-        name: '退出',
-        path: 'policyImport',
-        icon: 'solution',
-        component: dynamicWrapper(app, ['group'], () => import('../routes/EntrySystem/universalInput')),
+        path: 'case',
+        children: [
+          {
+            name: '案件扫描',
+            path: 'todo',
+            icon: 'scan',
+            component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
+          },
+          {
+            name: '扫描质检',
+            path: 'zhijian',
+            icon: 'scan',
+            component: dynamicWrapper(app, ['rule'], () => import('../routes/List/TableList')),
+          },
+          {
+            name: '案件预审',
+            path: 'preliminary',
+            icon: 'customer-service',
+            component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
+          },
+          {
+            name: '案件录入',
+            path: 'entry',
+            icon: 'customer-service',
+            children: [
+              {
+                component: dynamicWrapper(app, ['preList'], () => import('../routes/EntrySystem/index')),
+              },
+              {
+                path: 'input',
+                component: dynamicWrapper(app, ['group', 'entry'], () => import('../routes/EntrySystem/universalInput')),
+              },
+            ],
+          },
+          {
+            name: '录入质检',
+            path: 'review1',
+            icon: 'customer-service',
+            children: [
+              {
+                component: dynamicWrapper(app, ['caseList'], () => import('../routes/Review/BasicList')),
+              },
+              {
+                path: 'detail',
+                component: dynamicWrapper(app, ['caseList', 'claim'], () => import('../routes/CaseDetail/AdvancedProfile')),
+              },
+            ],
+          },
+          {
+            name: '案件初审',
+            path: 'review2',
+            icon: 'customer-service',
+            children: [
+              {
+                component: dynamicWrapper(app, ['caseList'], () => import('../routes/Review/BasicList')),
+              },
+              {
+                path: 'detail',
+                component: dynamicWrapper(app, ['caseList', 'claim'], () => import('../routes/CaseDetail/AdvancedProfile')),
+              },
+            ],
+          },
+          {
+            name: '案件复审',
+            path: 'review',
+            icon: 'customer-service',
+            children: [
+              {
+                component: dynamicWrapper(app, ['caseList'], () => import('../routes/Review/BasicList')),
+              },
+              {
+                path: 'detail',
+                component: dynamicWrapper(app, ['caseList', 'claim'], () => import('../routes/CaseDetail/AdvancedProfile')),
+              },
+            ],
+          },
+          {
+            name: '案件汇总',
+            path: 'allCase',
+            icon: 'customer-service',
+            children: [
+              {
+                component: dynamicWrapper(app, ['caseList'], () => import('../routes/Review/BasicList')),
+              },
+              {
+                path: 'detail',
+                component: dynamicWrapper(app, ['caseList', 'claim'], () => import('../routes/CaseDetail/AdvancedProfile')),
+              },
+            ],
+          },
+          {
+            name: '导出历史',
+            path: 'exportHistory',
+            icon: 'solution',
+            component: dynamicWrapper(app, ['group'], () => import('../routes/EntrySystem/universalInput')),
+          },
+          {
+            name: '历史案件',
+            path: 'history',
+            icon: 'customer-service',
+            component: dynamicWrapper(app, ['preList'], () => import('../routes/Preliminary/BasicList')),
+          },
+        ],
       },
     ],
   },

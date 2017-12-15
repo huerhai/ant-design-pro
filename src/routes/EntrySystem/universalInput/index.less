@@ -2,9 +2,12 @@
 @import "../../../utils/utils.less";
 
 .card {
+  & + .card {
+    margin-top: 15px;
+  }
   :global {
     .ant-row {
-      height: 32px;
+      min-height: 32.5px;
     }
   }
 }

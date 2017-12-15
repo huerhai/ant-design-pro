@@ -19,7 +19,7 @@ export default class Login extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.login.success) {
-      this.props.dispatch(routerRedux.push('/preliminary'));
+      this.props.dispatch(routerRedux.push('/workplace'));
     } else if (nextProps.login.success === null) {
       notification.error({
         message: '对不起, 登录失败',

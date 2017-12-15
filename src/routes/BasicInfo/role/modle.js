@@ -3,12 +3,10 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Form, Input, Modal, Radio, Checkbox } from 'antd';
+import { Form, Input, Modal, Checkbox } from 'antd';
 import './Roleboard.less';
 
 const CheckboxGroup = Checkbox.Group;
-const RadioButton = Radio.Button;
-const RadioGroup = Radio.Group;
 
 const FormItem = Form.Item;
 
@@ -108,7 +106,7 @@ const modal = ({
             )}
           </FormItem>
         </div>
-        <div style={{overflow: 'auto' }}>
+        <div style={{ overflow: 'auto' }}>
           <span>菜单编辑</span>
           <div style={{ height: '1px', borderTop: '1px solid #ddd', textAlign: 'center', margin: '10px 0px' }} />
           <div className="left-part" style={{ width: '40%', float: 'left', marginTop: '10px' }}>

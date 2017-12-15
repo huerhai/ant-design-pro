@@ -1,5 +1,67 @@
 import moment from 'moment';
 
+const ICD10 = [
+  {
+    label: '慢性呼吸道感染 J98.951',
+    value: '慢性呼吸道感染 J98.951',
+  },
+  {
+    label: '胸腔肿物 J98.902',
+    value: '胸腔肿物 J98.902',
+  },
+  {
+    label: '胸腔占位性病变 J98.901',
+    value: '胸腔占位性病变 J98.901',
+  },
+  {
+    label: '其他特指的呼吸性疾患 J98.851',
+    value: '其他特指的呼吸性疾患 J98.851',
+  },
+  {
+    label: '胸部肿物 J98.804',
+    value: '胸部肿物 J98.804',
+  },
+  {
+    label: '呼吸道梗阻 J98.803',
+    value: '呼吸道梗阻 J98.803',
+  },
+  {
+    label: '呼吸道感染 J98.802',
+    value: '呼吸道感染 J98.802',
+  },
+  {
+    label: '鼻咽肿物 J98.801',
+    value: '鼻咽肿物 J98.801',
+  },
+  {
+    label: '膈松弛 J98.653',
+    value: '膈松弛 J98.653',
+  },
+  {
+    label: '膈麻痹 J98.652',
+    value: '膈麻痹 J98.652',
+  },
+  {
+    label: '膈肌囊肿 J98.651',
+    value: '膈肌囊肿 J98.651',
+  },
+  {
+    label: '横膈麻痹 J98.603',
+    value: '横膈麻痹 J98.603',
+  },
+  {
+    label: '膈肌麻痹 J98.602',
+    value: '膈肌麻痹 J98.602',
+  },
+  {
+    label: '膈(横膈)膨升 J98.601',
+    value: '膈(横膈)膨升 J98.601',
+  },
+  {
+    label: '纵隔退缩 J98.553',
+    value: '纵隔退缩 J98.553',
+  },
+];
 const claim = {
   title: '一个案件对象',
   type: 'object',
@@ -731,7 +793,7 @@ const event = {
     },
     referralClinical: {
       type: 'string',
-      title: '转来科室名称',
+      title: '转科室名称',
       defaultValue: '',
       description: '描述',
       order: 5,
@@ -740,7 +802,7 @@ const event = {
     },
     referralDoctor: {
       type: 'string',
-      title: '转来医生姓名',
+      title: '转医生姓名',
       defaultValue: '',
       description: '描述',
       order: 5,
@@ -749,7 +811,7 @@ const event = {
     },
     referralHospitalName: {
       type: 'string',
-      title: '转来医院名称',
+      title: '转医院名称',
       defaultValue: '',
       description: '描述',
       order: 5,
@@ -825,4 +887,473 @@ const event = {
     },
   },
 };
-export { claim, person, event };
+
+const basicInfo = {
+  title: '基本信息',
+  type: 'object',
+  properties: {
+    policyId: {
+      type: 'string',
+      title: '保单号',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    policyHolderName: {
+      type: 'string',
+      title: '投保单位',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    idType: {
+      type: 'select',
+      title: '证件类型',
+      defaultValue: '111',
+      description: '描述',
+      rules: [],
+      style: {},
+      enum: [{
+        label: '身份证',
+        value: '111',
+      }, {
+        label: '驾驶证',
+        value: '112',
+      }, {
+        label: '港澳台胞证',
+        value: '113',
+      }],
+    },
+    id: {
+      type: 'string',
+      title: '证件号码',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    name: {
+      type: 'string',
+      title: '被保人姓名',
+      description: '',
+      rules: [],
+      style: {},
+    },
+    gender: {
+      type: 'radioBtn',
+      title: '性别',
+      defaultValue: '2',
+      description: '描述',
+      rules: [],
+      style: {},
+      enum: [{
+        label: '男',
+        value: '2',
+      }, {
+        label: '女',
+        value: '3',
+      }, {
+        label: '未知',
+        value: '4',
+      }],
+    },
+    mobilePhone: {
+      type: 'string',
+      title: '联系电话',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    bankType: {
+      type: 'select',
+      title: '银行名称',
+      defaultValue: '002',
+      description: '描述',
+      rules: [],
+      style: {},
+      enum: [{
+        label: '中国工商银行',
+        value: '001',
+      }, {
+        label: '中国建设银行',
+        value: '002',
+      }],
+    },
+    bankAccount: {
+      type: 'string',
+      title: '银行账号',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    bankAccountCity: {
+      type: 'city',
+      title: '银行省市区',
+      description: '描述',
+      order: 4,
+      rules: [],
+      style: {
+        span: 12,
+      },
+    },
+    relationship: {
+      type: 'select',
+      title: '领款关系',
+      defaultValue: '1',
+      description: '描述',
+      order: 5,
+      rules: [],
+      style: {},
+      enum: [{
+        label: '本人',
+        value: '1',
+      }, {
+        label: '配偶',
+        value: '2',
+      }, {
+        label: '父母',
+        value: '3',
+      }, {
+        label: '子女',
+        value: '4',
+      }, {
+        label: '其他',
+        value: '5',
+      }],
+    },
+    领款人姓名: {
+      type: 'string',
+      title: '领款人姓名',
+      description: '描述',
+      hide: [{
+        key: 'relationship',
+        value: '1',
+      }],
+      rules: [],
+      style: {},
+    },
+    领款人证件类型: {
+      type: 'select',
+      title: '证件类型',
+      defaultValue: '111',
+      description: '描述',
+      rules: [],
+      style: {},
+      hide: [{
+        key: 'relationship',
+        value: '1',
+      }],
+      enum: [{
+        label: '身份证',
+        value: '111',
+      }, {
+        label: '驾驶证',
+        value: '112',
+      }, {
+        label: '港澳台胞证',
+        value: '113',
+      }],
+    },
+    领款人证件号: {
+      type: 'string',
+      title: '证件号',
+      defaultValue: '',
+      description: '描述',
+      hide: [{
+        key: 'relationship',
+        value: '1',
+      }],
+      rules: [],
+      style: {},
+    },
+    bankType2: {
+      type: 'select',
+      title: '银行名称',
+      description: '描述',
+      hide: [{
+        key: 'relationship',
+        value: '1',
+      }],
+      rules: [],
+      style: {},
+      enum: [{
+        label: '中国工商银行',
+        value: '001',
+      }, {
+        label: '中国建设银行',
+        value: '002',
+      }],
+    },
+    bankAccount2: {
+      type: 'string',
+      title: '银行账号',
+      defaultValue: '',
+      description: '描述',
+      hide: [{
+        key: 'relationship',
+        value: '1',
+      }],
+      rules: [],
+      style: {},
+    },
+    bankAccountCity2: {
+      type: 'city',
+      title: '银行省市区',
+      defaultValue: undefined,
+      description: '描述',
+      hide: [{
+        key: 'relationship',
+        value: '1',
+      }],
+      rules: [],
+      style: {
+        span: 12,
+      },
+    },
+  },
+};
+const basicEventInfo = {
+  title: '案件基本信息',
+  type: 'object',
+  properties: {
+    accidentSubtype: {
+      type: 'radioBtn',
+      title: '出险类型',
+      defaultValue: 1,
+      description: '描述',
+      order: 1,
+      rules: [],
+      style: {
+        span: 8,
+      },
+      enum: [{
+        label: '疾病',
+        value: 1,
+      }, {
+        label: '意外',
+        value: 2,
+      }, {
+        label: '其他',
+        value: 3,
+      }],
+    },
+    billType: {
+      type: 'radioBtn',
+      title: '收据类型',
+      defaultValue: 1,
+      description: '描述',
+      order: 1,
+      rules: [],
+      style: {
+        span: 8,
+      },
+      enum: [{
+        label: '门诊',
+        value: 1,
+      }, {
+        label: '住院',
+        value: 2,
+      }, {
+        label: '其他',
+        value: 3,
+      }],
+    },
+    referral: {
+      type: 'bool',
+      title: '是否转诊',
+      defaultValue: false,
+      description: '描述',
+      rules: [],
+      style: {
+        span: 8,
+      },
+    },
+    firstDate: {
+      type: 'dateString',
+      title: '就诊日期',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    hospitalName: {
+      type: 'string',
+      title: '就诊医院',
+      defaultValue: '',
+      description: '描述',
+      order: 5,
+      rules: [],
+      style: {},
+    },
+    clinical: {
+      type: 'string',
+      title: '科室名称',
+      defaultValue: '',
+      description: '描述',
+      order: 5,
+      rules: [],
+      style: {},
+    },
+    illCode: {
+      type: 'selectTag',
+      title: '疾病诊断',
+      defaultValue: undefined,
+      description: '描述',
+      rules: [],
+      style: {
+        span: 24,
+        formItem: {
+          labelCol: { span: 2 },
+          wrapperCol: { span: 22 },
+        },
+      },
+      enum: ICD10,
+
+    },
+    referralHospitalName: {
+      type: 'string',
+      title: '转医院',
+      defaultValue: '',
+      description: '描述',
+      hide: [{
+        key: 'referral',
+        value: false,
+      }],
+      rules: [],
+      style: {},
+    },
+    referralClinical: {
+      type: 'string',
+      title: '转科室',
+      defaultValue: '',
+      description: '描述',
+      hide: [{
+        key: 'referral',
+        value: false,
+      }],
+      rules: [],
+      style: {},
+    },
+    referralDoctor: {
+      type: 'string',
+      title: '转医生',
+      defaultValue: '',
+      description: '描述',
+      hide: [{
+        key: 'referral',
+        value: false,
+      }],
+      rules: [],
+      style: {},
+    },
+    illCode2: {
+      type: 'selectNET',
+      title: '转诊 疾病诊断',
+      defaultValue: undefined,
+      description: '描述',
+      hide: [{
+        key: 'referral',
+        value: false,
+      }],
+      rules: [],
+      style: {
+        span: 24,
+        formItem: {
+          labelCol: { span: 2 },
+          wrapperCol: { span: 22 },
+        },
+      },
+      enum: ICD10,
+    },
+  },
+};
+
+const invoiceInfo = {
+  title: '收据信息',
+  type: 'object',
+  properties: {
+    hospitalName: {
+      type: 'string',
+      title: '收据号',
+      defaultValue: '',
+      description: '描述',
+      rules: [],
+      style: {},
+    },
+    总金额: {
+      type: 'money',
+      title: '总金额',
+      defaultValue: 0,
+      description: '描述',
+      rules: [],
+      style: {
+        span: 4,
+      },
+    },
+    自费: {
+      type: 'money',
+      title: '自费',
+      defaultValue: 0,
+      description: '描述',
+      rules: [],
+      style: {
+        span: 4,
+      },
+    },
+    自负: {
+      type: 'money',
+      title: '自负',
+      defaultValue: 0,
+      description: '描述',
+      rules: [],
+      style: {
+        span: 4,
+      },
+    },
+    统筹: {
+      type: 'money',
+      title: '统筹',
+      defaultValue: 0,
+      description: '描述',
+      rules: [],
+      style: {
+        span: 4,
+      },
+    },
+    附加: {
+      type: 'money',
+      title: '附加',
+      defaultValue: 0,
+      description: '描述',
+      rules: [],
+      style: {
+        span: 4,
+      },
+    },
+    大病: {
+      type: 'money',
+      title: '大病',
+      defaultValue: 0,
+      description: '描述',
+      rules: [],
+      style: {
+        span: 4,
+      },
+    },
+    第三方: {
+      type: 'money',
+      title: '第三方',
+      defaultValue: 0,
+      description: '描述',
+      rules: [],
+      style: {
+        span: 4,
+      },
+    },
+  },
+};
+export { basicInfo, basicEventInfo, invoiceInfo, claim, person, event };

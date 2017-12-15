@@ -5,7 +5,7 @@ import { Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, mess
 import ListTable from './list';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 import styles from './Userboard.less';
-import EditModal from './modle';
+import EditModal from './EditModal';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -180,58 +180,6 @@ export default class Userboard extends Component {
     }
   }
 
-  renderSimpleForm() {
-    const { getFieldDecorator } = this.props.form;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
-            <FormItem label="帐号">
-              {getFieldDecorator('帐号')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={4} sm={24}>
-            <FormItem label="姓名">
-              {getFieldDecorator('姓名')(
-                <Input placeholder="请输入" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
-            <FormItem label="公司属性">
-              {getFieldDecorator('公司属性')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="类型1">类型1</Option>
-                  <Option value="类型2">类型2</Option>
-                  <Option value="类型3">类型3</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
-            <FormItem label="所属公司">
-              {getFieldDecorator('所属公司')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="公司1">公司1</Option>
-                  <Option value="公司2">公司2</Option>
-                  <Option value="公司3">公司3</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={4} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">查询</Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
-
   render() {
     const { group: { loading: groupLoading, data } } = this.props;
     const { selectedRows, modalVisible } = this.state;
@@ -247,38 +195,15 @@ export default class Userboard extends Component {
       },
     ];
 
-    const pageHeaderContent = (
-      <div style={{ textAlign: 'center' }}>
-        {/* <Input.Search
-          placeholder="请输入"
-          enterButton="搜索"
-          size="large"
-          onSearch={this.handleFormSubmit}
-          style={{ width: 522 }}
-        /> */}
-      </div>
-    );
-
-    const menu = (
-      <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="approval">批量审批</Menu.Item>
-      </Menu>
-    );
-
     return (
       <PageHeaderLayout
         title="用户管理"
-        content={pageHeaderContent}
         tabList={tabList}
         onTabChange={this.handleTabChange}
       >
         <div>
           <Card bordered={false}>
             <div className={styles.tableList}>
-              <div className={styles.tableListForm}>
-                {this.renderSimpleForm()}
-              </div>
               <div className={styles.tableListOperator}>
                 <Button
                   icon="plus"
@@ -292,18 +217,6 @@ export default class Userboard extends Component {
                 >
                   新建
                 </Button>
-                {
-                  selectedRows.length > 0 && (
-                    <span>
-                      <Button>批量操作</Button>
-                      <Dropdown overlay={menu}>
-                        <Button>
-                          更多操作 <Icon type="down" />
-                        </Button>
-                      </Dropdown>
-                    </span>
-                  )
-                }
               </div>
               <ListTable
                 selectedRows={selectedRows}

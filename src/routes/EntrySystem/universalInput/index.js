@@ -1,17 +1,22 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-vars,react/no-unused-state */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Select, Radio, DatePicker, Cascader, InputNumber, Tabs, Icon, Button, Dropdown, Menu, message } from 'antd';
+import { Row, Col, Card, Form, Input, Select, Radio, DatePicker, Cascader, InputNumber, Tabs, Icon, Button, Dropdown, Menu, message, Divider, Collapse, Alert } from 'antd';
 import FooterToolbar from '../../../components/FooterToolbar';
 import PageHeaderLayout from '../../../layouts/PageHeaderLayout';
 import UniversalInput from '../../../components/UniversalInput';
 import UniversalForm from '../../../components/UniversalForm';
 import InvoiceTable from './InvoiceTable';
+import { date } from '../../../utils/utils';
+
+import InvoiceDetailTable from './InvoiceDetailTable';
+import SelectNet from './selectNet';
 import styles from './index.less';
 
-import { claim as claimSchema, event as eventSchema, person as personSchema } from './claim';
+import { basicInfo, basicEventInfo, invoiceInfo, claim as claimSchema, event as eventSchema, person as personSchema } from './claim';
 
 const { TabPane } = Tabs;
+const { Panel } = Collapse;
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -20,6 +25,7 @@ const getValue = obj => Object.keys(obj).map(key => obj[key]).join(',');
 
 @connect(state => ({
   group: state.group,
+  entry: state.entry,
 }))
 @Form.create()
 export default class UniversalClaim extends PureComponent {
@@ -27,13 +33,12 @@ export default class UniversalClaim extends PureComponent {
     super(props);
     this.newTabIndex = 1;
     this.state = {
-      activeKey: '1 事件',
-      events: [],
-      personActiveKey: '被保人 申请人 报案人 领款人',
-      persons: [{
-        key: '被保人 申请人 报案人 领款人',
-        title: '被保人 申请人 报案人 领款人',
-      }],
+      policyFromNet: undefined,
+      policyValidate: undefined,
+      insurancePlanResponseList: [],
+      basicInfo,
+      basicEventInfo,
+      invoiceInfo,
       claimSchema,
       eventSchema,
       personSchema,
@@ -55,36 +60,43 @@ export default class UniversalClaim extends PureComponent {
     if (action === 'remove') this.removePeason(targetKey);
   }
   getInputForm(data) {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, getFieldValue } = this.props.form;
     const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 6 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-      },
+      labelCol: { span: 6 },
+      wrapperCol: { span: 18 },
     };
     const children = [];
     Object.keys(data.properties)
-      .sort((a, b) => data.properties[a].order - data.properties[b].order)
       .forEach((key) => {
         const item = data.properties[key];
-        children.push(
-          <Col span={8} key={key}>
-            <FormItem {...formItemLayout} label={item.title}>
-              {getFieldDecorator(key, {
-                initialValue: item.defaultValue,
-                rules: item.rules,
-              })(
-                <UniversalInput schema={item} />
-              )}
-            </FormItem>
-          </Col>
-        );
+        if (data.properties[key].type === 'selectNET') {
+          children.push(
+            <Col span={item.style.span || 6} key={key} style={{ display: item.hide ? (getFieldValue(item.hide[0].key) === item.hide[0].value ? 'none' : 'inline-block') : 'inline-block' }}>
+              <FormItem {...{ ...formItemLayout, ...item.style.formItem }} label={item.title}>
+                {getFieldDecorator(key, {
+                  initialValue: item.defaultValue,
+                })(
+                  <SelectNet />
+                )}
+              </FormItem>
+            </Col>
+          );
+        } else {
+          children.push(
+            <Col span={item.style.span || 6} key={key} style={{ display: item.hide ? (getFieldValue(item.hide[0].key) === item.hide[0].value ? 'none' : 'inline-block') : 'inline-block' }}>
+              <FormItem {...{ ...formItemLayout, ...item.style.formItem }} label={item.title}>
+                {getFieldDecorator(key, {
+                  initialValue: item.defaultValue,
+                  rules: item.rules,
+                })(
+                  <UniversalInput schema={item} />
+                )}
+              </FormItem>
+            </Col>
+          );
+        }
       });
-    return <Row gutter={40}>{children}</Row>;
+    return <Row gutter={8} >{children}</Row>;
   }
   add = (name) => {
     const { events } = this.state;
@@ -140,9 +152,41 @@ export default class UniversalClaim extends PureComponent {
       events: newEvents,
     });
   }
+  handleIDSubmit = (value) => {
+    const { dispatch, form: { setFieldsValue } } = this.props;
+    const { entry } = this.state;
+    dispatch({
+      type: 'entry/fetchPolicy',
+      payload: {
+        id: value,
+      },
+      callback: (res) => {
+        if (res.length === 1) {
+          message.success('获取成功,请核实申请书与系统的是否一致');
+          const policy = res[0];
+          this.setState({
+            policyFromNet: res[0],
+            policyValidate: `${date(policy.policyValidateFrom)}-${date(policy.policyValidateTo)}`,
+            insurancePlanResponseList: res[0].insurancePlanResponseList,
+          });
+          setFieldsValue({
+            policyId: policy.policyId,
+            policyHolderName: policy.policyHolder.name,
+            id: policy.insuredPerson.id,
+            idType: policy.insuredPerson.idType.referenceCode,
+            name: policy.insuredPerson.name,
+            gender: policy.insuredPerson.gender.referenceCode,
+            mobilePhone: policy.insuredPerson.mobilePhone,
+            bankType: policy.insuredPerson.bankType.referenceCode,
+            bankAccount: policy.insuredPerson.bankAccount,
+          });
+        }
+      },
+    });
+  };
   render() {
     const { form, submitting = false } = this.props;
-    const { persons } = this.state;
+    const { persons, policyFromNet, policyValidate, insurancePlanResponseList } = this.state;
     const { getFieldDecorator, validateFieldsAndScroll, getFieldsError } = form;
     const validate = () => {
       validateFieldsAndScroll((error, values) => {
@@ -152,80 +196,76 @@ export default class UniversalClaim extends PureComponent {
         // }
       });
     };
+    const AlertMessge = `${policyFromNet && policyFromNet.insuredPerson.name} 保单有效期:${policyValidate}`;
+
+    const pageHeaderContent = (
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Input.Search
+          placeholder="请输入被保人身份证号码"
+          enterButton="获取"
+          size="large"
+          defaultValue="410804198701160085"
+          onSearch={this.handleIDSubmit}
+          style={{ width: 422, height: 40 }}
+        />
+        {policyValidate && <Alert message={AlertMessge} type="success" style={{ margin: '0 10px' }} />}
+        {policyValidate && <a>查看</a>}
+      </div>
+    );
     return (
-      <PageHeaderLayout title="数据录入">
+      <PageHeaderLayout
+        content={pageHeaderContent}
+      >
         <Form>
-          <Card className={styles.card} bordered={false}>
-            {this.getInputForm(this.state.claimSchema)}
+          <Card className={styles.card} title="基本信息">
+            {this.getInputForm(this.state.basicInfo)}
           </Card>
-          <Card className={styles.card} bordered={false} style={{ marginTop: 16 }}>
-            <div style={{ marginBottom: 16 }}>
-              <span>添加:</span>
-              {~persons[0].title.indexOf('申请人') ? <Button onClick={this.addPerson.bind(this, '申请人')}>+申请人</Button> : null}
-              {~persons[0].title.indexOf('领款人') ? <Button onClick={this.addPerson.bind(this, '领款人')}>+领款人</Button> : null}
-              {~persons[0].title.indexOf('报案人') ? <Button onClick={this.addPerson.bind(this, '报案人')}>+报案人</Button> : null}
-            </div>
-            <Tabs
-              hideAdd
-              onChange={key => this.setState({ personActiveKey: key })}
-              activeKey={this.state.personActiveKey}
-              type="editable-card"
-              onEdit={this.onPeasonEdit}
+          <Card className={styles.card} title="事件信息">
+            {this.getInputForm(this.state.basicEventInfo)}
+            <Divider>收据信息</Divider>
+            <Collapse defaultActiveKey={['1']}>
+              <Panel header="收据1" key="1">
+                <div>
+                  {this.getInputForm(this.state.invoiceInfo)}
+                </div>
+                <div>
+                  {getFieldDecorator('invoiceDetailList', {
+                    initialValue: [{
+                      key: '0',
+                      费用类型: '',
+                      费用名称: '',
+                      数量: '1',
+                      单价: '0',
+                      金额: '0',
+                      自付比例: '0',
+                      自负金额: '0',
+                      editable: true,
+                      isNew: true,
+                    }],
+                  })(<InvoiceDetailTable />)}
+                </div>
+              </Panel>
+            </Collapse>
+            <Button
+              style={{ width: '100%', marginTop: 16, marginBottom: 8 }}
+              type="dashed"
+              onClick={() => {}}
+              icon="plus"
             >
-              {this.state.persons.map((pane, index) => {
-                return (
-                  <TabPane tab={pane.title} key={pane.key}>
-                    <Card className={styles.card} bordered={false}>
-                      <UniversalForm
-                        schema={this.state.personSchema}
-                        {...this.state.persons[index]}
-                        onChange={this.handleFormChange.bind(this, index)}
-                      />
-                    </Card>
-                  </TabPane>);
-              })}
-            </Tabs>
-          </Card>
-          <Card className={styles.card} bordered={false} style={{ marginTop: 16 }}>
-            <div style={{ marginBottom: 16 }}>
-              <span>添加:</span>
-              <Button onClick={this.add.bind(this, '疾病门诊')}>+疾病门诊事件</Button>
-              <Button onClick={this.add.bind(this, '疾病住院')}>+疾病住院事件</Button>
-              <Button onClick={this.add.bind(this, '意外门诊')}>+意外门诊事件</Button>
-              <Button onClick={this.add.bind(this, '意外住院')}>+意外住院事件</Button>
-              <Button onClick={this.add.bind(this, '伤残')}>+伤残事件</Button>
-              <Button onClick={this.add.bind(this, '生育')}>+生育事件</Button>
-              <Button onClick={this.add.bind(this, '身故')}>+身故事件</Button>
-            </div>
-            <Tabs
-              hideAdd
-              onChange={this.onChange}
-              activeKey={this.state.activeKey}
-              type="editable-card"
-              onEdit={this.onEdit}
-            >
-              {this.state.events.map((pane, index) => {
-                return (
-                  <TabPane tab={pane.title} key={pane.key}>
-                    <Card className={styles.card} bordered={false}>
-                      <UniversalForm
-                        filter={this.state.events[index].type}
-                        schema={this.state.eventSchema}
-                        {...this.state.events[index]}
-                        onChange={this.handleFormChange.bind(this, index)}
-                      />
-                    </Card>
-                  </TabPane>);
-              })}
-            </Tabs>
-          </Card>
-          <Card className={styles.card} bordered={false} style={{ marginTop: 16 }}>
-            {getFieldDecorator('invoiceList', {
-              initialValue: [],
-            })(<InvoiceTable />)}
+              新增收据
+            </Button>
           </Card>
         </Form>
         <FooterToolbar>
+          {document.body.clientWidth < 1440 && <Alert message="您使用的屏幕太小了,可能会影响录入,建议你窗口全屏" type="warning" style={{ margin: 10, display: 'inline-block', float: 'left' }} />}
+          <Button
+            onClick={() => {
+              window.open('http://hic.leapstack.cn/gw/am/attachment/getclaimFileByCalimId?claimId=0000000180');
+            }}
+            loading={submitting}
+          >
+            增加事件
+          </Button>
           <Button
             onClick={() => {
               window.open('http://hic.leapstack.cn/gw/am/attachment/getclaimFileByCalimId?claimId=0000000180');

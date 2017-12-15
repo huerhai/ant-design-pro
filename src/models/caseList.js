@@ -1,5 +1,6 @@
+/* eslint-disable no-param-reassign */
 import { updatePreCase, freshRreList } from '../services/Basic';
-import { queryList, updateStatusCodes, getClaimById, getDutyByClaimId, updateDutyByClaimId, getPolicyById } from '../services/case';
+import { queryList, updateStatusCodes, getClaimById, getDutyByClaimId, updateDutyByClaimId, getPolicyById, exportCasesDetail } from '../services/case';
 
 export default {
   namespace: 'caseList',
@@ -55,6 +56,10 @@ export default {
     },
     *updateDutyByClaimId({ payload, callback }, { call }) {
       const res = yield call(updateDutyByClaimId, payload);
+      if (callback) callback(payload, res);
+    },
+    *exportCasesDetail({ payload, callback }, { call }) {
+      const res = yield call(exportCasesDetail, payload);
       if (callback) callback(payload, res);
     },
     *update({ payload, callback }, { call, put }) {

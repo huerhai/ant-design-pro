@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { PureComponent } from 'react';
 import { Table, Button, Input, message, Popconfirm, Divider } from 'antd';
 
@@ -63,6 +64,8 @@ export default class TableForm extends PureComponent {
       自费部分: '0',
       统筹支付额: '0',
       附加支付金额: '0',
+      大病支付: '0',
+      第三方支付: '0',
       editable: true,
       isNew: true,
     });
@@ -102,6 +105,9 @@ export default class TableForm extends PureComponent {
       }
       delete target.isNew;
       this.toggleEditable(e, key);
+      if (!this.state.data[this.state.data.length - 1].editable) {
+        this.newMember();
+      }
       this.props.onChange(this.state.data);
     }, 10);
   }
@@ -121,15 +127,26 @@ export default class TableForm extends PureComponent {
       title: '收据类型',
       dataIndex: '收据类型',
       key: '收据类型',
-      width: 40,
-      render: (text) => {
+      width: 100,
+      render: (text, record) => {
+        if (record.editable) {
+          return (
+            <Input
+              value={text}
+              autoFocus
+              onChange={e => this.handleFieldChange(e, '收据类型', record.key)}
+              onKeyPress={e => this.handleKeyPress(e, record.key)}
+              placeholder="收据类型"
+            />
+          );
+        }
         return `${text}`;
       },
     }, {
       title: '收据日期',
       dataIndex: '收据日期',
       key: '收据日期',
-      width: '12%',
+      width: 120,
       render: (text, record) => {
         if (record.editable) {
           return (
@@ -137,9 +154,8 @@ export default class TableForm extends PureComponent {
               value={text}
               autoFocus
               onChange={e => this.handleFieldChange(e, '收据日期', record.key)}
-              onBlur={e => this.saveRow(e, record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
-              placeholder="年/月/日 或者 年-月-日"
+              placeholder="YYYYMMDD"
             />
           );
         }
@@ -157,7 +173,6 @@ export default class TableForm extends PureComponent {
               value={text}
               autoFocus
               onChange={e => this.handleFieldChange(e, '收据号', record.key)}
-              onBlur={e => this.saveRow(e, record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="收据号"
             />
@@ -169,7 +184,6 @@ export default class TableForm extends PureComponent {
       title: '费用总额',
       dataIndex: '费用总额',
       key: '费用总额',
-      width: '10%',
       render: (text, record) => {
         if (record.editable) {
           return (
@@ -177,10 +191,8 @@ export default class TableForm extends PureComponent {
               value={text}
               autoFocus
               onChange={e => this.handleFieldChange(e, '费用总额', record.key)}
-              onBlur={e => this.saveRow(e, record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="费用总额"
-              addonAfter="元"
             />
           );
         }
@@ -190,7 +202,6 @@ export default class TableForm extends PureComponent {
       title: '乙类自付',
       dataIndex: '乙类自付',
       key: '乙类自付',
-      width: '10%',
       render: (text, record) => {
         if (record.editable) {
           return (
@@ -198,10 +209,8 @@ export default class TableForm extends PureComponent {
               value={text}
               autoFocus
               onChange={e => this.handleFieldChange(e, '乙类自付', record.key)}
-              onBlur={e => this.saveRow(e, record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="乙类自付"
-              addonAfter="元"
             />
           );
         }
@@ -211,7 +220,6 @@ export default class TableForm extends PureComponent {
       title: '自费部分',
       dataIndex: '自费部分',
       key: '自费部分',
-      width: '10%',
       render: (text, record) => {
         if (record.editable) {
           return (
@@ -219,10 +227,8 @@ export default class TableForm extends PureComponent {
               value={text}
               autoFocus
               onChange={e => this.handleFieldChange(e, '自费部分', record.key)}
-              onBlur={e => this.saveRow(e, record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="自费部分"
-              addonAfter="元"
             />
           );
         }
@@ -232,7 +238,6 @@ export default class TableForm extends PureComponent {
       title: '统筹支付额',
       dataIndex: '统筹支付额',
       key: '统筹支付额',
-      width: '10%',
       render: (text, record) => {
         if (record.editable) {
           return (
@@ -240,10 +245,8 @@ export default class TableForm extends PureComponent {
               value={text}
               autoFocus
               onChange={e => this.handleFieldChange(e, '统筹支付额', record.key)}
-              onBlur={e => this.saveRow(e, record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="统筹支付额"
-              addonAfter="元"
             />
           );
         }
@@ -253,7 +256,6 @@ export default class TableForm extends PureComponent {
       title: '附加支付金额',
       dataIndex: '附加支付金额',
       key: '附加支付金额',
-      width: '10%',
       render: (text, record) => {
         if (record.editable) {
           return (
@@ -261,7 +263,6 @@ export default class TableForm extends PureComponent {
               value={text}
               autoFocus
               onChange={e => this.handleFieldChange(e, '附加支付金额', record.key)}
-              onBlur={e => this.saveRow(e, record.key)}
               onKeyPress={e => this.handleKeyPress(e, record.key)}
               placeholder="附加支付金额"
             />
@@ -270,15 +271,44 @@ export default class TableForm extends PureComponent {
         return `${text}元`;
       },
     }, {
-      title: '核定小计',
-      dataIndex: '费用总额',
-      key: '核定小计',
-      width: '10%',
+      title: '大病支付',
+      dataIndex: '大病支付',
+      key: '大病支付',
       render: (text, record) => {
-        return `${(+text) - ((+record.乙类自付) + (+record.自费部分) + (+record.统筹支付额))}元`;
+        if (record.editable) {
+          return (
+            <Input
+              value={text}
+              autoFocus
+              onChange={e => this.handleFieldChange(e, '大病支付', record.key)}
+              onKeyPress={e => this.handleKeyPress(e, record.key)}
+              placeholder="大病支付"
+            />
+          );
+        }
+        return `${text}元`;
+      },
+    }, {
+      title: '第三方支付',
+      dataIndex: '第三方支付',
+      key: '第三方支付',
+      render: (text, record) => {
+        if (record.editable) {
+          return (
+            <Input
+              value={text}
+              autoFocus
+              onChange={e => this.handleFieldChange(e, '第三方支付', record.key)}
+              onKeyPress={e => this.handleKeyPress(e, record.key)}
+              placeholder="第三方支付"
+            />
+          );
+        }
+        return `${text}元`;
       },
     }, {
       title: '操作',
+      width: 130,
       key: 'action',
       render: (text, record) => {
         if (record.editable) {
@@ -315,6 +345,7 @@ export default class TableForm extends PureComponent {
     return (
       <div>
         <Table
+          size="small"
           columns={columns}
           dataSource={this.state.data}
           pagination={false}
@@ -322,54 +353,6 @@ export default class TableForm extends PureComponent {
             return record.editable ? styles.editable : '';
           }}
         />
-        <Button
-          style={{ width: '40%', marginTop: 16, marginBottom: 8 }}
-          type="dashed"
-          onClick={this.newMember.bind(this, '门诊')}
-          icon="plus"
-        >
-          新增门诊收据
-        </Button>
-        <Button
-          style={{ width: '40%', marginTop: 16, marginBottom: 8 }}
-          type="dashed"
-          onClick={this.newMember.bind(this, '住院')}
-          icon="plus"
-        >
-          新增住院收据
-        </Button>
-        <Button
-          style={{ width: '5%', marginTop: 16, marginBottom: 8 }}
-          type="dashed"
-          onClick={this.newMember.bind(this, '生育')}
-          icon="plus"
-        >
-          生育
-        </Button>
-        <Button
-          style={{ width: '5%', marginTop: 16, marginBottom: 8 }}
-          type="dashed"
-          onClick={this.newMember.bind(this, '体检')}
-          icon="plus"
-        >
-          体检
-        </Button>
-        <Button
-          style={{ width: '5%', marginTop: 16, marginBottom: 8 }}
-          type="dashed"
-          onClick={this.newMember.bind(this, '牙科')}
-          icon="plus"
-        >
-          牙科
-        </Button>
-        <Button
-          style={{ width: '5%', marginTop: 16, marginBottom: 8 }}
-          type="dashed"
-          onClick={this.newMember.bind(this, '眼科')}
-          icon="plus"
-        >
-          眼科
-        </Button>
       </div>
     );
   }

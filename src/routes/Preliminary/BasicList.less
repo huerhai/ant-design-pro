@@ -91,6 +91,19 @@
     height: auto;
   }
 }
+.iframeWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  :global {
+    iframe {
+      flex: 1;
+    }
+    form {
+      flex: 1;
+    }
+  }
+}
 @media screen and (max-width: @screen-xs) {
   .standardList {
     :global {

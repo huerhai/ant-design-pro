@@ -1,0 +1,19 @@
+@import "~antd/lib/style/themes/default.less";
+@import "../../utils/utils.less";
+
+.standardList {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  :global {
+    .ant-card {
+      flex: 1;
+      margin: 10px;
+      min-height: 885px;
+      .ant-list-item {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+  }
+}

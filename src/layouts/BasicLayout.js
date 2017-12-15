@@ -265,12 +265,11 @@ class BasicLayout extends React.PureComponent {
           collapsed={collapsed}
           breakpoint="md"
           onCollapse={this.onCollapse}
-          width={256}
+          width={160}
           className={styles.sider}
         >
           <div className={styles.logo}>
             <Link to="/">
-              <img src="https://gw.alipayobjects.com/zos/rmsportal/iwWyPinUoseUxIAeElSx.svg" alt="logo" />
               <h1>商保2.0</h1>
             </Link>
           </div>
@@ -359,7 +358,7 @@ class BasicLayout extends React.PureComponent {
                     )
                   )
                 }
-                <Redirect exact from="/" to="/dashboard/analysis" />
+                <Redirect exact from="/" to="/workplace" />
                 <Route component={NotFound} />
               </Switch>
             </div>

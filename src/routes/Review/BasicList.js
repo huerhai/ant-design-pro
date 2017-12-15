@@ -2,7 +2,6 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { routerRedux } from 'dva/router';
 import { Form, Select, List, Card, Row, Col, Radio, Input, Icon, Dropdown, Menu, Avatar, message, Table } from 'antd';
 
 import { caseState } from '../../utils/utils';
@@ -28,13 +27,18 @@ export default class BasicList extends PureComponent {
     currentItemRiskNumber: 1,
     modalVisible: false,
     gridStyle: 'grid',
+    selectedRowKeys: [],
+    selectedRow: [],
     filter: {
       page: this.props.caseList.page || 0,
-      size: 500,
+      size: 100,
     },
   };
   componentDidMount() {
     this.fetch();
+  }
+  onSelectChange = (selectedRowKeys, selectedRow) => {
+    this.setState({ selectedRowKeys, selectedRow });
   }
   fetch(newFilter) {
     const { form } = this.props;
@@ -75,11 +79,114 @@ export default class BasicList extends PureComponent {
   exportCase = (item) => {
     window.open(`gw/cs/excelexport/excel?fileName=${new Date().toLocaleDateString()}.xls&companyId=${item.companyName.dictionaryDataId}&claimIds=${item.claimId}&afterUpdateStatus=40`);
   }
+  exportCases = (claimIds) => {
+    window.open(`gw/cs/excelexport/excel?fileName=${new Date().toLocaleDateString()}.xls&companyId=7428&claimIds=${claimIds.join(',')}&afterUpdateStatus=40`);
+  }
+  exportCasesDetail = (selectedRow) => {
+    const { dispatch } = this.props;
+    dispatch(
+      {
+        type: 'caseList/exportCasesDetail',
+        payload: {
+          fileName: new Date().toLocaleDateString(),
+          subSheet: selectedRow.map((item) => {
+            return {
+              claimId: item.claimId,
+              insuredPerson: item.insuredPersonName || '未知',
+            };
+          }),
+        },
+      }
+    );
+  }
   render() {
     const { caseList: { list, loading, total, currentItem }, dispatch } = this.props;
-    const { modalVisible } = this.state;
+    const { modalVisible, selectedRowKeys } = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
+    const hasSelected = selectedRowKeys.length > 0;
+    const batchMeneOnClick = ({ key }) => {
+      if (+key < 100) {
+        dispatch(
+          {
+            type: 'caseList/changeStatus',
+            payload: {
+              items: this.state.selectedRowKeys,
+              to: key,
+            },
+          }
+        );
+      } else if (key === '200') {
+        this.exportCases(this.state.selectedRowKeys);
+      } else if (key === '300') {
+        this.exportCasesDetail(this.state.selectedRow);
+      }
+    };
+    const detaile = () => {
+      return JSON.stringify(this.state.selectedRow.map((item) => {
+        return {
+          claimId: item.claimId,
+          insuredPerson: item.insuredPersonName || '未知',
+        };
+      }));
+    };
+    const dropdownMenu = (
+      <Menu onClick={batchMeneOnClick}>
+        <Menu.Item key="11">
+          <a rel="noopener noreferrer" >→质检</a>
+        </Menu.Item>
+        <Menu.Item key="91">
+          <a rel="noopener noreferrer" >→质检不通过</a>
+        </Menu.Item>
+        <Menu.Item key="21">
+          <a rel="noopener noreferrer" >→待审核</a>
+        </Menu.Item>
+        <Menu.Item key="92">
+          <a rel="noopener noreferrer" >→审核未通过</a>
+        </Menu.Item>
+        <Menu.Item key="30">
+          <a rel="noopener noreferrer" >→审核通过</a>
+        </Menu.Item>
+        <Menu.Item key="40">
+          <a rel="noopener noreferrer" >→已导出</a>
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item key="200">
+          <a rel="noopener noreferrer" >↓批量导出案件(易安) →已导出</a>
+        </Menu.Item>
+        <Menu.Item key="300">
+          <form
+            method="POST"
+            target="_blank"
+            name="downExcel"
+            encType="multipart/form-data"
+            action="/gw/cs/excelexport/formexcelmutidetail"
+          >
+            <p style={{ display: 'none' }}>
+              <input type="text" name="fileName" value="案件清单明细.xls" readOnly />
+              <input type="text" name="claimInfo" value={detaile()} readOnly />
+            </p>
+            <p>
+              <input type="submit" value="↓批量导出明细" className="ant-dropdown-link" disabled={!hasSelected} />
+            </p>
+          </form>
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item key="9" disabled>请谨慎操作</Menu.Item>
+      </Menu>
+    );
     const extraContent = (
       <div className={styles.extraContent}>
+        <span style={{ marginRight: 8 }}>
+          {hasSelected ? `选择了 ${selectedRowKeys.length} 件` : ''}
+        </span>
+        <Dropdown overlay={dropdownMenu} disabled={!hasSelected}>
+          <a className="ant-dropdown-link" style={{ marginRight: 15 }} >
+            批量操作 <Icon type="down" />
+          </a>
+        </Dropdown>
         <a
           onClick={() => {
             this.fetch();
@@ -109,7 +216,7 @@ export default class BasicList extends PureComponent {
           </RadioButton>
           <RadioButton value="10,11" >质检{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(10) ? total : ''}</RadioButton>
           <RadioButton value="91" >质检不通过{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(91) ? total : ''}</RadioButton>
-          <RadioButton value="20,21,92" >待审核{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(20) ? total : ''}</RadioButton>
+          <RadioButton value="20,21" >待审核{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(20) ? total : ''}</RadioButton>
           <RadioButton value="92" >审核未通过{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(92) ? total : ''}</RadioButton>
           <RadioButton value="30" >审核通过{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(30) ? total : ''}</RadioButton>
           <RadioButton value="40" >已导出{!loading && this.state.filter.statusCodes && ~this.state.filter.statusCodes.indexOf(40) ? total : ''}</RadioButton>
@@ -133,6 +240,9 @@ export default class BasicList extends PureComponent {
       this.setState({
         currentItemRiskNumber: this.state.currentItemRiskNumber + 1,
       });
+    };
+    const handleCheck = (record) => {
+      window.open(`/#/case/review/detail?claimDataId=${record.claimDataId}&claimId=${record.claimId}`);
     };
     const ListContent =
       ({ data: {
@@ -269,14 +379,15 @@ export default class BasicList extends PureComponent {
       dataIndex: 'receiveTime',
       align: 'center',
       render: (text) => {
-        return <span>{moment(text).format('MM-DD')}</span>;
+        return <span>{moment(text).format('MM/DD')}</span>;
       },
     }, {
       title: '来源',
       dataIndex: 'companyName',
       align: 'center',
       render: (text) => {
-        return <span>{text.value === '易安财产保险股份有限公司' ? '易安' : '人保'}</span>;
+        const temp = text || { value: '异常' };
+        return <span>{temp.value === '易安财产保险股份有限公司' ? '易安' : '人保'}</span>;
       },
     }, {
       title: '赔案号',
@@ -315,7 +426,8 @@ export default class BasicList extends PureComponent {
       filterMultiple: true,
       onFilter: (value, record) => record.auditConclusion.value.indexOf(value) === 0,
       render: (text, record) => {
-        return <span className={styles[`res-${text.value}`]}>{text.value}{record.invalidateType && <Icon type="question-circle" />}</span>;
+        const temp = text || { value: '异常' };
+        return <span className={styles[`res-${temp.value}`]}>{temp.value}{record.invalidateType && <Icon type="question-circle" />}</span>;
       },
     }, {
       title: '赔付金额',
@@ -343,7 +455,29 @@ export default class BasicList extends PureComponent {
             {text !== '低' && <span>{text}风险</span>}
           </div>);
       },
+    }, {
+      title: '操作',
+      dataIndex: 'option',
+      render: (text, record) => {
+        return (
+          <div>
+            <a onClick={() => handleCheck(record)}>查看</a>
+          </div>);
+      },
     }];
+
+    if (this.state.filter.statusCodes === undefined) {
+      columns.push({
+        title: '状态',
+        dataIndex: 'status',
+        render: (status) => {
+          return (
+            <div>
+              {caseState(status).label}
+            </div>);
+        },
+      });
+    }
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
@@ -382,9 +516,10 @@ export default class BasicList extends PureComponent {
       dataSource: list,
       pagination: paginationProps,
       onRowDoubleClick: (record) => {
-        dispatch(routerRedux.push(`/review/detail?claimId=${record.claimId}`));
+        handleCheck(record);
       },
       rowKey: 'claimDataId',
+      rowSelection,
     };
     return (
       <PageHeaderLayout>
